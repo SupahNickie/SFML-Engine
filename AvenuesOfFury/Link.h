@@ -8,12 +8,9 @@ private:
 
 	void initAttackSprites();
 	void initMoveSprites();
-	void setAttack1Sprite();
-	void setMove1Sprite();
+	void resetMoveFrame(int moveType);
 public:
 	Link();
 	void virtual handleInput();
-	void handleAttack(float elapsedTime);
-	void handleMove(float elapsedTime);
 	void setIdleSprite();
 };

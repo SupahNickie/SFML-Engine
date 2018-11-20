@@ -1,4 +1,0 @@
-﻿  Link.cpp
-c:\users\bmf_c\vs stuff\projects\avenuesoffury\avenuesoffury\link.cpp(40): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
-c:\users\bmf_c\vs stuff\projects\avenuesoffury\avenuesoffury\link.cpp(61): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
-  AvenuesOfFury.vcxproj -> C:\Users\bmf_c\VS Stuff\Projects\AvenuesOfFury\Debug\AvenuesOfFury.exe

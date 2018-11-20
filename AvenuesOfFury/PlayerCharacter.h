@@ -6,16 +6,22 @@ using namespace sf;
 class PlayerCharacter : public Drawable {
 protected:
 	int const MS_PER_FRAME = 50;
-	enum class SpriteState { IDLE, ATTACKING };
+	int const MOVEMENT_TYPES = 1;
+	int const ATTACK_TYPES = 1;
+	int const MOVE_WALK = 0;
+	int const ATTACK_NORMAL = 0;
+	enum class SpriteState { IDLE, ATTACKING, MOVING };
 
 	SpriteState spriteState;
 	Sprite sprite;
 	Vector2f position;
 	
-	Vector2i* attack1SpriteOrigins = nullptr;
-	Vector2i* attack1SpriteBounds = nullptr;
-	Vector2i* move1SpriteOrigins = nullptr;
-	Vector2i* move1SpriteBounds = nullptr;
+	Vector2i** attackSpriteOrigins = nullptr;
+	Vector2i** attackSpriteBounds = nullptr;
+	int* attackTypeMaxFrames = nullptr;
+	Vector2i** moveSpriteOrigins = nullptr;
+	Vector2i** moveSpriteBounds = nullptr;
+	int* moveTypeMaxFrames = nullptr;
 
 	bool upPressed;
 	bool downPressed;
@@ -28,25 +34,25 @@ protected:
 	bool facingRight;
 	bool jumping;
 	
-	int idle1Frame = 0;
-	int attack1Frame = 0;
-	int move1Frame = 0;
-	int idle1FrameMax;
-	int attack1FrameMax;
-	int move1FrameMax;
-	int timeSinceIdle1Frame = 0;
-	int timeSinceAttack1Frame = 0;
-	int timeSinceMove1Frame = 0;
+	int idleFrame = 0;
+	int attackFrame = 0;
+	int moveFrame = 0;
+	int idleFrameMax;
+	int timeSinceIdleFrame = 0;
+	int timeSinceAttackFrame = 0;
+	int timeSinceMoveFrame = 0;
 	bool moveSpriteCycleDown;
 
 	float speed;
 
 	void virtual initAttackSprites() = 0;
 	void virtual setIdleSprite() = 0;
-	void virtual handleAttack(float elapsedTime) = 0;
-	void virtual handleMove(float elapsedTime) = 0;
-	void virtual setAttack1Sprite() = 0;
-	void virtual setMove1Sprite() = 0;
+	void handleAttack(float elapsedTime, int attackType);
+	void handleMove(float elapsedTime, int moveType);
+	void setAttackSprite(int attackType);
+	void setMoveSprite(int moveType);
+	void resetAttackFrame();
+	void virtual resetMoveFrame(int moveType) = 0;
 private:
 	Texture texture;
 	FloatRect hitbox;
