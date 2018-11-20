@@ -1,5 +1,6 @@
 #include "pch.h"
 #include <fstream>
+#include <iostream>
 #include <sstream>
 #include <vector>
 #include "PlayerCharacter.h"
@@ -9,10 +10,13 @@ using namespace sf;
 using namespace std;
 
 void PlayerCharacter::update(float elapsedTime) {
-	if (attackPressed) {
-		handleAttack(elapsedTime, ATTACK_NORMAL);
+	if (primaryAttackPressed) {
+		handleAttack(elapsedTime, ATTACK_1);
 	}
-	else if (spriteState == SpriteState::ATTACKING && !attackPressed) {
+	else if (secondaryAttackPressed) {
+		handleAttack(elapsedTime, ATTACK_2);
+	}
+	else if (spriteState == SpriteState::ATTACKING && !primaryAttackPressed && !secondaryAttackPressed) {
 		setIdleSprite();
 		spriteState = SpriteState::IDLE;
 		attackFrame = 0;
@@ -27,23 +31,23 @@ void PlayerCharacter::update(float elapsedTime) {
 	if (rightPressed) {
 		position.x += speed * elapsedTime;
 		if (!facingRight) flipHorizontally();
-		handleMove(elapsedTime, MOVE_WALK);
+		handleMove(elapsedTime, MOVE_1);
 	}
 	
 	if (leftPressed) {
 		position.x -= speed * elapsedTime;
 		if (!facingLeft) flipHorizontally();
-		handleMove(elapsedTime, MOVE_WALK);
+		handleMove(elapsedTime, MOVE_1);
 	}
 
 	if (upPressed) {
 		position.y -= speed * elapsedTime;
-		if (!rightPressed && !leftPressed) handleMove(elapsedTime, MOVE_WALK);
+		if (!rightPressed && !leftPressed) handleMove(elapsedTime, MOVE_1);
 	}
 
 	if (downPressed) {
 		position.y += speed * elapsedTime;
-		if (!rightPressed && !leftPressed) handleMove(elapsedTime, MOVE_WALK);
+		if (!rightPressed && !leftPressed) handleMove(elapsedTime, MOVE_1);
 	}
 
 	sprite.setPosition(position);
@@ -71,13 +75,14 @@ void PlayerCharacter::handleAttack(float elapsedTime, int attackType) {
 		timeSinceAttackFrame = 0;
 	}
 
-	if (attackFrame > attackTypeMaxFrames[attackType]) {
+	if (attackFrame >= attackTypeMaxFrames[attackType]) {
 		setIdleSprite();
 		spriteState = SpriteState::IDLE;
-		attackFrame = 0;
+		resetAttackFrame();
 		idleFrame = 0;
 		timeSinceAttackFrame = 0;
-		attackPressed = false;
+		primaryAttackPressed = false;
+		secondaryAttackPressed = false;
 		attackDisabled = true;
 	}
 	else {
@@ -92,7 +97,7 @@ void PlayerCharacter::handleMove(float elapsedTime, int moveType) {
 		timeSinceMoveFrame = 0;
 	}
 
-	if (moveFrame > moveTypeMaxFrames[moveType] && !moveSpriteCycleDown) {
+	if (moveFrame >= moveTypeMaxFrames[moveType] && !moveSpriteCycleDown) {
 		moveSpriteCycleDown = true;
 		--moveFrame;
 		--moveFrame;
@@ -146,6 +151,7 @@ void PlayerCharacter::initSprites() {
 			initAttackSprites(numberOfAttacks);
 		}
 		else if (line[0] == "frames" && settingMove) {
+			inIndex = 0;
 			outIndex = 0;
 			for (unsigned int i = 1; i < line.size(); ++i) {
 				numberOfFrames = stoi(line[i]);
@@ -154,6 +160,7 @@ void PlayerCharacter::initSprites() {
 		}
 		else if (line[0] == "frames" && settingAttack) {
 			outIndex = 0;
+			inIndex = 0;
 			for (unsigned int i = 1; i < line.size(); ++i) {
 				numberOfFrames = stoi(line[i]);
 				addAttackSpriteFrames(numberOfFrames, i - 1);
@@ -187,26 +194,16 @@ void PlayerCharacter::initSprites() {
 }
 
 void PlayerCharacter::initMoveSprites(unsigned int moveCount) {
-	delete[] moveSpriteOrigins;
 	moveSpriteOrigins = new Vector2i*[moveCount];
-
-	delete[] moveSpriteBounds;
 	moveSpriteBounds = new Vector2i*[moveCount];
-
-	delete[] moveTypeMaxFrames;
 	moveTypeMaxFrames = new int[moveCount];
 
-	resetMoveFrame(MOVE_WALK);
+	resetMoveFrame(MOVE_1);
 }
 
 void PlayerCharacter::initAttackSprites(unsigned int moveCount) {
-	delete[] attackSpriteOrigins;
 	attackSpriteOrigins = new Vector2i*[moveCount];
-
-	delete[] attackSpriteBounds;
 	attackSpriteBounds = new Vector2i*[moveCount];
-
-	delete[] attackTypeMaxFrames;
 	attackTypeMaxFrames = new int[moveCount];
 
 	resetAttackFrame();

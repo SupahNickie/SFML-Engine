@@ -8,7 +8,8 @@ using namespace std;
 
 Link::Link() {
 	sprite = Sprite(TextureHolder::getTexture("graphics/linksheet.jpg"));
-	attackPressed = false;
+	primaryAttackPressed = false;
+	secondaryAttackPressed = false;
 	spriteState = SpriteState::IDLE;
 	setIdleSprite();
 	facingLeft = true;
@@ -55,20 +56,28 @@ void Link::handleInput() {
 	}
 
 	if (Keyboard::isKeyPressed(Keyboard::Space)) {
-		attackPressed = true;
+		primaryAttackPressed = true;
 		spriteState = SpriteState::ATTACKING;
 	}
 	else {
-		attackPressed = false;
+		primaryAttackPressed = false;
+	}
+
+	if (Keyboard::isKeyPressed(Keyboard::E)) {
+		secondaryAttackPressed = true;
+		spriteState = SpriteState::ATTACKING;
+	}
+	else {
+		secondaryAttackPressed = false;
 	}
 }
 
 void Link::setIdleSprite() {
 	sprite.setTextureRect(IntRect(IDLE_SPRITE_ORIGIN.x, IDLE_SPRITE_ORIGIN.y, IDLE_SPRITE_BOUNDS.x, IDLE_SPRITE_BOUNDS.y));
 	sprite.setOrigin(70, 85.5f);
-	resetMoveFrame(MOVE_WALK);
+	resetMoveFrame(MOVE_1);
 }
 
 void Link::resetMoveFrame(int moveType) {
-	if (moveType == MOVE_WALK) moveFrame = 2;
+	if (moveType == MOVE_1) moveFrame = 2;
 }

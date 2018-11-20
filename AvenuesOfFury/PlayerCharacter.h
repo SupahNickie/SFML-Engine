@@ -7,9 +7,9 @@ class PlayerCharacter : public Drawable {
 protected:
 	int const MS_PER_FRAME = 50;
 	int const MOVEMENT_TYPES = 1;
-	int const ATTACK_TYPES = 1;
-	int const MOVE_WALK = 0;
-	int const ATTACK_NORMAL = 0;
+	int const MOVE_1 = 0;
+	int const ATTACK_1 = 0;
+	int const ATTACK_2 = 1;
 	enum class SpriteState { IDLE, ATTACKING, MOVING };
 
 	std::string charName;
@@ -28,7 +28,8 @@ protected:
 	bool downPressed;
 	bool leftPressed;
 	bool rightPressed;
-	bool attackPressed;
+	bool primaryAttackPressed;
+	bool secondaryAttackPressed;
 	bool attackDisabled = false;
 	
 	bool facingLeft;
