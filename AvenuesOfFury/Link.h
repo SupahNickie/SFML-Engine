@@ -6,8 +6,6 @@ private:
 	const Vector2i IDLE_SPRITE_ORIGIN = Vector2i(395, 0);
 	const Vector2i IDLE_SPRITE_BOUNDS = Vector2i(142, 178);
 
-	void initAttackSprites();
-	void initMoveSprites();
 	void resetMoveFrame(int moveType);
 public:
 	Link();

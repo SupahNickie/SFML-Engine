@@ -1,7 +1,12 @@
 #include "pch.h"
+#include <fstream>
+#include <sstream>
+#include <vector>
 #include "PlayerCharacter.h"
+#include <iostream>
 
 using namespace sf;
+using namespace std;
 
 void PlayerCharacter::update(float elapsedTime) {
 	if (attackPressed) {
@@ -99,6 +104,134 @@ void PlayerCharacter::handleMove(float elapsedTime, int moveType) {
 	}
 
 	setMoveSprite(moveType);
+}
+
+void PlayerCharacter::initSprites() {
+	bool settingMove = false;
+	bool settingAttack = false;
+	unsigned int numberOfMoves = 0;
+	unsigned int numberOfAttacks = 0;
+	int outIndex = 0;
+	int inIndex = 0;
+	unsigned int numberOfFrames = 0;
+
+	stringstream ss;
+	ss << "graphics/" << charName << "coords.txt";
+	
+	string s;
+	const string delimiter = ",";
+	ifstream inputFile(ss.str());
+	while (getline(inputFile, s)) {
+		size_t pos = 0;
+		string current = "";
+		vector<string> line{};
+
+		while ((pos = s.find(delimiter)) != string::npos) {
+			current = s.substr(0, pos);
+			line.push_back(current);
+			s.erase(0, pos + delimiter.length());
+		}
+		line.push_back(s);
+
+		if (line[0] == "move") {
+			settingMove = true;
+			settingAttack = false;
+			numberOfMoves = stoi(line[1]);
+			initMoveSprites(numberOfMoves);
+		}
+		else if (line[0] == "attack") {
+			settingAttack = true;
+			settingMove = false;
+			numberOfAttacks = stoi(line[1]);
+			initAttackSprites(numberOfAttacks);
+		}
+		else if (line[0] == "frames" && settingMove) {
+			outIndex = 0;
+			for (unsigned int i = 1; i < line.size(); ++i) {
+				numberOfFrames = stoi(line[i]);
+				addMoveSpriteFrames(numberOfFrames, i - 1);
+			}
+		}
+		else if (line[0] == "frames" && settingAttack) {
+			outIndex = 0;
+			for (unsigned int i = 1; i < line.size(); ++i) {
+				numberOfFrames = stoi(line[i]);
+				addAttackSpriteFrames(numberOfFrames, i - 1);
+			}
+		}
+		else if (line[0] == "skip") {
+			inIndex = 0;
+			++outIndex;
+		}
+		else {
+			if (settingMove) {
+				setMoveSpriteFrames(
+					outIndex, 
+					inIndex, 
+					Vector2i(stoi(line[0]), stoi(line[1])), 
+					Vector2i(stoi(line[2]), stoi(line[3]))
+				);
+			}
+			else if (settingAttack) {
+				setAttackSpriteFrames(
+					outIndex,
+					inIndex,
+					Vector2i(stoi(line[0]), stoi(line[1])),
+					Vector2i(stoi(line[2]), stoi(line[3]))
+				);
+			}
+			++inIndex;
+		}
+	}
+	inputFile.close();
+}
+
+void PlayerCharacter::initMoveSprites(unsigned int moveCount) {
+	delete[] moveSpriteOrigins;
+	moveSpriteOrigins = new Vector2i*[moveCount];
+
+	delete[] moveSpriteBounds;
+	moveSpriteBounds = new Vector2i*[moveCount];
+
+	delete[] moveTypeMaxFrames;
+	moveTypeMaxFrames = new int[moveCount];
+
+	resetMoveFrame(MOVE_WALK);
+}
+
+void PlayerCharacter::initAttackSprites(unsigned int moveCount) {
+	delete[] attackSpriteOrigins;
+	attackSpriteOrigins = new Vector2i*[moveCount];
+
+	delete[] attackSpriteBounds;
+	attackSpriteBounds = new Vector2i*[moveCount];
+
+	delete[] attackTypeMaxFrames;
+	attackTypeMaxFrames = new int[moveCount];
+
+	resetAttackFrame();
+}
+
+void PlayerCharacter::addMoveSpriteFrames(unsigned int numberOfFrames, int index) {
+	moveSpriteOrigins[index] = new Vector2i[numberOfFrames];
+	moveSpriteBounds[index] = new Vector2i[numberOfFrames];
+	moveTypeMaxFrames[index] = numberOfFrames;
+}
+
+void PlayerCharacter::addAttackSpriteFrames(unsigned int numberOfFrames, int index) {
+	attackSpriteOrigins[index] = new Vector2i[numberOfFrames];
+	attackSpriteBounds[index] = new Vector2i[numberOfFrames];
+	attackTypeMaxFrames[index] = numberOfFrames;
+}
+
+void PlayerCharacter::setMoveSpriteFrames(int outIndex, int inIndex, Vector2i origin, Vector2i bound) {
+	moveSpriteOrigins[outIndex][inIndex] = origin;
+	moveSpriteBounds[outIndex][inIndex] = bound;
+}
+
+void PlayerCharacter::setAttackSpriteFrames(int outIndex, int inIndex, Vector2i origin, Vector2i bound) {
+	attackSpriteOrigins[outIndex][inIndex] = origin;
+	attackSpriteBounds[outIndex][inIndex] = bound;
 }
 
 void PlayerCharacter::setAttackSprite(int attackType) {

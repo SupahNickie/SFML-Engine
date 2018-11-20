@@ -12,6 +12,7 @@ protected:
 	int const ATTACK_NORMAL = 0;
 	enum class SpriteState { IDLE, ATTACKING, MOVING };
 
+	std::string charName;
 	SpriteState spriteState;
 	Sprite sprite;
 	Vector2f position;
@@ -45,7 +46,7 @@ protected:
 
 	float speed;
 
-	void virtual initAttackSprites() = 0;
+	void initSprites();
 	void virtual setIdleSprite() = 0;
 	void handleAttack(float elapsedTime, int attackType);
 	void handleMove(float elapsedTime, int moveType);
@@ -57,6 +58,12 @@ private:
 	Texture texture;
 	FloatRect hitbox;
 
+	void initMoveSprites(unsigned int moveCount);
+	void initAttackSprites(unsigned int moveCount);
+	void addMoveSpriteFrames(unsigned int numberOfFrames, int index);
+	void addAttackSpriteFrames(unsigned int numberOfFrames, int index);
+	void setMoveSpriteFrames(int outIndex, int inIndex, Vector2i origin, Vector2i bound);
+	void setAttackSpriteFrames(int outIndex, int inIndex, Vector2i origin, Vector2i bound);
 	void flipHorizontally();
 public:
 	virtual void draw(RenderTarget& target, RenderStates states) const;
