@@ -11,4 +11,5 @@ void Engine::input() {
 		}
 	}
 	player1.handleInput();
+	player2.handleInput();
 }

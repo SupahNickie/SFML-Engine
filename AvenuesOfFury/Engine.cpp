@@ -12,7 +12,7 @@ Engine::Engine() {
 
 void Engine::run() {
 	Clock clock;
-
+	player2.setSecondPlayer();
 	while (window.isOpen()) {
 		Time dt = clock.restart();
 		float dtAsSeconds = dt.asSeconds();

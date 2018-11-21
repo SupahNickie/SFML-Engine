@@ -17,12 +17,12 @@ protected:
 	Sprite sprite;
 	Vector2f position;
 	
-	Vector2i** attackSpriteOrigins = nullptr;
-	Vector2i** attackSpriteBounds = nullptr;
-	int* attackTypeMaxFrames = nullptr;
 	Vector2i** moveSpriteOrigins = nullptr;
 	Vector2i** moveSpriteBounds = nullptr;
+	Vector2i** attackSpriteOrigins = nullptr;
+	Vector2i** attackSpriteBounds = nullptr;
 	int* moveTypeMaxFrames = nullptr;
+	int* attackTypeMaxFrames = nullptr;
 
 	bool upPressed;
 	bool downPressed;

@@ -22,6 +22,10 @@ Link::Link() {
 	initSprites();
 }
 
+void Link::setSecondPlayer() {
+	speed = 400;
+}
+
 void Link::handleInput() {
 	if (Keyboard::isKeyPressed(Keyboard::W)) {
 		upPressed = true;

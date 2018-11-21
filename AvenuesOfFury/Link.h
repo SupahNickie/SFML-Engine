@@ -11,4 +11,5 @@ public:
 	Link();
 	void virtual handleInput();
 	void setIdleSprite();
+	void setSecondPlayer();
 };

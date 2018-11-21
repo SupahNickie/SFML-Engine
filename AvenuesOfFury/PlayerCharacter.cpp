@@ -4,7 +4,7 @@
 #include <sstream>
 #include <vector>
 #include "PlayerCharacter.h"
-#include <iostream>
+#include "SpriteHolder.h"
 
 using namespace sf;
 using namespace std;
@@ -112,6 +112,16 @@ void PlayerCharacter::handleMove(float elapsedTime, int moveType) {
 }
 
 void PlayerCharacter::initSprites() {
+	if (SpriteHolder::isStored(charName)) {
+		moveSpriteOrigins = SpriteHolder::getMoveSpriteOrigins(charName);
+		moveSpriteBounds= SpriteHolder::getMoveSpriteBounds(charName);
+		attackSpriteOrigins = SpriteHolder::getAttackSpriteOrigins(charName);
+		attackSpriteBounds = SpriteHolder::getAttackSpriteBounds(charName);
+		moveTypeMaxFrames = SpriteHolder::getMoveTypeMaxFrames(charName);
+		attackTypeMaxFrames = SpriteHolder::getAttackTypeMaxFrames(charName);
+		return;
+	}
+
 	bool settingMove = false;
 	bool settingAttack = false;
 	unsigned int numberOfMoves = 0;
@@ -195,16 +205,26 @@ void PlayerCharacter::initSprites() {
 
 void PlayerCharacter::initMoveSprites(unsigned int moveCount) {
 	moveSpriteOrigins = new Vector2i*[moveCount];
+	SpriteHolder::setMoveSpriteOrigins(charName, moveSpriteOrigins);
+
 	moveSpriteBounds = new Vector2i*[moveCount];
+	SpriteHolder::setMoveSpriteBounds(charName, moveSpriteBounds);
+
 	moveTypeMaxFrames = new int[moveCount];
+	SpriteHolder::setMoveTypeMaxFrames(charName, moveTypeMaxFrames);
 
 	resetMoveFrame(MOVE_1);
 }
 
 void PlayerCharacter::initAttackSprites(unsigned int moveCount) {
 	attackSpriteOrigins = new Vector2i*[moveCount];
+	SpriteHolder::setAttackSpriteOrigins(charName, attackSpriteOrigins);
+
 	attackSpriteBounds = new Vector2i*[moveCount];
+	SpriteHolder::setAttackSpriteBounds(charName, attackSpriteBounds);
+
 	attackTypeMaxFrames = new int[moveCount];
+	SpriteHolder::setAttackTypeMaxFrames(charName, attackTypeMaxFrames);
 
 	resetAttackFrame();
 }
