@@ -20,7 +20,8 @@ private:
 	static SpriteHolder* shInstance;
 public:
 	SpriteHolder();
-	static bool isStored(string const& charName);
+	static bool getIsStored(string const& charName);
+	static void setIsStored(string const& charName);
 
 	static Vector2i** getMoveSpriteOrigins(string const& charName);
 	static void setMoveSpriteOrigins(string const& charName, Vector2i** sprites);

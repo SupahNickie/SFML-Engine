@@ -13,13 +13,17 @@ SpriteHolder::SpriteHolder() {
 	shInstance = this;
 }
 
-bool SpriteHolder::isStored(string const& charName) {
+bool SpriteHolder::getIsStored(string const& charName) {
 	auto& storedMap = shInstance->isStoredMap;
 	auto storedEntry = storedMap.find(charName);
 	if (storedEntry != storedMap.end()) {
 		return true;
 	}
 	return false;
+}
+
+void SpriteHolder::setIsStored(string const& charName) {
+	shInstance->isStoredMap[charName] = true;
 }
 
 Vector2i** SpriteHolder::getMoveSpriteOrigins(string const& charName) {
@@ -31,7 +35,6 @@ Vector2i** SpriteHolder::getMoveSpriteOrigins(string const& charName) {
 }
 
 void SpriteHolder::setMoveSpriteOrigins(string const& charName, Vector2i** sprites) {
-	shInstance->isStoredMap[charName] = true;
 	shInstance->moveSpriteOriginsMap[charName] = sprites;
 }
 

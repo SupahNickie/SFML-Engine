@@ -112,7 +112,7 @@ void PlayerCharacter::handleMove(float elapsedTime, int moveType) {
 }
 
 void PlayerCharacter::initSprites() {
-	if (SpriteHolder::isStored(charName)) {
+	if (SpriteHolder::getIsStored(charName)) {
 		moveSpriteOrigins = SpriteHolder::getMoveSpriteOrigins(charName);
 		moveSpriteBounds= SpriteHolder::getMoveSpriteBounds(charName);
 		attackSpriteOrigins = SpriteHolder::getAttackSpriteOrigins(charName);
@@ -201,6 +201,7 @@ void PlayerCharacter::initSprites() {
 		}
 	}
 	inputFile.close();
+	SpriteHolder::setIsStored(charName);
 }
 
 void PlayerCharacter::initMoveSprites(unsigned int moveCount) {
