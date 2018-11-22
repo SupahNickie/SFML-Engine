@@ -20,6 +20,7 @@ private:
 	map<string, int*> attackTypeMaxFramesMap;
 	map<string, int*> idleTypeMaxFramesMap;
 	map<string, int*> moveTypeStartFramesMap;
+	map<string, int*> attackTypeStartFramesMap;
 	map<string, int*> idleTypeStartFramesMap;
 	map<string, bool> isStoredMap;
 	static SpriteHolder* shInstance;
@@ -57,6 +58,9 @@ public:
 
 	static int* getMoveTypeStartFrames(string const& charName);
 	static void setMoveTypeStartFrames(string const& charName, int* counts);
+
+	static int* getAttackTypeStartFrames(string const& charName);
+	static void setAttackTypeStartFrames(string const& charName, int* counts);
 
 	static int* getIdleTypeStartFrames(string const& charName);
 	static void setIdleTypeStartFrames(string const& charName, int* counts);

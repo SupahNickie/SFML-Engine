@@ -63,29 +63,6 @@ void PlayerCharacter::flipHorizontally() {
 	facingRight = !facingRight;
 }
 
-void PlayerCharacter::handleAttack(float elapsedTime, int attackType) {
-	if (attackDisabled) return;
-	timeSinceAttackFrame += elapsedTime * 1000;
-	if (timeSinceAttackFrame > MS_PER_FRAME) {
-		++attackFrame;
-		timeSinceAttackFrame = 0;
-	}
-
-	if (attackFrame >= attackTypeMaxFrames[attackType]) {
-		setIdleSprite(IDLE_1);
-		spriteState = SpriteState::IDLE;
-		resetAttackFrame();
-		idleFrame = 0;
-		timeSinceAttackFrame = 0;
-		primaryAttackPressed = false;
-		secondaryAttackPressed = false;
-		attackDisabled = true;
-	}
-	else {
-		setAttackSprite(attackType);
-	}
-}
-
 void PlayerCharacter::handleMove(float elapsedTime, int moveType) {
 	timeSinceMoveFrame += elapsedTime * 1000;
 	if (timeSinceMoveFrame > MS_PER_FRAME) {
@@ -93,7 +70,7 @@ void PlayerCharacter::handleMove(float elapsedTime, int moveType) {
 		timeSinceMoveFrame = 0;
 	}
 
-	if (moveFrame >= moveTypeMaxFrames[moveType] && !moveSpriteCycleDown) {
+	if (moveFrame >= SpriteHolder::getMoveTypeMaxFrames(charName)[moveType] && !moveSpriteCycleDown) {
 		moveSpriteCycleDown = true;
 		--moveFrame;
 		--moveFrame;
@@ -107,28 +84,38 @@ void PlayerCharacter::handleMove(float elapsedTime, int moveType) {
 	setMoveSprite(moveType);
 }
 
-void PlayerCharacter::initSprites() {
-	if (SpriteHolder::getIsStored(charName)) {
-		moveSpriteOrigins = SpriteHolder::getMoveSpriteOrigins(charName);
-		moveSpriteBounds= SpriteHolder::getMoveSpriteBounds(charName);
-		attackSpriteOrigins = SpriteHolder::getAttackSpriteOrigins(charName);
-		attackSpriteBounds = SpriteHolder::getAttackSpriteBounds(charName);
-		idleSpriteOrigins = SpriteHolder::getIdleSpriteOrigins(charName);
-		idleSpriteBounds = SpriteHolder::getIdleSpriteBounds(charName);
-		moveTypeMaxFrames = SpriteHolder::getMoveTypeMaxFrames(charName);
-		attackTypeMaxFrames = SpriteHolder::getAttackTypeMaxFrames(charName);
-		idleTypeMaxFrames = SpriteHolder::getIdleTypeMaxFrames(charName);
-		moveTypeStartFrames = SpriteHolder::getMoveTypeStartFrames(charName);
-		idleTypeStartFrames = SpriteHolder::getIdleTypeStartFrames(charName);
-		return;
+void PlayerCharacter::handleAttack(float elapsedTime, int attackType) {
+	if (attackDisabled) return;
+	timeSinceAttackFrame += elapsedTime * 1000;
+	if (timeSinceAttackFrame > MS_PER_FRAME) {
+		++attackFrame;
+		timeSinceAttackFrame = 0;
 	}
 
-	bool settingMove = false;
-	bool settingAttack = false;
-	bool settingIdle= false;
-	unsigned int numberOfMoves = 0;
-	unsigned int numberOfAttacks = 0;
-	unsigned int numberOfIdles = 0;
+	if (attackFrame >= SpriteHolder::getAttackTypeMaxFrames(charName)[attackType]) {
+		setIdleSprite(IDLE_1);
+		spriteState = SpriteState::IDLE;
+		resetAttackFrame(SpriteHolder::getAttackTypeStartFrames(charName)[attackType]);
+		idleFrame = 0;
+		timeSinceAttackFrame = 0;
+		primaryAttackPressed = false;
+		secondaryAttackPressed = false;
+		attackDisabled = true;
+	}
+	else {
+		setAttackSprite(attackType);
+	}
+}
+
+void PlayerCharacter::handleIdle(float elapsedTime, int idleType) {
+
+}
+
+void PlayerCharacter::initSprites() {
+	if (SpriteHolder::getIsStored(charName)) return;
+
+	string currentlySetting = "";
+	unsigned int numberOfActions = 0;
 	int outIndex = 0;
 	int inIndex = 0;
 	unsigned int numberOfFrames = 0;
@@ -152,57 +139,21 @@ void PlayerCharacter::initSprites() {
 		}
 		line.push_back(s);
 
-		if (line[0] == "move") {
-			settingMove = true;
-			settingAttack = false;
-			settingIdle = false;
-			numberOfMoves = stoi(line[1]);
-			initMoveSprites(numberOfMoves);
+		if (line[0] == "move" || line[0] == "attack" || line[0] == "idle") {
+			currentlySetting = line[0];
+			numberOfActions = stoi(line[1]);
+			initActionSprites(actionStringToEnum(currentlySetting), numberOfActions);
 		}
-		else if (line[0] == "attack") {
-			settingAttack = true;
-			settingMove = false;
-			settingIdle = false;
-			numberOfAttacks = stoi(line[1]);
-			initAttackSprites(numberOfAttacks);
-		}
-		else if (line[0] == "idle") {
-			settingAttack = false;
-			settingMove = false;
-			settingIdle = true;
-			numberOfIdles = stoi(line[1]);
-			initIdleSprites(numberOfIdles);
-		}
-		else if (line[0] == "frames" && settingMove) {
+		else if (line[0] == "frames") {
 			inIndex = 0;
 			outIndex = 0;
-			numberOfMoves = 0;
-			for (unsigned int i = 1; i < line.size(); ++numberOfMoves) {
+			numberOfActions = 0;
+			for (unsigned int i = 1; i < line.size(); ++numberOfActions) {
 				numberOfFrames = stoi(line[i]);
 				++i;
 				startFrame = stoi(line[i]);
 				++i;
-				addMoveSpriteFrames(numberOfFrames, startFrame, numberOfMoves);
-			}
-		}
-		else if (line[0] == "frames" && settingAttack) {
-			outIndex = 0;
-			inIndex = 0;
-			for (unsigned int i = 1; i < line.size(); ++i) {
-				numberOfFrames = stoi(line[i]);
-				addAttackSpriteFrames(numberOfFrames, i - 1);
-			}
-		}
-		else if (line[0] == "frames" && settingIdle) {
-			inIndex = 0;
-			outIndex = 0;
-			numberOfIdles = 0;
-			for (unsigned int i = 1; i < line.size(); ++numberOfIdles) {
-				numberOfFrames = stoi(line[i]);
-				++i;
-				startFrame = stoi(line[i]);
-				++i;
-				addIdleSpriteFrames(numberOfFrames, startFrame, numberOfIdles);
+				addActionSpriteFrames(actionStringToEnum(currentlySetting), numberOfActions, numberOfFrames, startFrame);
 			}
 		}
 		else if (line[0] == "skip") {
@@ -210,114 +161,116 @@ void PlayerCharacter::initSprites() {
 			++outIndex;
 		}
 		else {
-			if (settingMove) {
-				setMoveSpriteFrames(
-					outIndex, 
-					inIndex, 
-					Vector2i(stoi(line[0]), stoi(line[1])), 
-					Vector2i(stoi(line[2]), stoi(line[3]))
-				);
-			}
-			else if (settingAttack) {
-				setAttackSpriteFrames(
-					outIndex,
-					inIndex,
-					Vector2i(stoi(line[0]), stoi(line[1])),
-					Vector2i(stoi(line[2]), stoi(line[3]))
-				);
-			}
-			else if (settingIdle) {
-				setIdleSpriteFrames(
-					outIndex,
-					inIndex,
-					Vector2i(stoi(line[0]), stoi(line[1])),
-					Vector2i(stoi(line[2]), stoi(line[3]))
-				);
-			}
+			setActionSpriteFrames(
+				actionStringToEnum(currentlySetting),
+				outIndex,
+				inIndex,
+				Vector2i(stoi(line[0]), stoi(line[1])),
+				Vector2i(stoi(line[2]), stoi(line[3]))
+			);
 			++inIndex;
 		}
 	}
 	inputFile.close();
 
 	resetMoveFrame(MOVE_1);
-	resetAttackFrame();
+	resetAttackFrame(ATTACK_1);
 	resetIdleFrame(IDLE_1);
 
 	SpriteHolder::setIsStored(charName);
 }
 
-void PlayerCharacter::initMoveSprites(unsigned int moveCount) {
-	moveSpriteOrigins = new Vector2i*[moveCount];
-	SpriteHolder::setMoveSpriteOrigins(charName, moveSpriteOrigins);
-
-	moveSpriteBounds = new Vector2i*[moveCount];
-	SpriteHolder::setMoveSpriteBounds(charName, moveSpriteBounds);
-
-	moveTypeMaxFrames = new int[moveCount];
-	SpriteHolder::setMoveTypeMaxFrames(charName, moveTypeMaxFrames);
-
-	moveTypeStartFrames = new int[moveCount];
-	SpriteHolder::setMoveTypeStartFrames(charName, moveTypeStartFrames);
+PlayerCharacter::ActionType PlayerCharacter::actionStringToEnum(string action) {
+	if (action == "move") return PlayerCharacter::ActionType::MOVE;
+	if (action == "attack") return PlayerCharacter::ActionType::ATTACK;
+	if (action == "idle") return PlayerCharacter::ActionType::IDLE;
 }
 
-void PlayerCharacter::initAttackSprites(unsigned int attackCount) {
-	attackSpriteOrigins = new Vector2i*[attackCount];
-	SpriteHolder::setAttackSpriteOrigins(charName, attackSpriteOrigins);
+void PlayerCharacter::initActionSprites(PlayerCharacter::ActionType action, unsigned int actionCount) {
+	switch (action) {
+	case PlayerCharacter::ActionType::MOVE: {
+		Vector2i** moveSpriteOrigins = new Vector2i*[actionCount];
+		SpriteHolder::setMoveSpriteOrigins(charName, moveSpriteOrigins);
 
-	attackSpriteBounds = new Vector2i*[attackCount];
-	SpriteHolder::setAttackSpriteBounds(charName, attackSpriteBounds);
+		Vector2i** moveSpriteBounds = new Vector2i*[actionCount];
+		SpriteHolder::setMoveSpriteBounds(charName, moveSpriteBounds);
 
-	attackTypeMaxFrames = new int[attackCount];
-	SpriteHolder::setAttackTypeMaxFrames(charName, attackTypeMaxFrames);
+		int* moveTypeMaxFrames = new int[actionCount];
+		SpriteHolder::setMoveTypeMaxFrames(charName, moveTypeMaxFrames);
+
+		int* moveTypeStartFrames = new int[actionCount];
+		SpriteHolder::setMoveTypeStartFrames(charName, moveTypeStartFrames);
+	}
+		break;
+	case PlayerCharacter::ActionType::ATTACK: {
+		Vector2i** attackSpriteOrigins = new Vector2i*[actionCount];
+		SpriteHolder::setAttackSpriteOrigins(charName, attackSpriteOrigins);
+
+		Vector2i** attackSpriteBounds = new Vector2i*[actionCount];
+		SpriteHolder::setAttackSpriteBounds(charName, attackSpriteBounds);
+
+		int* attackTypeMaxFrames = new int[actionCount];
+		SpriteHolder::setAttackTypeMaxFrames(charName, attackTypeMaxFrames);
+
+		int* attackTypeStartFrames = new int[actionCount];
+		SpriteHolder::setAttackTypeStartFrames(charName, attackTypeStartFrames);
+	}
+		break;
+	case PlayerCharacter::ActionType::IDLE: {
+		Vector2i** idleSpriteOrigins = new Vector2i*[actionCount];
+		SpriteHolder::setIdleSpriteOrigins(charName, idleSpriteOrigins);
+
+		Vector2i** idleSpriteBounds = new Vector2i*[actionCount];
+		SpriteHolder::setIdleSpriteBounds(charName, idleSpriteBounds);
+
+		int* idleTypeMaxFrames = new int[actionCount];
+		SpriteHolder::setIdleTypeMaxFrames(charName, idleTypeMaxFrames);
+
+		int* idleTypeStartFrames = new int[actionCount];
+		SpriteHolder::setIdleTypeStartFrames(charName, idleTypeStartFrames);
+	}
+		break;
+	}
 }
 
-void PlayerCharacter::initIdleSprites(unsigned int idleCount) {
-	idleSpriteOrigins = new Vector2i*[idleCount];
-	SpriteHolder::setIdleSpriteOrigins(charName, idleSpriteOrigins);
-
-	idleSpriteBounds = new Vector2i*[idleCount];
-	SpriteHolder::setIdleSpriteBounds(charName, idleSpriteBounds);
-
-	idleTypeMaxFrames = new int[idleCount];
-	SpriteHolder::setIdleTypeMaxFrames(charName, idleTypeMaxFrames);
-
-	idleTypeStartFrames = new int[idleCount];
-	SpriteHolder::setIdleTypeStartFrames(charName, idleTypeStartFrames);
+void PlayerCharacter::addActionSpriteFrames(PlayerCharacter::ActionType action, int numberOfActions, int numberOfFrames, int startFrame) {
+	switch (action) {
+	case PlayerCharacter::ActionType::MOVE:
+		SpriteHolder::getMoveSpriteOrigins(charName)[numberOfActions] = new Vector2i[numberOfFrames];
+		SpriteHolder::getMoveSpriteBounds(charName)[numberOfActions] = new Vector2i[numberOfFrames];
+		SpriteHolder::getMoveTypeMaxFrames(charName)[numberOfActions] = numberOfFrames;
+		SpriteHolder::getMoveTypeStartFrames(charName)[numberOfActions] = startFrame;
+		break;
+	case PlayerCharacter::ActionType::ATTACK:
+		SpriteHolder::getAttackSpriteOrigins(charName)[numberOfActions] = new Vector2i[numberOfFrames];
+		SpriteHolder::getAttackSpriteBounds(charName)[numberOfActions] = new Vector2i[numberOfFrames];
+		SpriteHolder::getAttackTypeMaxFrames(charName)[numberOfActions] = numberOfFrames;
+		SpriteHolder::getAttackTypeStartFrames(charName)[numberOfActions] = startFrame;
+		break;
+	case PlayerCharacter::ActionType::IDLE:
+		SpriteHolder::getIdleSpriteOrigins(charName)[numberOfActions] = new Vector2i[numberOfFrames];
+		SpriteHolder::getIdleSpriteBounds(charName)[numberOfActions] = new Vector2i[numberOfFrames];
+		SpriteHolder::getIdleTypeMaxFrames(charName)[numberOfActions] = numberOfFrames;
+		SpriteHolder::getIdleTypeStartFrames(charName)[numberOfActions] = startFrame;
+		break;
+	}
 }
 
-void PlayerCharacter::addMoveSpriteFrames(unsigned int numberOfFrames, unsigned int moveFrameStart, int index) {
-	moveSpriteOrigins[index] = new Vector2i[numberOfFrames];
-	moveSpriteBounds[index] = new Vector2i[numberOfFrames];
-	moveTypeMaxFrames[index] = numberOfFrames;
-	moveTypeStartFrames[index] = moveFrameStart;
-}
-
-void PlayerCharacter::addAttackSpriteFrames(unsigned int numberOfFrames, int index) {
-	attackSpriteOrigins[index] = new Vector2i[numberOfFrames];
-	attackSpriteBounds[index] = new Vector2i[numberOfFrames];
-	attackTypeMaxFrames[index] = numberOfFrames;
-}
-
-void PlayerCharacter::addIdleSpriteFrames(unsigned int numberOfFrames, unsigned int idleFrameStart, int index) {
-	idleSpriteOrigins[index] = new Vector2i[numberOfFrames];
-	idleSpriteBounds[index] = new Vector2i[numberOfFrames];
-	idleTypeMaxFrames[index] = numberOfFrames;
-	idleTypeStartFrames[index] = idleFrameStart;
-}
-
-void PlayerCharacter::setMoveSpriteFrames(int outIndex, int inIndex, Vector2i origin, Vector2i bound) {
-	moveSpriteOrigins[outIndex][inIndex] = origin;
-	moveSpriteBounds[outIndex][inIndex] = bound;
-}
-
-void PlayerCharacter::setAttackSpriteFrames(int outIndex, int inIndex, Vector2i origin, Vector2i bound) {
-	attackSpriteOrigins[outIndex][inIndex] = origin;
-	attackSpriteBounds[outIndex][inIndex] = bound;
-}
-
-void PlayerCharacter::setIdleSpriteFrames(int outIndex, int inIndex, Vector2i origin, Vector2i bound) {
-	idleSpriteOrigins[outIndex][inIndex] = origin;
-	idleSpriteBounds[outIndex][inIndex] = bound;
+void PlayerCharacter::setActionSpriteFrames(PlayerCharacter::ActionType action, int outIndex, int inIndex, Vector2i origin, Vector2i bound) {
+	switch (action) {
+	case PlayerCharacter::ActionType::MOVE:
+		SpriteHolder::getMoveSpriteOrigins(charName)[outIndex][inIndex] = origin;
+		SpriteHolder::getMoveSpriteBounds(charName)[outIndex][inIndex] = bound;
+		break;
+	case PlayerCharacter::ActionType::ATTACK:
+		SpriteHolder::getAttackSpriteOrigins(charName)[outIndex][inIndex] = origin;
+		SpriteHolder::getAttackSpriteBounds(charName)[outIndex][inIndex] = bound;
+		break;
+	case PlayerCharacter::ActionType::IDLE:
+		SpriteHolder::getIdleSpriteOrigins(charName)[outIndex][inIndex] = origin;
+		SpriteHolder::getIdleSpriteBounds(charName)[outIndex][inIndex] = bound;
+		break;
+	}
 }
 
 void PlayerCharacter::setMoveSprite(int moveType) {
@@ -328,56 +281,56 @@ void PlayerCharacter::setMoveSprite(int moveType) {
 
 	sprite.setTextureRect(
 		IntRect(
-			moveSpriteOrigins[moveType][moveFrame].x,
-			moveSpriteOrigins[moveType][moveFrame].y,
-			moveSpriteBounds[moveType][moveFrame].x,
-			moveSpriteBounds[moveType][moveFrame].y
+			SpriteHolder::getMoveSpriteOrigins(charName)[moveType][moveFrame].x,
+			SpriteHolder::getMoveSpriteOrigins(charName)[moveType][moveFrame].y,
+			SpriteHolder::getMoveSpriteBounds(charName)[moveType][moveFrame].x,
+			SpriteHolder::getMoveSpriteBounds(charName)[moveType][moveFrame].y
 		)
 	);
 	sprite.setOrigin(
-		moveSpriteBounds[moveType][moveFrame].x / 2.0f,
-		moveSpriteBounds[moveType][moveFrame].y / 2.0f
+		SpriteHolder::getMoveSpriteBounds(charName)[moveType][moveFrame].x / 2.0f,
+		SpriteHolder::getMoveSpriteBounds(charName)[moveType][moveFrame].y / 2.0f
 	);
 }
 
 void PlayerCharacter::setAttackSprite(int attackType) {
 	sprite.setTextureRect(
 		IntRect(
-			attackSpriteOrigins[attackType][attackFrame].x,
-			attackSpriteOrigins[attackType][attackFrame].y,
-			attackSpriteBounds[attackType][attackFrame].x,
-			attackSpriteBounds[attackType][attackFrame].y
+			SpriteHolder::getAttackSpriteOrigins(charName)[attackType][attackFrame].x,
+			SpriteHolder::getAttackSpriteOrigins(charName)[attackType][attackFrame].y,
+			SpriteHolder::getAttackSpriteBounds(charName)[attackType][attackFrame].x,
+			SpriteHolder::getAttackSpriteBounds(charName)[attackType][attackFrame].y
 		)
 	);
 	sprite.setOrigin(
-		attackSpriteBounds[attackType][attackFrame].x / 2.0f,
-		attackSpriteBounds[attackType][attackFrame].y / 2.0f
+		SpriteHolder::getAttackSpriteBounds(charName)[attackType][attackFrame].x / 2.0f,
+		SpriteHolder::getAttackSpriteBounds(charName)[attackType][attackFrame].y / 2.0f
 	);
 }
 
 void PlayerCharacter::setIdleSprite(int idleType) {
 	sprite.setTextureRect(
 		IntRect(
-			idleSpriteOrigins[idleType][idleFrame].x,
-			idleSpriteOrigins[idleType][idleFrame].y,
-			idleSpriteBounds[idleType][idleFrame].x,
-			idleSpriteBounds[idleType][idleFrame].y
+			SpriteHolder::getIdleSpriteOrigins(charName)[idleType][idleFrame].x,
+			SpriteHolder::getIdleSpriteOrigins(charName)[idleType][idleFrame].y,
+			SpriteHolder::getIdleSpriteBounds(charName)[idleType][idleFrame].x,
+			SpriteHolder::getIdleSpriteBounds(charName)[idleType][idleFrame].y
 		)
 	);
 	sprite.setOrigin(
-		idleSpriteBounds[idleType][idleFrame].x / 2.0f,
-		idleSpriteBounds[idleType][idleFrame].y / 2.0f
+		SpriteHolder::getIdleSpriteBounds(charName)[idleType][idleFrame].x / 2.0f,
+		SpriteHolder::getIdleSpriteBounds(charName)[idleType][idleFrame].y / 2.0f
 	);
 }
 
-void PlayerCharacter::resetAttackFrame() {
-	attackFrame = 0;
+void PlayerCharacter::resetMoveFrame(int moveType) {
+	moveFrame = SpriteHolder::getMoveTypeStartFrames(charName)[moveType];
 }
 
-void PlayerCharacter::resetMoveFrame(int moveType) {
-	moveFrame = moveTypeStartFrames[moveType];
+void PlayerCharacter::resetAttackFrame(int attackType) {
+	attackFrame = SpriteHolder::getAttackTypeStartFrames(charName)[attackType];
 }
 
 void PlayerCharacter::resetIdleFrame(int idleType) {
-	idleFrame = idleTypeStartFrames[idleType];
+	idleFrame = SpriteHolder::getIdleTypeStartFrames(charName)[idleType];
 }

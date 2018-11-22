@@ -176,6 +176,21 @@ void SpriteHolder::setMoveTypeStartFrames(string const& charName, int* counts) {
 	shInstance->moveTypeStartFramesMap[charName] = counts;
 }
 
+int* SpriteHolder::getAttackTypeStartFrames(string const& charName) {
+	auto mMap = shInstance->attackTypeStartFramesMap;
+	auto countEntry = mMap.find(charName);
+	if (countEntry != mMap.end()) {
+		return countEntry->second;
+	}
+	else {
+		return nullptr;
+	}
+}
+
+void SpriteHolder::setAttackTypeStartFrames(string const& charName, int* counts) {
+	shInstance->attackTypeStartFramesMap[charName] = counts;
+}
+
 int* SpriteHolder::getIdleTypeStartFrames(string const& charName) {
 	auto mMap = shInstance->idleTypeStartFramesMap;
 	auto countEntry = mMap.find(charName);
