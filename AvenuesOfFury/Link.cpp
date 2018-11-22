@@ -11,15 +11,14 @@ Link::Link() {
 	primaryAttackPressed = false;
 	secondaryAttackPressed = false;
 	spriteState = SpriteState::IDLE;
-	setIdleSprite();
 	facingLeft = true;
 	facingRight = false;
 	speed = 700;
-	idleFrameMax = 0;
 	moveSpriteCycleDown = false;
 	charName = "link";
 
 	initSprites();
+	setIdleSprite(IDLE_1);
 }
 
 void Link::setSecondPlayer() {
@@ -74,14 +73,4 @@ void Link::handleInput() {
 	else {
 		secondaryAttackPressed = false;
 	}
-}
-
-void Link::setIdleSprite() {
-	sprite.setTextureRect(IntRect(IDLE_SPRITE_ORIGIN.x, IDLE_SPRITE_ORIGIN.y, IDLE_SPRITE_BOUNDS.x, IDLE_SPRITE_BOUNDS.y));
-	sprite.setOrigin(70, 85.5f);
-	resetMoveFrame(MOVE_1);
-}
-
-void Link::resetMoveFrame(int moveType) {
-	if (moveType == MOVE_1) moveFrame = 2;
 }

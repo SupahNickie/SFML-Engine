@@ -1,4 +1,4 @@
-#include "pch.h";
+#include "pch.h"
 #include <assert.h>
 #include <iostream>
 #include "SpriteHolder.h"
@@ -32,6 +32,9 @@ Vector2i** SpriteHolder::getMoveSpriteOrigins(string const& charName) {
 	if (spriteEntry != sMap.end()) {
 		return spriteEntry->second;
 	}
+	else {
+		return nullptr;
+	}
 }
 
 void SpriteHolder::setMoveSpriteOrigins(string const& charName, Vector2i** sprites) {
@@ -43,6 +46,9 @@ Vector2i** SpriteHolder::getMoveSpriteBounds(string const& charName) {
 	auto spriteEntry = sMap.find(charName);
 	if (spriteEntry != sMap.end()) {
 		return spriteEntry->second;
+	}
+	else {
+		return nullptr;
 	}
 }
 
@@ -56,6 +62,9 @@ Vector2i** SpriteHolder::getAttackSpriteOrigins(string const& charName) {
 	if (spriteEntry != sMap.end()) {
 		return spriteEntry->second;
 	}
+	else {
+		return nullptr;
+	}
 }
 
 void SpriteHolder::setAttackSpriteOrigins(string const& charName, Vector2i** sprites) {
@@ -68,10 +77,43 @@ Vector2i** SpriteHolder::getAttackSpriteBounds(string const& charName) {
 	if (spriteEntry != sMap.end()) {
 		return spriteEntry->second;
 	}
+	else {
+		return nullptr;
+	}
 }
 
 void SpriteHolder::setAttackSpriteBounds(string const& charName, Vector2i** sprites) {
 	shInstance->attackSpriteBoundsMap[charName] = sprites;
+}
+
+Vector2i** SpriteHolder::getIdleSpriteOrigins(string const& charName) {
+	auto sMap = shInstance->idleSpriteOriginsMap;
+	auto spriteEntry = sMap.find(charName);
+	if (spriteEntry != sMap.end()) {
+		return spriteEntry->second;
+	}
+	else {
+		return nullptr;
+	}
+}
+
+void SpriteHolder::setIdleSpriteOrigins(string const& charName, Vector2i** sprites) {
+	shInstance->idleSpriteOriginsMap[charName] = sprites;
+}
+
+Vector2i** SpriteHolder::getIdleSpriteBounds(string const& charName) {
+	auto sMap = shInstance->idleSpriteBoundsMap;
+	auto spriteEntry = sMap.find(charName);
+	if (spriteEntry != sMap.end()) {
+		return spriteEntry->second;
+	}
+	else {
+		return nullptr;
+	}
+}
+
+void SpriteHolder::setIdleSpriteBounds(string const& charName, Vector2i** sprites) {
+	shInstance->idleSpriteBoundsMap[charName] = sprites;
 }
 
 int* SpriteHolder::getMoveTypeMaxFrames(string const& charName) {
@@ -79,6 +121,9 @@ int* SpriteHolder::getMoveTypeMaxFrames(string const& charName) {
 	auto countEntry = mMap.find(charName);
 	if (countEntry != mMap.end()) {
 		return countEntry->second;
+	}
+	else {
+		return nullptr;
 	}
 }
 
@@ -92,8 +137,56 @@ int* SpriteHolder::getAttackTypeMaxFrames(string const& charName) {
 	if (countEntry != mMap.end()) {
 		return countEntry->second;
 	}
+	else {
+		return nullptr;
+	}
 }
 
 void SpriteHolder::setAttackTypeMaxFrames(string const& charName, int* counts) {
 	shInstance->attackTypeMaxFramesMap[charName] = counts;
+}
+
+int* SpriteHolder::getIdleTypeMaxFrames(string const& charName) {
+	auto mMap = shInstance->idleTypeMaxFramesMap;
+	auto countEntry = mMap.find(charName);
+	if (countEntry != mMap.end()) {
+		return countEntry->second;
+	}
+	else {
+		return nullptr;
+	}
+}
+
+void SpriteHolder::setIdleTypeMaxFrames(string const& charName, int* counts) {
+	shInstance->idleTypeMaxFramesMap[charName] = counts;
+}
+
+int* SpriteHolder::getMoveTypeStartFrames(string const& charName) {
+	auto mMap = shInstance->moveTypeStartFramesMap;
+	auto countEntry = mMap.find(charName);
+	if (countEntry != mMap.end()) {
+		return countEntry->second;
+	}
+	else {
+		return nullptr;
+	}
+}
+
+void SpriteHolder::setMoveTypeStartFrames(string const& charName, int* counts) {
+	shInstance->moveTypeStartFramesMap[charName] = counts;
+}
+
+int* SpriteHolder::getIdleTypeStartFrames(string const& charName) {
+	auto mMap = shInstance->idleTypeStartFramesMap;
+	auto countEntry = mMap.find(charName);
+	if (countEntry != mMap.end()) {
+		return countEntry->second;
+	}
+	else {
+		return nullptr;
+	}
+}
+
+void SpriteHolder::setIdleTypeStartFrames(string const& charName, int* counts) {
+	shInstance->idleTypeStartFramesMap[charName] = counts;
 }
