@@ -38,6 +38,7 @@ protected:
 	int timeSinceAttackFrame = 0;
 	int timeSinceIdleFrame = 0;
 	bool moveSpriteCycleDown;
+	bool idleSpriteCycleDown;
 
 	float speed;
 

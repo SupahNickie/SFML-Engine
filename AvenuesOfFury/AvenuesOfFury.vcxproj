@@ -161,6 +161,7 @@
     <ClInclude Include="Link.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="PlayerCharacter.h" />
+    <ClInclude Include="Skate.h" />
     <ClInclude Include="SpriteHolder.h" />
     <ClInclude Include="TextureHolder.h" />
   </ItemGroup>
@@ -177,6 +178,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="PlayerCharacter.cpp" />
+    <ClCompile Include="Skate.cpp" />
     <ClCompile Include="SpriteHolder.cpp" />
     <ClCompile Include="TextureHolder.cpp" />
     <ClCompile Include="Update.cpp" />

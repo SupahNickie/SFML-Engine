@@ -17,15 +17,15 @@ void PlayerCharacter::update(float elapsedTime) {
 		handleAttack(elapsedTime, ATTACK_2);
 	}
 	else if (spriteState == SpriteState::ATTACKING && !primaryAttackPressed && !secondaryAttackPressed) {
-		setIdleSprite(IDLE_1);
+		resetIdleFrame(IDLE_1);
 		spriteState = SpriteState::IDLE;
-		attackFrame = 0;
-		idleFrame = 0;
+		handleIdle(elapsedTime, IDLE_1);
+		resetAttackFrame(ATTACK_1);
 		timeSinceAttackFrame = 0;
 		attackDisabled = false;
 	}
 	else if (!upPressed && !downPressed && !leftPressed && !rightPressed) {
-		setIdleSprite(IDLE_1);
+		handleIdle(elapsedTime, IDLE_1);
 	}
 
 	if (rightPressed) {
@@ -108,7 +108,24 @@ void PlayerCharacter::handleAttack(float elapsedTime, int attackType) {
 }
 
 void PlayerCharacter::handleIdle(float elapsedTime, int idleType) {
+	timeSinceIdleFrame += elapsedTime * 1000;
+	if (timeSinceIdleFrame > MS_PER_FRAME) {
+		idleSpriteCycleDown ? --idleFrame : ++idleFrame;
+		timeSinceIdleFrame = 0;
+	}
 
+	if (idleFrame >= SpriteHolder::getIdleTypeMaxFrames(charName)[idleType] && !idleSpriteCycleDown) {
+		idleSpriteCycleDown = true;
+		--idleFrame;
+		--idleFrame;
+	}
+	else if (idleFrame < 0 && idleSpriteCycleDown) {
+		idleSpriteCycleDown = false;
+		++idleFrame;
+		++idleFrame;
+	}
+
+	setIdleSprite(idleType);
 }
 
 void PlayerCharacter::initSprites() {
@@ -122,7 +139,7 @@ void PlayerCharacter::initSprites() {
 	unsigned int startFrame = 0;
 
 	stringstream ss;
-	ss << "graphics/" << charName << "coords.txt";
+	ss << "graphics/" << charName << "_coords.txt";
 	
 	string s;
 	const string delimiter = ",";

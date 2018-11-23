@@ -1,33 +1,34 @@
 #include "pch.h"
 #include <fstream>
 #include <sstream>
-#include "Link.h"
+#include "Skate.h"
 #include "TextureHolder.h"
 
 using namespace std;
 
-Link::Link() {
-	sprite = Sprite(TextureHolder::getTexture("graphics/link_sheet.jpg"));
+Skate::Skate() {
+	sprite = Sprite(TextureHolder::getTexture("graphics/skate_sheet.png"));
 	primaryAttackPressed = false;
 	secondaryAttackPressed = false;
 	spriteState = SpriteState::IDLE;
-	facingLeft = true;
-	facingRight = false;
+	facingLeft = false;
+	facingRight = true;
 	speed = 700;
 	moveSpriteCycleDown = false;
 	idleSpriteCycleDown = false;
-	charName = "link";
+	charName = "skate";
 
 	initSprites();
 	setIdleSprite(IDLE_1);
+	sprite.scale(Vector2f(4.0f, 4.0f));
 }
 
-void Link::setSecondPlayer() {
+void Skate::setSecondPlayer() {
 	speed = 400;
 }
 
-void Link::handleInput() {
-	if (Keyboard::isKeyPressed(Keyboard::W)) {
+void Skate::handleInput() {
+	if (Keyboard::isKeyPressed(Keyboard::Up)) {
 		upPressed = true;
 		spriteState = SpriteState::MOVING;
 	}
@@ -35,7 +36,7 @@ void Link::handleInput() {
 		upPressed = false;
 	}
 
-	if (Keyboard::isKeyPressed(Keyboard::S)) {
+	if (Keyboard::isKeyPressed(Keyboard::Down)) {
 		downPressed = true;
 		spriteState = SpriteState::MOVING;
 	}
@@ -43,7 +44,7 @@ void Link::handleInput() {
 		downPressed = false;
 	}
 
-	if (Keyboard::isKeyPressed(Keyboard::A)) {
+	if (Keyboard::isKeyPressed(Keyboard::Left)) {
 		leftPressed = true;
 		spriteState = SpriteState::MOVING;
 	}
@@ -51,7 +52,7 @@ void Link::handleInput() {
 		leftPressed = false;
 	}
 
-	if (Keyboard::isKeyPressed(Keyboard::D)) {
+	if (Keyboard::isKeyPressed(Keyboard::Right)) {
 		rightPressed = true;
 		spriteState = SpriteState::MOVING;
 	}
@@ -59,7 +60,7 @@ void Link::handleInput() {
 		rightPressed = false;
 	}
 
-	if (Keyboard::isKeyPressed(Keyboard::Space)) {
+	if (Keyboard::isKeyPressed(Keyboard::RControl)) {
 		primaryAttackPressed = true;
 		spriteState = SpriteState::ATTACKING;
 	}
@@ -67,7 +68,7 @@ void Link::handleInput() {
 		primaryAttackPressed = false;
 	}
 
-	if (Keyboard::isKeyPressed(Keyboard::E)) {
+	if (Keyboard::isKeyPressed(Keyboard::RShift)) {
 		secondaryAttackPressed = true;
 		spriteState = SpriteState::ATTACKING;
 	}

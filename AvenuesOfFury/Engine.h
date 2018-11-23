@@ -3,6 +3,7 @@
 #include "TextureHolder.h"
 #include "SpriteHolder.h"
 #include "Link.h"
+#include "Skate.h"
 
 using namespace sf;
 
@@ -13,7 +14,7 @@ private:
 	RenderWindow window;
 	View mainView;
 	Link player1;
-	Link player2;
+	Skate player2;
 
 	void input();
 	void update(float timeElapsed);
