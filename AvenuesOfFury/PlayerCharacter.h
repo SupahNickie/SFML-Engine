@@ -6,7 +6,7 @@ using namespace std;
 
 class PlayerCharacter : public Drawable {
 protected:
-	int const MS_PER_FRAME = 50;
+	int MS_PER_FRAME = 50;
 	int const MOVE_1 = 0;
 	int const ATTACK_1 = 0;
 	int const ATTACK_2 = 1;
@@ -18,6 +18,8 @@ protected:
 	SpriteState spriteState;
 	Sprite sprite;
 	Vector2f position;
+
+	bool animationCycle;
 
 	bool upPressed;
 	bool downPressed;

@@ -14,6 +14,7 @@ Link::Link() {
 	facingLeft = true;
 	facingRight = false;
 	speed = 700;
+	animationCycle = true;
 	moveSpriteCycleDown = false;
 	idleSpriteCycleDown = false;
 	charName = "link";

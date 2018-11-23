@@ -7,6 +7,7 @@
 using namespace std;
 
 Skate::Skate() {
+	MS_PER_FRAME = 100;
 	sprite = Sprite(TextureHolder::getTexture("graphics/skate_sheet.png"));
 	primaryAttackPressed = false;
 	secondaryAttackPressed = false;
@@ -14,6 +15,7 @@ Skate::Skate() {
 	facingLeft = false;
 	facingRight = true;
 	speed = 700;
+	animationCycle = false;
 	moveSpriteCycleDown = false;
 	idleSpriteCycleDown = false;
 	charName = "skate";

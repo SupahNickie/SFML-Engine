@@ -20,6 +20,7 @@ void PlayerCharacter::update(float elapsedTime) {
 		resetIdleFrame(IDLE_1);
 		spriteState = SpriteState::IDLE;
 		handleIdle(elapsedTime, IDLE_1);
+		resetMoveFrame(MOVE_1);
 		resetAttackFrame(ATTACK_1);
 		timeSinceAttackFrame = 0;
 		attackDisabled = false;
@@ -66,21 +67,20 @@ void PlayerCharacter::flipHorizontally() {
 void PlayerCharacter::handleMove(float elapsedTime, int moveType) {
 	timeSinceMoveFrame += elapsedTime * 1000;
 	if (timeSinceMoveFrame > MS_PER_FRAME) {
-		moveSpriteCycleDown ? --moveFrame : ++moveFrame;
+		if (moveFrame >= SpriteHolder::getMoveTypeMaxFrames(charName)[moveType] && !moveSpriteCycleDown) {
+			--moveFrame;
+			moveSpriteCycleDown = true;
+			if (!animationCycle) moveFrame = 0;
+		}
+		else if (moveFrame <= 0 && moveSpriteCycleDown) {
+			++moveFrame;
+			moveSpriteCycleDown = false;
+		}
+		else {
+			moveSpriteCycleDown ? --moveFrame : ++moveFrame;
+		}
 		timeSinceMoveFrame = 0;
 	}
-
-	if (moveFrame >= SpriteHolder::getMoveTypeMaxFrames(charName)[moveType] && !moveSpriteCycleDown) {
-		moveSpriteCycleDown = true;
-		--moveFrame;
-		--moveFrame;
-	}
-	else if (moveFrame < 0 && moveSpriteCycleDown) {
-		moveSpriteCycleDown = false;
-		++moveFrame;
-		++moveFrame;
-	}
-
 	setMoveSprite(moveType);
 }
 
@@ -110,21 +110,20 @@ void PlayerCharacter::handleAttack(float elapsedTime, int attackType) {
 void PlayerCharacter::handleIdle(float elapsedTime, int idleType) {
 	timeSinceIdleFrame += elapsedTime * 1000;
 	if (timeSinceIdleFrame > MS_PER_FRAME) {
-		idleSpriteCycleDown ? --idleFrame : ++idleFrame;
+		if (idleFrame >= SpriteHolder::getIdleTypeMaxFrames(charName)[idleType] && !idleSpriteCycleDown) {
+			--idleFrame;
+			idleSpriteCycleDown = true;
+			if (!animationCycle) idleFrame = 0;
+		}
+		else if (idleFrame <= 0 && idleSpriteCycleDown) {
+			++idleFrame;
+			idleSpriteCycleDown = false;
+		}
+		else {
+			idleSpriteCycleDown ? --idleFrame : ++idleFrame;
+		}
 		timeSinceIdleFrame = 0;
 	}
-
-	if (idleFrame >= SpriteHolder::getIdleTypeMaxFrames(charName)[idleType] && !idleSpriteCycleDown) {
-		idleSpriteCycleDown = true;
-		--idleFrame;
-		--idleFrame;
-	}
-	else if (idleFrame < 0 && idleSpriteCycleDown) {
-		idleSpriteCycleDown = false;
-		++idleFrame;
-		++idleFrame;
-	}
-
 	setIdleSprite(idleType);
 }
 
@@ -255,19 +254,19 @@ void PlayerCharacter::addActionSpriteFrames(PlayerCharacter::ActionType action, 
 	case PlayerCharacter::ActionType::MOVE:
 		SpriteHolder::getMoveSpriteOrigins(charName)[numberOfActions] = new Vector2i[numberOfFrames];
 		SpriteHolder::getMoveSpriteBounds(charName)[numberOfActions] = new Vector2i[numberOfFrames];
-		SpriteHolder::getMoveTypeMaxFrames(charName)[numberOfActions] = numberOfFrames;
+		SpriteHolder::getMoveTypeMaxFrames(charName)[numberOfActions] = numberOfFrames - 1;
 		SpriteHolder::getMoveTypeStartFrames(charName)[numberOfActions] = startFrame;
 		break;
 	case PlayerCharacter::ActionType::ATTACK:
 		SpriteHolder::getAttackSpriteOrigins(charName)[numberOfActions] = new Vector2i[numberOfFrames];
 		SpriteHolder::getAttackSpriteBounds(charName)[numberOfActions] = new Vector2i[numberOfFrames];
-		SpriteHolder::getAttackTypeMaxFrames(charName)[numberOfActions] = numberOfFrames;
+		SpriteHolder::getAttackTypeMaxFrames(charName)[numberOfActions] = numberOfFrames - 1;
 		SpriteHolder::getAttackTypeStartFrames(charName)[numberOfActions] = startFrame;
 		break;
 	case PlayerCharacter::ActionType::IDLE:
 		SpriteHolder::getIdleSpriteOrigins(charName)[numberOfActions] = new Vector2i[numberOfFrames];
 		SpriteHolder::getIdleSpriteBounds(charName)[numberOfActions] = new Vector2i[numberOfFrames];
-		SpriteHolder::getIdleTypeMaxFrames(charName)[numberOfActions] = numberOfFrames;
+		SpriteHolder::getIdleTypeMaxFrames(charName)[numberOfActions] = numberOfFrames - 1;
 		SpriteHolder::getIdleTypeStartFrames(charName)[numberOfActions] = startFrame;
 		break;
 	}
