@@ -4,4 +4,6 @@
 void Engine::update(float timeElapsed) {
 	player1.update(timeElapsed);
 	player2.update(timeElapsed);
+	player3.update(timeElapsed);
+	player4.update(timeElapsed);
 }

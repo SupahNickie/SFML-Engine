@@ -15,6 +15,8 @@ private:
 	View mainView;
 	Link player1;
 	Skate player2;
+	Link player3;
+	Skate player4;
 
 	void input();
 	void update(float timeElapsed);

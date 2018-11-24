@@ -1,6 +1,4 @@
 #include "pch.h"
-#include <fstream>
-#include <sstream>
 #include "Skate.h"
 #include "TextureHolder.h"
 
@@ -17,11 +15,11 @@ Skate::Skate() {
 	speed = 700;
 	animationCycle = false;
 	moveSpriteCycleDown = false;
+	attackSpriteCycleDown = false;
 	idleSpriteCycleDown = false;
 	charName = "skate";
 
 	initSprites();
-	setIdleSprite(IDLE_1);
 	sprite.scale(Vector2f(4.0f, 4.0f));
 }
 

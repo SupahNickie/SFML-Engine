@@ -1,6 +1,4 @@
 #include "pch.h"
-#include <fstream>
-#include <sstream>
 #include "Link.h"
 #include "TextureHolder.h"
 
@@ -16,11 +14,11 @@ Link::Link() {
 	speed = 700;
 	animationCycle = true;
 	moveSpriteCycleDown = false;
+	attackSpriteCycleDown = false;
 	idleSpriteCycleDown = false;
 	charName = "link";
 
 	initSprites();
-	setIdleSprite(IDLE_1);
 }
 
 void Link::setSecondPlayer() {

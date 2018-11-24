@@ -6,5 +6,7 @@ void Engine::draw() {
 	window.setView(mainView);
 	window.draw(player1);
 	window.draw(player2);
+	window.draw(player3);
+	window.draw(player4);
 	window.display();
 }

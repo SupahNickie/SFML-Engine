@@ -12,8 +12,8 @@ Engine::Engine() {
 
 void Engine::run() {
 	Clock clock;
-	player1.setSecondPlayer();
-	player2.setSecondPlayer();
+	player3.setSecondPlayer();
+	player4.setSecondPlayer();
 	while (window.isOpen()) {
 		Time dt = clock.restart();
 		float dtAsSeconds = dt.asSeconds();
