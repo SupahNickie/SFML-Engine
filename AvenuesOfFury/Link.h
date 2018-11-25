@@ -4,6 +4,6 @@
 class Link : public PlayerCharacter {
 public:
 	Link();
-	void virtual handleInput();
+	void handleInput();
 	void setSecondPlayer();
 };

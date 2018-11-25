@@ -2,8 +2,6 @@
 #include "Skate.h"
 #include "TextureHolder.h"
 
-using namespace std;
-
 Skate::Skate() {
 	MS_PER_FRAME = 100;
 	sprite = Sprite(TextureHolder::getTexture("graphics/skate_sheet.png"));

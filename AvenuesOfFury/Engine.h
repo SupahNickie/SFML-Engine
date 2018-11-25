@@ -4,6 +4,7 @@
 #include "SpriteHolder.h"
 #include "Link.h"
 #include "Skate.h"
+#include "Garnet.h"
 
 using namespace sf;
 
@@ -13,10 +14,9 @@ private:
 	SpriteHolder sh;
 	RenderWindow window;
 	View mainView;
-	Link player1;
-	Skate player2;
-	Link player3;
-	Skate player4;
+	
+	Character** characters;
+	int numCharacters = 0;
 
 	void input();
 	void update(float timeElapsed);

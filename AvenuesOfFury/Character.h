@@ -11,6 +11,7 @@ protected:
 	int const ATTACK_1 = 0;
 	int const ATTACK_2 = 1;
 	int const IDLE_1 = 0;
+	float speed;
 
 	enum class SpriteState { MOVING, ATTACKING, IDLE };
 	enum class ActionType { MOVE, ATTACK, IDLE };
@@ -48,9 +49,9 @@ protected:
 	void resetAttackFrame(int attackType);
 	void resetIdleFrame(int idleType);
 	
-	void virtual handleMove(float elapsedTime, int moveType) = 0;
-	void virtual handleAttack(float elapsedTime, int attackType) = 0;
-	void virtual handleIdle(float elapsedTime, int idleType) = 0;
+	virtual void handleMove(float elapsedTime, int moveType) = 0;
+	virtual void handleAttack(float elapsedTime, int attackType) = 0;
+	virtual void handleIdle(float elapsedTime, int idleType) = 0;
 	
 	virtual void draw(RenderTarget& target, RenderStates states) const;
 private:
@@ -66,5 +67,8 @@ private:
 	void setAttackSprite(int attackType);
 	void setIdleSprite(int idleType);
 public:
+	void setPosition(Vector2f position);
+
+	void virtual handleInput() = 0;
 	void virtual update(float elapsedTime) = 0;
 };

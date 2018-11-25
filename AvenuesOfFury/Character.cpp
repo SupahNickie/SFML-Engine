@@ -5,6 +5,10 @@
 #include "Character.h"
 #include "SpriteHolder.h"
 
+void Character::setPosition(Vector2f newPosition) {
+	position = newPosition;
+}
+
 void Character::flipHorizontally() {
 	sprite.scale(-1, 1);
 	facingLeft = !facingLeft;

@@ -157,8 +157,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Character.h" />
+    <ClInclude Include="EnemyCharacter.h" />
     <ClInclude Include="Engine.h" />
-    <ClInclude Include="Header.h" />
+    <ClInclude Include="Garnet.h" />
     <ClInclude Include="Link.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="PlayerCharacter.h" />
@@ -170,7 +171,9 @@
     <ClCompile Include="AvenuesOfFury.cpp" />
     <ClCompile Include="Character.cpp" />
     <ClCompile Include="Draw.cpp" />
+    <ClCompile Include="EnemyCharacter.cpp" />
     <ClCompile Include="Engine.cpp" />
+    <ClCompile Include="Garnet.cpp" />
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="Link.cpp" />
     <ClCompile Include="pch.cpp">

@@ -2,8 +2,6 @@
 #include "Link.h"
 #include "TextureHolder.h"
 
-using namespace std;
-
 Link::Link() {
 	sprite = Sprite(TextureHolder::getTexture("graphics/link_sheet.jpg"));
 	primaryAttackPressed = false;

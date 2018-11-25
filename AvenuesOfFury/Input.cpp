@@ -10,8 +10,7 @@ void Engine::input() {
 			}
 		}
 	}
-	player1.handleInput();
-	player2.handleInput();
-	player3.handleInput();
-	player4.handleInput();
+	for (int i = 0; i < numCharacters; ++i) {
+		characters[i]->handleInput();
+	}
 }

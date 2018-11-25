@@ -2,8 +2,7 @@
 #include "Engine.h"
 
 void Engine::update(float timeElapsed) {
-	player1.update(timeElapsed);
-	player2.update(timeElapsed);
-	player3.update(timeElapsed);
-	player4.update(timeElapsed);
+	for (int i = 0; i < numCharacters; ++i) {
+		characters[i]->update(timeElapsed);
+	}
 }

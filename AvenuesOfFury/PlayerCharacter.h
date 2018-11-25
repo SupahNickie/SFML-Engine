@@ -3,8 +3,6 @@
 
 class PlayerCharacter : public Character {
 protected:
-	float speed;
-	
 	bool upPressed;
 	bool downPressed;
 	bool leftPressed;
@@ -17,5 +15,6 @@ private:
 	void handleAttack(float elapsedTime, int attackType);
 	void handleIdle(float elapsedTime, int idleType);
 public:
+	virtual void handleInput() = 0;
 	void update(float elapsedTime);
 };
