@@ -11,7 +11,7 @@ using namespace std;
 class SpriteHolder {
 private:
 	static SpriteHolder* shInstance;
-	enum class ActionType { MOVE, ATTACK, IDLE };
+	enum class ActionType { MOVE, ATTACK, IDLE, NONE };
 
 	map<string, map<ActionType, Vector2i**>> charOriginsMap;
 	map<string, map<ActionType, Vector2i**>> charBoundsMap;

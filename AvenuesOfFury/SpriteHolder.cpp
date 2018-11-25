@@ -43,7 +43,7 @@ void SpriteHolder::initSprites(string const& charName) {
 		}
 		line.push_back(s);
 
-		if (line[0] == "move" || line[0] == "attack" || line[0] == "idle") {
+		if (actionStringToEnum(line[0]) != ActionType::NONE) {
 			currentlySetting = line[0];
 			numberOfActions = stoi(line[1]);
 			initActionSprites(charName, actionStringToEnum(currentlySetting), numberOfActions);
@@ -142,4 +142,5 @@ SpriteHolder::ActionType SpriteHolder::actionStringToEnum(string const& action) 
 	if (action == "move") return ActionType::MOVE;
 	if (action == "attack") return ActionType::ATTACK;
 	if (action == "idle") return ActionType::IDLE;
+	return ActionType::NONE;
 }
