@@ -17,5 +17,4 @@ Garnet::Garnet() {
 
 	initSprites();
 	sprite.scale(Vector2f(4.0f, 4.0f));
-	position = Vector2f(600.0f, 400.0f);
 }

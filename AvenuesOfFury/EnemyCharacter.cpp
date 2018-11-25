@@ -1,4 +1,5 @@
 #include "pch.h"
+#include <iostream>
 #include "EnemyCharacter.h"
 
 void EnemyCharacter::handleInput() {
@@ -7,6 +8,8 @@ void EnemyCharacter::handleInput() {
 
 void EnemyCharacter::update(float elapsedTime) {
 	handleIdle(elapsedTime, IDLE_1);
+
+	sprite.setPosition(position);
 }
 
 void EnemyCharacter::handleMove(float elapsedTime, int moveType) {
