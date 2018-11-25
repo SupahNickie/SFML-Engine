@@ -1,6 +1,8 @@
 #include "pch.h"
 #include <assert.h>
 #include <iostream>
+#include <sstream>
+#include <fstream>
 #include "SpriteHolder.h"
 
 using namespace sf;
@@ -13,10 +15,120 @@ SpriteHolder::SpriteHolder() {
 	shInstance = this;
 }
 
+void SpriteHolder::initSprites(string const& charName) {
+	if (SpriteHolder::getIsStored(charName)) return;
+
+	string currentlySetting = "";
+	unsigned int numberOfActions = 0;
+	int outIndex = 0;
+	int inIndex = 0;
+	unsigned int numberOfFrames = 0;
+	unsigned int startFrame = 0;
+
+	stringstream ss;
+	ss << "graphics/" << charName << "_coords.txt";
+
+	string s;
+	const string delimiter = ",";
+	ifstream inputFile(ss.str());
+	while (getline(inputFile, s)) {
+		size_t pos = 0;
+		string current = "";
+		vector<string> line{};
+
+		while ((pos = s.find(delimiter)) != string::npos) {
+			current = s.substr(0, pos);
+			line.push_back(current);
+			s.erase(0, pos + delimiter.length());
+		}
+		line.push_back(s);
+
+		if (line[0] == "move" || line[0] == "attack" || line[0] == "idle") {
+			currentlySetting = line[0];
+			numberOfActions = stoi(line[1]);
+			initActionSprites(charName, actionStringToEnum(currentlySetting), numberOfActions);
+		}
+		else if (line[0] == "frames") {
+			inIndex = 0;
+			outIndex = 0;
+			numberOfActions = 0;
+			for (unsigned int i = 1; i < line.size(); ++numberOfActions) {
+				numberOfFrames = stoi(line[i]);
+				++i;
+				startFrame = stoi(line[i]);
+				++i;
+				addActionSpriteFrames(charName, actionStringToEnum(currentlySetting), numberOfActions, numberOfFrames, startFrame);
+			}
+		}
+		else if (line[0] == "skip") {
+			inIndex = 0;
+			++outIndex;
+		}
+		else {
+			setActionSpriteFrames(
+				charName,
+				actionStringToEnum(currentlySetting),
+				outIndex,
+				inIndex,
+				Vector2i(stoi(line[0]), stoi(line[1])),
+				Vector2i(stoi(line[2]), stoi(line[3]))
+			);
+			++inIndex;
+		}
+	}
+	inputFile.close();
+
+	setIsStored(charName);
+}
+
+void SpriteHolder::setSprite(Sprite& sprite, string const& charName, string const& actionCategory, int actionType, int actionFrame) {
+	Vector2i originPos = shInstance->charOriginsMap[charName][actionStringToEnum(actionCategory)][actionType][actionFrame];
+	Vector2i boundPos = shInstance->charBoundsMap[charName][actionStringToEnum(actionCategory)][actionType][actionFrame];
+
+	sprite.setTextureRect(
+		IntRect(
+			originPos.x,
+			originPos.y,
+			boundPos.x,
+			boundPos.y
+		)
+	);
+	sprite.setOrigin(
+		boundPos.x / 2.0f,
+		boundPos.y / 2.0f
+	);
+}
+
+int SpriteHolder::getMaxFramesForAction(string const& charName, string const& actionCategory, int actionType) {
+	return shInstance->charMaxFrameMap[charName][actionStringToEnum(actionCategory)][actionType];
+}
+
+int SpriteHolder::getStartFramesForAction(string const& charName, string const& actionCategory, int actionType) {
+	return shInstance->charStartFrameMap[charName][actionStringToEnum(actionCategory)][actionType];
+}
+
+void SpriteHolder::initActionSprites(string const& charName, ActionType action, unsigned int actionCount) {
+	shInstance->charOriginsMap[charName][action] = new Vector2i*[actionCount];
+	shInstance->charBoundsMap[charName][action] = new Vector2i*[actionCount];
+	shInstance->charMaxFrameMap[charName][action] = new int[actionCount];
+	shInstance->charStartFrameMap[charName][action] = new int[actionCount];
+}
+
+void SpriteHolder::addActionSpriteFrames(string const& charName, ActionType action, int numberOfActions, int numberOfFrames, int startFrame) {
+	shInstance->charOriginsMap[charName][action][numberOfActions] = new Vector2i[numberOfFrames];
+	shInstance->charBoundsMap[charName][action][numberOfActions] = new Vector2i[numberOfFrames];
+	shInstance->charMaxFrameMap[charName][action][numberOfActions] = numberOfFrames - 1;
+	shInstance->charStartFrameMap[charName][action][numberOfActions] = startFrame;
+}
+
+void SpriteHolder::setActionSpriteFrames(string const& charName, ActionType action, int outIndex, int inIndex, Vector2i origin, Vector2i bound) {
+	shInstance->charOriginsMap[charName][action][outIndex][inIndex] = origin;
+	shInstance->charBoundsMap[charName][action][outIndex][inIndex] = bound;
+}
+
 bool SpriteHolder::getIsStored(string const& charName) {
-	auto& storedMap = shInstance->isStoredMap;
-	auto storedEntry = storedMap.find(charName);
-	if (storedEntry != storedMap.end()) {
+	auto storedEntry = shInstance->isStoredMap.find(charName);
+	if (storedEntry != shInstance->isStoredMap.end()) {
 		return true;
 	}
 	return false;
@@ -26,182 +138,8 @@ void SpriteHolder::setIsStored(string const& charName) {
 	shInstance->isStoredMap[charName] = true;
 }
 
-Vector2i** SpriteHolder::getMoveSpriteOrigins(string const& charName) {
-	auto sMap = shInstance->moveSpriteOriginsMap;
-	auto spriteEntry = sMap.find(charName);
-	if (spriteEntry != sMap.end()) {
-		return spriteEntry->second;
-	}
-	else {
-		return nullptr;
-	}
-}
-
-void SpriteHolder::setMoveSpriteOrigins(string const& charName, Vector2i** sprites) {
-	shInstance->moveSpriteOriginsMap[charName] = sprites;
-}
-
-Vector2i** SpriteHolder::getMoveSpriteBounds(string const& charName) {
-	auto sMap = shInstance->moveSpriteBoundsMap;
-	auto spriteEntry = sMap.find(charName);
-	if (spriteEntry != sMap.end()) {
-		return spriteEntry->second;
-	}
-	else {
-		return nullptr;
-	}
-}
-
-void SpriteHolder::setMoveSpriteBounds(string const& charName, Vector2i** sprites) {
-	shInstance->moveSpriteBoundsMap[charName] = sprites;
-}
-
-Vector2i** SpriteHolder::getAttackSpriteOrigins(string const& charName) {
-	auto sMap = shInstance->attackSpriteOriginsMap;
-	auto spriteEntry = sMap.find(charName);
-	if (spriteEntry != sMap.end()) {
-		return spriteEntry->second;
-	}
-	else {
-		return nullptr;
-	}
-}
-
-void SpriteHolder::setAttackSpriteOrigins(string const& charName, Vector2i** sprites) {
-	shInstance->attackSpriteOriginsMap[charName] = sprites;
-}
-
-Vector2i** SpriteHolder::getAttackSpriteBounds(string const& charName) {
-	auto sMap = shInstance->attackSpriteBoundsMap;
-	auto spriteEntry = sMap.find(charName);
-	if (spriteEntry != sMap.end()) {
-		return spriteEntry->second;
-	}
-	else {
-		return nullptr;
-	}
-}
-
-void SpriteHolder::setAttackSpriteBounds(string const& charName, Vector2i** sprites) {
-	shInstance->attackSpriteBoundsMap[charName] = sprites;
-}
-
-Vector2i** SpriteHolder::getIdleSpriteOrigins(string const& charName) {
-	auto sMap = shInstance->idleSpriteOriginsMap;
-	auto spriteEntry = sMap.find(charName);
-	if (spriteEntry != sMap.end()) {
-		return spriteEntry->second;
-	}
-	else {
-		return nullptr;
-	}
-}
-
-void SpriteHolder::setIdleSpriteOrigins(string const& charName, Vector2i** sprites) {
-	shInstance->idleSpriteOriginsMap[charName] = sprites;
-}
-
-Vector2i** SpriteHolder::getIdleSpriteBounds(string const& charName) {
-	auto sMap = shInstance->idleSpriteBoundsMap;
-	auto spriteEntry = sMap.find(charName);
-	if (spriteEntry != sMap.end()) {
-		return spriteEntry->second;
-	}
-	else {
-		return nullptr;
-	}
-}
-
-void SpriteHolder::setIdleSpriteBounds(string const& charName, Vector2i** sprites) {
-	shInstance->idleSpriteBoundsMap[charName] = sprites;
-}
-
-int* SpriteHolder::getMoveTypeMaxFrames(string const& charName) {
-	auto mMap = shInstance->moveTypeMaxFramesMap;
-	auto countEntry = mMap.find(charName);
-	if (countEntry != mMap.end()) {
-		return countEntry->second;
-	}
-	else {
-		return nullptr;
-	}
-}
-
-void SpriteHolder::setMoveTypeMaxFrames(string const& charName, int* counts) {
-	shInstance->moveTypeMaxFramesMap[charName] = counts;
-}
-
-int* SpriteHolder::getAttackTypeMaxFrames(string const& charName) {
-	auto mMap = shInstance->attackTypeMaxFramesMap;
-	auto countEntry = mMap.find(charName);
-	if (countEntry != mMap.end()) {
-		return countEntry->second;
-	}
-	else {
-		return nullptr;
-	}
-}
-
-void SpriteHolder::setAttackTypeMaxFrames(string const& charName, int* counts) {
-	shInstance->attackTypeMaxFramesMap[charName] = counts;
-}
-
-int* SpriteHolder::getIdleTypeMaxFrames(string const& charName) {
-	auto mMap = shInstance->idleTypeMaxFramesMap;
-	auto countEntry = mMap.find(charName);
-	if (countEntry != mMap.end()) {
-		return countEntry->second;
-	}
-	else {
-		return nullptr;
-	}
-}
-
-void SpriteHolder::setIdleTypeMaxFrames(string const& charName, int* counts) {
-	shInstance->idleTypeMaxFramesMap[charName] = counts;
-}
-
-int* SpriteHolder::getMoveTypeStartFrames(string const& charName) {
-	auto mMap = shInstance->moveTypeStartFramesMap;
-	auto countEntry = mMap.find(charName);
-	if (countEntry != mMap.end()) {
-		return countEntry->second;
-	}
-	else {
-		return nullptr;
-	}
-}
-
-void SpriteHolder::setMoveTypeStartFrames(string const& charName, int* counts) {
-	shInstance->moveTypeStartFramesMap[charName] = counts;
-}
-
-int* SpriteHolder::getAttackTypeStartFrames(string const& charName) {
-	auto mMap = shInstance->attackTypeStartFramesMap;
-	auto countEntry = mMap.find(charName);
-	if (countEntry != mMap.end()) {
-		return countEntry->second;
-	}
-	else {
-		return nullptr;
-	}
-}
-
-void SpriteHolder::setAttackTypeStartFrames(string const& charName, int* counts) {
-	shInstance->attackTypeStartFramesMap[charName] = counts;
-}
-
-int* SpriteHolder::getIdleTypeStartFrames(string const& charName) {
-	auto mMap = shInstance->idleTypeStartFramesMap;
-	auto countEntry = mMap.find(charName);
-	if (countEntry != mMap.end()) {
-		return countEntry->second;
-	}
-	else {
-		return nullptr;
-	}
-}
-
-void SpriteHolder::setIdleTypeStartFrames(string const& charName, int* counts) {
-	shInstance->idleTypeStartFramesMap[charName] = counts;
+SpriteHolder::ActionType SpriteHolder::actionStringToEnum(string const& action) {
+	if (action == "move") return ActionType::MOVE;
+	if (action == "attack") return ActionType::ATTACK;
+	if (action == "idle") return ActionType::IDLE;
 }

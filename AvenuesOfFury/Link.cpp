@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Link.h"
 #include "TextureHolder.h"
+#include "SpriteHolder.h"
 
 Link::Link() {
 	sprite = Sprite(TextureHolder::getTexture("graphics/link_sheet.jpg"));
@@ -16,7 +17,12 @@ Link::Link() {
 	idleSpriteCycleDown = false;
 	charName = "link";
 
-	initSprites();
+	SpriteHolder::initSprites(charName);
+	resetMoveFrame(MOVE_1);
+	resetAttackFrame(ATTACK_1);
+	resetIdleFrame(IDLE_1);
+
+	SpriteHolder::setSprite(sprite, charName, "idle", IDLE_1, idleFrame);
 }
 
 void Link::setSecondPlayer() {

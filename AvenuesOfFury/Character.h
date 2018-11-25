@@ -1,5 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include "SpriteHolder.h"
 
 using namespace sf;
 using namespace std;
@@ -14,7 +15,6 @@ protected:
 	float speed;
 
 	enum class SpriteState { MOVING, ATTACKING, IDLE };
-	enum class ActionType { MOVE, ATTACK, IDLE };
 
 	string charName;
 	SpriteState spriteState;
@@ -43,8 +43,6 @@ protected:
 	void renderAttack(float elapsedTime, int attackType);
 	void renderIdle(float elapsedTime, int idleType);
 	
-	void initSprites();
-
 	void resetMoveFrame(int moveType);
 	void resetAttackFrame(int attackType);
 	void resetIdleFrame(int idleType);
@@ -57,15 +55,6 @@ protected:
 private:
 	Texture texture;
 	FloatRect hitbox;
-
-	ActionType actionStringToEnum(string action);
-	void initActionSprites(ActionType action, unsigned int moveCount);
-	void addActionSpriteFrames(ActionType action, int numberOfActions, int numberOfFrames, int startFrame);
-	void setActionSpriteFrames(ActionType action, int outIndex, int inIndex, Vector2i origin, Vector2i bound);
-	
-	void setMoveSprite(int moveType);
-	void setAttackSprite(int attackType);
-	void setIdleSprite(int idleType);
 public:
 	void setPosition(Vector2f position);
 

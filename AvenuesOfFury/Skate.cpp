@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Skate.h"
 #include "TextureHolder.h"
+#include "SpriteHolder.h"
 
 Skate::Skate() {
 	MS_PER_FRAME = 100;
@@ -17,8 +18,13 @@ Skate::Skate() {
 	idleSpriteCycleDown = false;
 	charName = "skate";
 
-	initSprites();
+	SpriteHolder::initSprites(charName);
+	resetMoveFrame(MOVE_1);
+	resetAttackFrame(ATTACK_1);
+	resetIdleFrame(IDLE_1);
+
 	sprite.scale(Vector2f(4.0f, 4.0f));
+	SpriteHolder::setSprite(sprite, charName, "idle", IDLE_1, idleFrame);
 }
 
 void Skate::setSecondPlayer() {
