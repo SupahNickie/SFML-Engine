@@ -1,7 +1,4 @@
 #include "pch.h"
-#include <sstream>
-#include <fstream>
-#include <iostream>
 #include "Character.h"
 #include "SpriteHolder.h"
 

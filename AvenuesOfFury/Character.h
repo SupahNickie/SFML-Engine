@@ -1,6 +1,5 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include "SpriteHolder.h"
 
 using namespace sf;
 using namespace std;
@@ -58,6 +57,6 @@ private:
 public:
 	void setPosition(Vector2f position);
 
-	void virtual handleInput() = 0;
-	void virtual update(float elapsedTime) = 0;
+	virtual void handleInput() = 0;
+	virtual void update(float elapsedTime) = 0;
 };
