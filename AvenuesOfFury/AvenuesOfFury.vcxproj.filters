@@ -13,80 +13,98 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\Sprites">
+      <UniqueIdentifier>{653dbde3-f8fe-400e-9602-0c6d5348b612}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Characters">
+      <UniqueIdentifier>{fb313670-e5c0-4931-82d1-affbba0f3d79}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Characters">
+      <UniqueIdentifier>{102c9b31-78c9-4909-a265-9ca469034e5d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Sprites">
+      <UniqueIdentifier>{dafdea25-a361-40c5-ab52-9aaea2823f6c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine">
+      <UniqueIdentifier>{70a188cf-3a65-4eda-a8a8-804138bbf8db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Engine">
+      <UniqueIdentifier>{35acee85-2093-405a-9905-af5c54a73a04}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Engine.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="SpriteHolder.h">
+      <Filter>Header Files\Sprites</Filter>
     </ClInclude>
     <ClInclude Include="TextureHolder.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayerCharacter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Link.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SpriteHolder.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Skate.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Character.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Sprites</Filter>
     </ClInclude>
     <ClInclude Include="EnemyCharacter.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Characters</Filter>
+    </ClInclude>
+    <ClInclude Include="Character.h">
+      <Filter>Header Files\Characters</Filter>
     </ClInclude>
     <ClInclude Include="Garnet.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Characters</Filter>
+    </ClInclude>
+    <ClInclude Include="Link.h">
+      <Filter>Header Files\Characters</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerCharacter.h">
+      <Filter>Header Files\Characters</Filter>
+    </ClInclude>
+    <ClInclude Include="Skate.h">
+      <Filter>Header Files\Characters</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine.h">
+      <Filter>Header Files\Engine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="AvenuesOfFury.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Input.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TextureHolder.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Update.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Draw.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PlayerCharacter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Link.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SpriteHolder.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Skate.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Character.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Characters</Filter>
     </ClCompile>
     <ClCompile Include="EnemyCharacter.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Characters</Filter>
     </ClCompile>
     <ClCompile Include="Garnet.cpp">
+      <Filter>Source Files\Characters</Filter>
+    </ClCompile>
+    <ClCompile Include="Link.cpp">
+      <Filter>Source Files\Characters</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerCharacter.cpp">
+      <Filter>Source Files\Characters</Filter>
+    </ClCompile>
+    <ClCompile Include="Skate.cpp">
+      <Filter>Source Files\Characters</Filter>
+    </ClCompile>
+    <ClCompile Include="Draw.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Input.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Update.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="SpriteHolder.cpp">
+      <Filter>Source Files\Sprites</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureHolder.cpp">
+      <Filter>Source Files\Sprites</Filter>
+    </ClCompile>
+    <ClCompile Include="AvenuesOfFury.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

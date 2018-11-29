@@ -19,16 +19,18 @@ Engine::Engine() {
 void Engine::run() {
 	Clock clock;
 	
-	characters = new Character*[100];
-	characters[0] = new Link;
-	++numCharacters;
-	characters[0]->setPosition(Vector2f(100, 300));
-	characters[1] = new Skate;
-	++numCharacters;
-	characters[1]->setPosition(Vector2f(250, 400));
-	characters[2] = new Garnet;
-	++numCharacters;
-	characters[2]->setPosition(Vector2f(500, 400));
+	players = new PlayerCharacter*[2];
+	players[0] = new Link;
+	++numPlayers;
+	players[0]->setPosition(Vector2f(100, 300));
+	players[1] = new Skate;
+	++numPlayers;
+	players[1]->setPosition(Vector2f(250, 400));
+
+	sprites = new Character*[100];
+	sprites[0] = new Garnet;
+	++numSprites;
+	sprites[0]->setPosition(Vector2f(500, 400));
 
 	while (window.isOpen()) {
 		Time dt = clock.restart();

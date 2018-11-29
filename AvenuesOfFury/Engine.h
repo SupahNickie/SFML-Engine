@@ -15,8 +15,10 @@ private:
 	RenderWindow window;
 	View mainView;
 	
-	Character** characters;
-	int numCharacters = 0;
+	PlayerCharacter** players;
+	Character** sprites;
+	int numPlayers = 0;
+	int numSprites = 0;
 
 	void input();
 	void update(float timeElapsed);

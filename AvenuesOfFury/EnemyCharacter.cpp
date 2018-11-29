@@ -2,10 +2,6 @@
 #include <iostream>
 #include "EnemyCharacter.h"
 
-void EnemyCharacter::handleInput() {
-	return;
-}
-
 void EnemyCharacter::update(float elapsedTime) {
 	handleIdle(elapsedTime, IDLE_1);
 

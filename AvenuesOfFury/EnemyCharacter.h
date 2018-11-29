@@ -7,6 +7,5 @@ private:
 	void handleAttack(float elapsedTime, int attackType);
 	void handleIdle(float elapsedTime, int idleType);
 public:
-	void handleInput();
 	void update(float elapsedTime);
 };

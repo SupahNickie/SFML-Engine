@@ -4,8 +4,11 @@
 void Engine::draw() {
 	window.clear(Color::White);
 	window.setView(mainView);
-	for (int i = 0; i < numCharacters; ++i) {
-		window.draw(*characters[i]);
+	for (int i = 0; i < numSprites; ++i) {
+		window.draw(*sprites[i]);
+	}
+	for (int i = 0; i < numPlayers; ++i) {
+		window.draw(*players[i]);
 	}
 	window.display();
 }

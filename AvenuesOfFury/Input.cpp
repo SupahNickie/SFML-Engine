@@ -10,7 +10,7 @@ void Engine::input() {
 			}
 		}
 	}
-	for (int i = 0; i < numCharacters; ++i) {
-		characters[i]->handleInput();
+	for (int i = 0; i < numPlayers; ++i) {
+		players[i]->handleInput();
 	}
 }

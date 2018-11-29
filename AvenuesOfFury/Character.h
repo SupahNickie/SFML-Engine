@@ -57,6 +57,5 @@ private:
 public:
 	void setPosition(Vector2f position);
 
-	virtual void handleInput() = 0;
 	virtual void update(float elapsedTime) = 0;
 };
