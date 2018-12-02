@@ -156,10 +156,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Area.h" />
     <ClInclude Include="Character.h" />
     <ClInclude Include="EnemyCharacter.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="Garnet.h" />
+    <ClInclude Include="Graphic.h" />
+    <ClInclude Include="Level.h" />
     <ClInclude Include="Link.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="PlayerCharacter.h" />
@@ -168,13 +171,16 @@
     <ClInclude Include="TextureHolder.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Area.cpp" />
     <ClCompile Include="AvenuesOfFury.cpp" />
     <ClCompile Include="Character.cpp" />
     <ClCompile Include="Draw.cpp" />
     <ClCompile Include="EnemyCharacter.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="Garnet.cpp" />
+    <ClCompile Include="Graphic.cpp" />
     <ClCompile Include="Input.cpp" />
+    <ClCompile Include="Level.cpp" />
     <ClCompile Include="Link.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

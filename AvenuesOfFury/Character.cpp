@@ -2,12 +2,8 @@
 #include "Character.h"
 #include "SpriteHolder.h"
 
-void Character::setPosition(Vector2f newPosition) {
-	position = newPosition;
-}
-
 void Character::flipHorizontally() {
-	sprite.scale(-1, 1);
+	Graphic::flipHorizontally();
 	facingLeft = !facingLeft;
 	facingRight = !facingRight;
 }
@@ -15,7 +11,7 @@ void Character::flipHorizontally() {
 void Character::renderMove(float elapsedTime, int moveType) {
 	timeSinceMoveFrame += elapsedTime * 1000;
 	if (timeSinceMoveFrame > MS_PER_FRAME) {
-		if (moveFrame >= SpriteHolder::getMaxFramesForAction(charName, "move", moveType) && !moveSpriteCycleDown) {
+		if (moveFrame >= SpriteHolder::getMaxFramesForAction(spriteName, "move", moveType) && !moveSpriteCycleDown) {
 			--moveFrame;
 			moveSpriteCycleDown = true;
 			if (!animationCycle) moveFrame = 0;
@@ -34,13 +30,13 @@ void Character::renderMove(float elapsedTime, int moveType) {
 		spriteState = SpriteState::MOVING;
 		resetMoveFrame(moveType);
 	}
-	SpriteHolder::setSprite(sprite, charName, "move", moveType, moveFrame);
+	SpriteHolder::setSprite(sprite, spriteName, "move", moveType, moveFrame);
 }
 
 void Character::renderAttack(float elapsedTime, int attackType) {
 	timeSinceAttackFrame += elapsedTime * 1000;
 	if (timeSinceAttackFrame > MS_PER_FRAME) {
-		if (attackFrame >= SpriteHolder::getMaxFramesForAction(charName, "attack", attackType) && !attackSpriteCycleDown) {
+		if (attackFrame >= SpriteHolder::getMaxFramesForAction(spriteName, "attack", attackType) && !attackSpriteCycleDown) {
 			--attackFrame;
 			attackSpriteCycleDown = true;
 			if (!animationCycle) attackFrame = 0;
@@ -54,13 +50,13 @@ void Character::renderAttack(float elapsedTime, int attackType) {
 		}
 		timeSinceAttackFrame = 0;
 	}
-	SpriteHolder::setSprite(sprite, charName, "attack", attackType, attackFrame);
+	SpriteHolder::setSprite(sprite, spriteName, "attack", attackType, attackFrame);
 }
 
 void Character::renderIdle(float elapsedTime, int idleType) {
 	timeSinceIdleFrame += elapsedTime * 1000;
 	if (timeSinceIdleFrame > MS_PER_FRAME) {
-		if (idleFrame >= SpriteHolder::getMaxFramesForAction(charName, "idle", idleType) && !idleSpriteCycleDown) {
+		if (idleFrame >= SpriteHolder::getMaxFramesForAction(spriteName, "idle", idleType) && !idleSpriteCycleDown) {
 			--idleFrame;
 			idleSpriteCycleDown = true;
 			if (!animationCycle) idleFrame = 0;
@@ -74,21 +70,17 @@ void Character::renderIdle(float elapsedTime, int idleType) {
 		}
 		timeSinceIdleFrame = 0;
 	}
-	SpriteHolder::setSprite(sprite, charName, "idle", idleType, idleFrame);
+	SpriteHolder::setSprite(sprite, spriteName, "idle", idleType, idleFrame);
 }
 
 void Character::resetMoveFrame(int moveType) {
-	moveFrame = SpriteHolder::getStartFramesForAction(charName, "move", moveType);
+	moveFrame = SpriteHolder::getStartFramesForAction(spriteName, "move", moveType);
 }
 
 void Character::resetAttackFrame(int attackType) {
-	attackFrame = SpriteHolder::getStartFramesForAction(charName, "attack", attackType);
+	attackFrame = SpriteHolder::getStartFramesForAction(spriteName, "attack", attackType);
 }
 
 void Character::resetIdleFrame(int idleType) {
-	idleFrame = SpriteHolder::getStartFramesForAction(charName, "attack", idleType);
-}
-
-void Character::draw(RenderTarget& target, RenderStates states) const {
-	target.draw(sprite, states);
+	idleFrame = SpriteHolder::getStartFramesForAction(spriteName, "attack", idleType);
 }

@@ -1,10 +1,10 @@
 #pragma once
-#include <SFML/Graphics.hpp>
+#include "Graphic.h"
 
 using namespace sf;
 using namespace std;
 
-class Character : public Drawable {
+class Character : public Graphic {
 protected:
 	int MS_PER_FRAME = 50;
 	int const MOVE_1 = 0;
@@ -15,12 +15,7 @@ protected:
 
 	enum class SpriteState { MOVING, ATTACKING, IDLE };
 
-	string charName;
 	SpriteState spriteState;
-	Sprite sprite;
-	Vector2f position;
-
-	bool animationCycle;
 	bool facingLeft;
 	bool facingRight;
 	bool jumping;
@@ -36,8 +31,6 @@ protected:
 	bool idleSpriteCycleDown;
 	int timeSinceHandlingLastAttackFrame = 0;
 
-	void flipHorizontally();
-	
 	void renderMove(float elapsedTime, int moveType);
 	void renderAttack(float elapsedTime, int attackType);
 	void renderIdle(float elapsedTime, int idleType);
@@ -49,13 +42,9 @@ protected:
 	virtual void handleMove(float elapsedTime, int moveType) = 0;
 	virtual void handleAttack(float elapsedTime, int attackType) = 0;
 	virtual void handleIdle(float elapsedTime, int idleType) = 0;
-	
-	virtual void draw(RenderTarget& target, RenderStates states) const;
 private:
-	Texture texture;
 	FloatRect hitbox;
 public:
-	void setPosition(Vector2f position);
-
+	void flipHorizontally();
 	virtual void update(float elapsedTime) = 0;
 };

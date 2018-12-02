@@ -15,8 +15,8 @@ SpriteHolder::SpriteHolder() {
 	shInstance = this;
 }
 
-void SpriteHolder::initSprites(string const& charName) {
-	if (SpriteHolder::getIsStored(charName)) return;
+void SpriteHolder::initSprites(string const& handlingType, string const& spriteName) {
+	if (SpriteHolder::getIsStored(spriteName)) return;
 
 	string currentlySetting = "";
 	unsigned int numberOfActions = 0;
@@ -26,7 +26,7 @@ void SpriteHolder::initSprites(string const& charName) {
 	unsigned int startFrame = 0;
 
 	stringstream ss;
-	ss << "graphics/" << charName << "_coords.txt";
+	ss << handlingType << "s/" << spriteName << "_coords.txt";
 
 	string s;
 	const string delimiter = ",";
@@ -43,47 +43,63 @@ void SpriteHolder::initSprites(string const& charName) {
 		}
 		line.push_back(s);
 
-		if (actionStringToEnum(line[0]) != ActionType::NONE) {
-			currentlySetting = line[0];
-			numberOfActions = stoi(line[1]);
-			initActionSprites(charName, actionStringToEnum(currentlySetting), numberOfActions);
+		if (handlingStringToEnum(handlingType) == HandlingType::CHARACTER) {
+			handleCharacterLine(line, &currentlySetting, &numberOfActions, spriteName, &outIndex, &inIndex, &numberOfFrames, &startFrame);
 		}
-		else if (line[0] == "frames") {
-			inIndex = 0;
-			outIndex = 0;
-			numberOfActions = 0;
-			for (unsigned int i = 1; i < line.size(); ++numberOfActions) {
-				numberOfFrames = stoi(line[i]);
-				++i;
-				startFrame = stoi(line[i]);
-				++i;
-				addActionSpriteFrames(charName, actionStringToEnum(currentlySetting), numberOfActions, numberOfFrames, startFrame);
-			}
-		}
-		else if (line[0] == "skip") {
-			inIndex = 0;
-			++outIndex;
+		else if (handlingStringToEnum(handlingType) == HandlingType::BACKGROUND) {
+			handleBackgroundLine(line, &currentlySetting, &numberOfActions, spriteName, &outIndex, &inIndex, &numberOfFrames, &startFrame);
 		}
 		else {
-			setActionSpriteFrames(
-				charName,
-				actionStringToEnum(currentlySetting),
-				outIndex,
-				inIndex,
-				Vector2i(stoi(line[0]), stoi(line[1])),
-				Vector2i(stoi(line[2]), stoi(line[3]))
-			);
-			++inIndex;
+			break;
 		}
 	}
 	inputFile.close();
 
-	setIsStored(charName);
+	setIsStored(spriteName);
 }
 
-void SpriteHolder::setSprite(Sprite& sprite, string const& charName, string const& actionCategory, int actionType, int actionFrame) {
-	Vector2i originPos = shInstance->charOriginsMap[charName][actionStringToEnum(actionCategory)][actionType][actionFrame];
-	Vector2i boundPos = shInstance->charBoundsMap[charName][actionStringToEnum(actionCategory)][actionType][actionFrame];
+void SpriteHolder::handleCharacterLine(vector<string> line, string* currentlySetting, unsigned int* numberOfActions, string spriteName, int* outIndex, int* inIndex, unsigned int* numberOfFrames, unsigned int* startFrame) {
+	if (actionStringToEnum(line[0]) != ActionType::NONE) {
+		*currentlySetting = line[0];
+		*numberOfActions = stoi(line[1]);
+		initActionSprites(spriteName, actionStringToEnum(*currentlySetting), *numberOfActions);
+	}
+	else if (line[0] == "frames") {
+		*inIndex = 0;
+		*outIndex = 0;
+		*numberOfActions = 0;
+		for (unsigned int i = 1; i < line.size(); ++*numberOfActions) {
+			*numberOfFrames = stoi(line[i]);
+			++i;
+			*startFrame = stoi(line[i]);
+			++i;
+			addActionSpriteFrames(spriteName, actionStringToEnum(*currentlySetting), *numberOfActions, *numberOfFrames, *startFrame);
+		}
+	}
+	else if (line[0] == "skip") {
+		*inIndex = 0;
+		++*outIndex;
+	}
+	else {
+		setActionSpriteFrames(
+			spriteName,
+			actionStringToEnum(*currentlySetting),
+			*outIndex,
+			*inIndex,
+			Vector2i(stoi(line[0]), stoi(line[1])),
+			Vector2i(stoi(line[2]), stoi(line[3]))
+		);
+		++*inIndex;
+	}
+}
+
+void SpriteHolder::handleBackgroundLine(vector<string> line, string* currentlySetting, unsigned int* numberOfActions, string spriteName, int* outIndex, int* inIndex, unsigned int* numberOfFrames, unsigned int* startFrame) {
+	
+}
+
+void SpriteHolder::setSprite(Sprite& sprite, string const& spriteName, string const& actionCategory, int actionType, int actionFrame) {
+	Vector2i originPos = shInstance->spriteOriginsMap[spriteName][actionStringToEnum(actionCategory)][actionType][actionFrame];
+	Vector2i boundPos = shInstance->spriteBoundsMap[spriteName][actionStringToEnum(actionCategory)][actionType][actionFrame];
 
 	sprite.setTextureRect(
 		IntRect(
@@ -99,43 +115,43 @@ void SpriteHolder::setSprite(Sprite& sprite, string const& charName, string cons
 	);
 }
 
-int SpriteHolder::getMaxFramesForAction(string const& charName, string const& actionCategory, int actionType) {
-	return shInstance->charMaxFrameMap[charName][actionStringToEnum(actionCategory)][actionType];
+int SpriteHolder::getMaxFramesForAction(string const& spriteName, string const& actionCategory, int actionType) {
+	return shInstance->spriteMaxFrameMap[spriteName][actionStringToEnum(actionCategory)][actionType];
 }
 
-int SpriteHolder::getStartFramesForAction(string const& charName, string const& actionCategory, int actionType) {
-	return shInstance->charStartFrameMap[charName][actionStringToEnum(actionCategory)][actionType];
+int SpriteHolder::getStartFramesForAction(string const& spriteName, string const& actionCategory, int actionType) {
+	return shInstance->spriteStartFrameMap[spriteName][actionStringToEnum(actionCategory)][actionType];
 }
 
-void SpriteHolder::initActionSprites(string const& charName, ActionType action, unsigned int actionCount) {
-	shInstance->charOriginsMap[charName][action] = new Vector2i*[actionCount];
-	shInstance->charBoundsMap[charName][action] = new Vector2i*[actionCount];
-	shInstance->charMaxFrameMap[charName][action] = new int[actionCount];
-	shInstance->charStartFrameMap[charName][action] = new int[actionCount];
+void SpriteHolder::initActionSprites(string const& spriteName, ActionType action, unsigned int actionCount) {
+	shInstance->spriteOriginsMap[spriteName][action] = new Vector2i*[actionCount];
+	shInstance->spriteBoundsMap[spriteName][action] = new Vector2i*[actionCount];
+	shInstance->spriteMaxFrameMap[spriteName][action] = new int[actionCount];
+	shInstance->spriteStartFrameMap[spriteName][action] = new int[actionCount];
 }
 
-void SpriteHolder::addActionSpriteFrames(string const& charName, ActionType action, int numberOfActions, int numberOfFrames, int startFrame) {
-	shInstance->charOriginsMap[charName][action][numberOfActions] = new Vector2i[numberOfFrames];
-	shInstance->charBoundsMap[charName][action][numberOfActions] = new Vector2i[numberOfFrames];
-	shInstance->charMaxFrameMap[charName][action][numberOfActions] = numberOfFrames - 1;
-	shInstance->charStartFrameMap[charName][action][numberOfActions] = startFrame;
+void SpriteHolder::addActionSpriteFrames(string const& spriteName, ActionType action, int numberOfActions, int numberOfFrames, int startFrame) {
+	shInstance->spriteOriginsMap[spriteName][action][numberOfActions] = new Vector2i[numberOfFrames];
+	shInstance->spriteBoundsMap[spriteName][action][numberOfActions] = new Vector2i[numberOfFrames];
+	shInstance->spriteMaxFrameMap[spriteName][action][numberOfActions] = numberOfFrames - 1;
+	shInstance->spriteStartFrameMap[spriteName][action][numberOfActions] = startFrame;
 }
 
-void SpriteHolder::setActionSpriteFrames(string const& charName, ActionType action, int outIndex, int inIndex, Vector2i origin, Vector2i bound) {
-	shInstance->charOriginsMap[charName][action][outIndex][inIndex] = origin;
-	shInstance->charBoundsMap[charName][action][outIndex][inIndex] = bound;
+void SpriteHolder::setActionSpriteFrames(string const& spriteName, ActionType action, int outIndex, int inIndex, Vector2i origin, Vector2i bound) {
+	shInstance->spriteOriginsMap[spriteName][action][outIndex][inIndex] = origin;
+	shInstance->spriteBoundsMap[spriteName][action][outIndex][inIndex] = bound;
 }
 
-bool SpriteHolder::getIsStored(string const& charName) {
-	auto storedEntry = shInstance->isStoredMap.find(charName);
+bool SpriteHolder::getIsStored(string const& spriteName) {
+	auto storedEntry = shInstance->isStoredMap.find(spriteName);
 	if (storedEntry != shInstance->isStoredMap.end()) {
 		return true;
 	}
 	return false;
 }
 
-void SpriteHolder::setIsStored(string const& charName) {
-	shInstance->isStoredMap[charName] = true;
+void SpriteHolder::setIsStored(string const& spriteName) {
+	shInstance->isStoredMap[spriteName] = true;
 }
 
 SpriteHolder::ActionType SpriteHolder::actionStringToEnum(string const& action) {
@@ -143,4 +159,10 @@ SpriteHolder::ActionType SpriteHolder::actionStringToEnum(string const& action) 
 	if (action == "attack") return ActionType::ATTACK;
 	if (action == "idle") return ActionType::IDLE;
 	return ActionType::NONE;
+}
+
+SpriteHolder::HandlingType SpriteHolder::handlingStringToEnum(string const& handling) {
+	if (handling == "character") return HandlingType::CHARACTER;
+	if (handling == "background") return HandlingType::BACKGROUND;
+	return HandlingType::NONE;
 }

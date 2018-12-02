@@ -56,12 +56,12 @@ void PlayerCharacter::handleAttack(float elapsedTime, int attackType) {
 
 	renderAttack(elapsedTime, attackType);
 
-	if (attackFrame >= SpriteHolder::getMaxFramesForAction(charName, "attack", attackType)) {
+	if (attackFrame >= SpriteHolder::getMaxFramesForAction(spriteName, "attack", attackType)) {
 		timeSinceHandlingLastAttackFrame += elapsedTime * 1000;
 		if (timeSinceHandlingLastAttackFrame >= MS_PER_FRAME) {
 			timeSinceAttackFrame = 0;
 			timeSinceHandlingLastAttackFrame = 0;
-			resetAttackFrame(SpriteHolder::getStartFramesForAction(charName, "attack", attackType));
+			resetAttackFrame(SpriteHolder::getStartFramesForAction(spriteName, "attack", attackType));
 
 			primaryAttackPressed = false;
 			secondaryAttackPressed = false;

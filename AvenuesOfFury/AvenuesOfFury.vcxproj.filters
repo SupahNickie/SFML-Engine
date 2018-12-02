@@ -31,6 +31,12 @@
     <Filter Include="Header Files\Engine">
       <UniqueIdentifier>{35acee85-2093-405a-9905-af5c54a73a04}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Levels">
+      <UniqueIdentifier>{4f2ab7e6-949a-4615-9086-21048ce11d85}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Levels">
+      <UniqueIdentifier>{4c557ce5-aa53-49d6-b902-1055e2c5e8f3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -62,6 +68,15 @@
     </ClInclude>
     <ClInclude Include="Engine.h">
       <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Level.h">
+      <Filter>Header Files\Levels</Filter>
+    </ClInclude>
+    <ClInclude Include="Area.h">
+      <Filter>Header Files\Levels</Filter>
+    </ClInclude>
+    <ClInclude Include="Graphic.h">
+      <Filter>Header Files\Sprites</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -106,6 +121,15 @@
     </ClCompile>
     <ClCompile Include="AvenuesOfFury.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Level.cpp">
+      <Filter>Source Files\Levels</Filter>
+    </ClCompile>
+    <ClCompile Include="Area.cpp">
+      <Filter>Source Files\Levels</Filter>
+    </ClCompile>
+    <ClCompile Include="Graphic.cpp">
+      <Filter>Source Files\Sprites</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

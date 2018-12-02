@@ -4,7 +4,7 @@
 #include "SpriteHolder.h"
 
 Link::Link() {
-	sprite = Sprite(TextureHolder::getTexture("graphics/link_sheet.jpg"));
+	sprite = Sprite(TextureHolder::getTexture("graphics/characters/link_sheet.jpg"));
 	primaryAttackPressed = false;
 	secondaryAttackPressed = false;
 	spriteState = SpriteState::IDLE;
@@ -15,14 +15,14 @@ Link::Link() {
 	moveSpriteCycleDown = false;
 	attackSpriteCycleDown = false;
 	idleSpriteCycleDown = false;
-	charName = "link";
+	spriteName = "link";
 
-	SpriteHolder::initSprites(charName);
+	SpriteHolder::initSprites("character", spriteName);
 	resetMoveFrame(MOVE_1);
 	resetAttackFrame(ATTACK_1);
 	resetIdleFrame(IDLE_1);
 
-	SpriteHolder::setSprite(sprite, charName, "idle", IDLE_1, idleFrame);
+	SpriteHolder::setSprite(sprite, spriteName, "idle", IDLE_1, idleFrame);
 }
 
 void Link::setSecondPlayer() {
