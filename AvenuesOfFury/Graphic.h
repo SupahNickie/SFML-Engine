@@ -14,8 +14,10 @@ protected:
 private:
 	Texture texture;
 public:
+	bool isActive;
 	void flipHorizontally();
 	void setPosition(Vector2f position);
+	void deleteSprite();
 
 	virtual void draw(RenderTarget& target, RenderStates states) const;
 };

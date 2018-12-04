@@ -6,6 +6,8 @@ void Engine::update(float timeElapsed) {
 		players[i]->update(timeElapsed);
 	}
 	for (int i = 0; i < numSprites; ++i) {
-		sprites[i]->update(timeElapsed);
+		if (sprites[i]->isActive) {
+			sprites[i]->update(timeElapsed);
+		}
 	}
 }

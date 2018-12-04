@@ -14,10 +14,10 @@ private:
 	enum class ActionType { MOVE, ATTACK, IDLE, NONE };
 	enum class HandlingType { CHARACTER, BACKGROUND, NONE };
 
-	map<string, map<ActionType, Vector2i**>> spriteOriginsMap;
-	map<string, map<ActionType, Vector2i**>> spriteBoundsMap;
-	map<string, map<ActionType, int*>> spriteMaxFrameMap;
-	map<string, map<ActionType, int*>> spriteStartFrameMap;
+	map<string, map<ActionType, vector<vector<Vector2i>>>> spriteOriginsMap;
+	map<string, map<ActionType, vector<vector<Vector2i>>>> spriteBoundsMap;
+	map<string, map<ActionType, vector<int>>> spriteMaxFrameMap;
+	map<string, map<ActionType, vector<int>>> spriteStartFrameMap;
 	map<string, bool> isStoredMap;
 
 	static void handleCharacterLine(vector<string> line, string* currentlySetting, unsigned int* numberOfActions, string spriteName, int* outIndex, int* inIndex, unsigned int* numberOfFrames, unsigned int* startFrame);
@@ -32,6 +32,7 @@ private:
 public:
 	SpriteHolder();
 	static void initSprites(string const& handlingType, string const& spriteName);
+	static void deleteSprite(string const& spriteName);
 	static void setSprite(Sprite& sprite, string const& spriteName, string const& actionCategory, int actionType, int actionFrame);
 	static int getMaxFramesForAction(string const& spriteName, string const& actionCategory, int actionType);
 	static int getStartFramesForAction(string const& spriteName, string const& actionCategory, int actionType);

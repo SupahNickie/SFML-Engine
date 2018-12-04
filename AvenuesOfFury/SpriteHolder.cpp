@@ -58,6 +58,15 @@ void SpriteHolder::initSprites(string const& handlingType, string const& spriteN
 	setIsStored(spriteName);
 }
 
+
+void SpriteHolder::deleteSprite(string const& spriteName) {
+	shInstance->spriteOriginsMap.erase(spriteName);
+	shInstance->spriteBoundsMap.erase(spriteName);
+	shInstance->spriteMaxFrameMap.erase(spriteName);
+	shInstance->spriteStartFrameMap.erase(spriteName);
+}
+
+
 void SpriteHolder::handleCharacterLine(vector<string> line, string* currentlySetting, unsigned int* numberOfActions, string spriteName, int* outIndex, int* inIndex, unsigned int* numberOfFrames, unsigned int* startFrame) {
 	if (actionStringToEnum(line[0]) != ActionType::NONE) {
 		*currentlySetting = line[0];
@@ -124,15 +133,15 @@ int SpriteHolder::getStartFramesForAction(string const& spriteName, string const
 }
 
 void SpriteHolder::initActionSprites(string const& spriteName, ActionType action, unsigned int actionCount) {
-	shInstance->spriteOriginsMap[spriteName][action] = new Vector2i*[actionCount];
-	shInstance->spriteBoundsMap[spriteName][action] = new Vector2i*[actionCount];
-	shInstance->spriteMaxFrameMap[spriteName][action] = new int[actionCount];
-	shInstance->spriteStartFrameMap[spriteName][action] = new int[actionCount];
+	shInstance->spriteOriginsMap[spriteName][action] = vector<vector<Vector2i>>(actionCount);
+	shInstance->spriteBoundsMap[spriteName][action] = vector<vector<Vector2i>>(actionCount);
+	shInstance->spriteMaxFrameMap[spriteName][action] = vector<int>(actionCount);
+	shInstance->spriteStartFrameMap[spriteName][action] = vector<int>(actionCount);
 }
 
 void SpriteHolder::addActionSpriteFrames(string const& spriteName, ActionType action, int numberOfActions, int numberOfFrames, int startFrame) {
-	shInstance->spriteOriginsMap[spriteName][action][numberOfActions] = new Vector2i[numberOfFrames];
-	shInstance->spriteBoundsMap[spriteName][action][numberOfActions] = new Vector2i[numberOfFrames];
+	shInstance->spriteOriginsMap[spriteName][action][numberOfActions] = vector<Vector2i>(numberOfFrames);
+	shInstance->spriteBoundsMap[spriteName][action][numberOfActions] = vector<Vector2i>(numberOfFrames);
 	shInstance->spriteMaxFrameMap[spriteName][action][numberOfActions] = numberOfFrames - 1;
 	shInstance->spriteStartFrameMap[spriteName][action][numberOfActions] = startFrame;
 }

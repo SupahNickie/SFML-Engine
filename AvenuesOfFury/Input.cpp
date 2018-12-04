@@ -8,6 +8,9 @@ void Engine::input() {
 			if (Keyboard::isKeyPressed(Keyboard::Escape)) {
 				window.close();
 			}
+			if (Keyboard::isKeyPressed(Keyboard::BackSpace)) {
+				sprites[0]->deleteSprite();
+			}
 		}
 	}
 	for (int i = 0; i < numPlayers; ++i) {

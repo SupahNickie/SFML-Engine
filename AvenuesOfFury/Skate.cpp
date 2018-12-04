@@ -17,6 +17,7 @@ Skate::Skate() {
 	attackSpriteCycleDown = false;
 	idleSpriteCycleDown = false;
 	spriteName = "skate";
+	isActive = true;
 
 	SpriteHolder::initSprites("character", spriteName);
 	resetMoveFrame(MOVE_1);

@@ -16,6 +16,7 @@ Link::Link() {
 	attackSpriteCycleDown = false;
 	idleSpriteCycleDown = false;
 	spriteName = "link";
+	isActive = true;
 
 	SpriteHolder::initSprites("character", spriteName);
 	resetMoveFrame(MOVE_1);

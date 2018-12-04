@@ -15,6 +15,7 @@ Garnet::Garnet() {
 	attackSpriteCycleDown = false;
 	idleSpriteCycleDown = false;
 	spriteName = "garnet";
+	isActive = true;
 
 	SpriteHolder::initSprites("character", spriteName);
 	resetMoveFrame(MOVE_1);
