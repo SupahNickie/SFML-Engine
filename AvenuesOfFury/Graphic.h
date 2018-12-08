@@ -8,7 +8,7 @@ class Graphic : public Drawable {
 protected:
 	string spriteName;
 	bool animationCycle;
-
+	string texturePath;
 	Sprite sprite;
 	Vector2f position;
 private:

@@ -12,6 +12,10 @@ TextureHolder::TextureHolder() {
 	thInstance = this;
 }
 
+void TextureHolder::deleteTexture(string const& filename) {
+	thInstance->textureMap.erase(filename);
+}
+
 Texture& TextureHolder::getTexture(string const& filename) {
 	auto& tMap = thInstance->textureMap;
 	auto textureEntry = tMap.find(filename);

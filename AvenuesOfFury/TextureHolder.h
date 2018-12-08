@@ -14,6 +14,7 @@ private:
 	static TextureHolder* thInstance;
 public:
 	TextureHolder();
+	static void deleteTexture(string const& filename);
 	static Texture& getTexture(string const& filename);
 };
 

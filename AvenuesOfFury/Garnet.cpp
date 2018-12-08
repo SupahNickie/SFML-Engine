@@ -5,7 +5,8 @@
 
 Garnet::Garnet() {
 	MS_PER_FRAME = 100;
-	sprite = Sprite(TextureHolder::getTexture("graphics/characters/garnet_sheet.png"));
+	texturePath = "graphics/characters/garnet_sheet.png";
+	sprite = Sprite(TextureHolder::getTexture(texturePath));
 	spriteState = SpriteState::IDLE;
 	facingLeft = false;
 	facingRight = true;

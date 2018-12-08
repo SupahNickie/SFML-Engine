@@ -4,7 +4,8 @@
 #include "SpriteHolder.h"
 
 Link::Link() {
-	sprite = Sprite(TextureHolder::getTexture("graphics/characters/link_sheet.jpg"));
+	texturePath = "graphics/characters/link_sheet.jpg";
+	sprite = Sprite(TextureHolder::getTexture(texturePath));
 	primaryAttackPressed = false;
 	secondaryAttackPressed = false;
 	spriteState = SpriteState::IDLE;

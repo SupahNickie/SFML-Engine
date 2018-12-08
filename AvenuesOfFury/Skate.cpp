@@ -5,7 +5,8 @@
 
 Skate::Skate() {
 	MS_PER_FRAME = 100;
-	sprite = Sprite(TextureHolder::getTexture("graphics/characters/skate_sheet.png"));
+	texturePath = "graphics/characters/skate_sheet.png";
+	sprite = Sprite(TextureHolder::getTexture(texturePath));
 	primaryAttackPressed = false;
 	secondaryAttackPressed = false;
 	spriteState = SpriteState::IDLE;
