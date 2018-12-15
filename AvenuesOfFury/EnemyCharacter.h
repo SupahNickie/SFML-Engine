@@ -2,10 +2,10 @@
 #include "Character.h"
 
 class EnemyCharacter : public Character {
-private:
+protected:
 	void handleMove(float elapsedTime, int moveType);
 	void handleAttack(float elapsedTime, int attackType);
 	void handleIdle(float elapsedTime, int idleType);
 public:
-	void update(float elapsedTime);
+	virtual void update(float elapsedTime) = 0;
 };

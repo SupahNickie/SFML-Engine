@@ -1,11 +1,19 @@
 #pragma once
+#include "Globals.h"
 #include "Graphic.h"
 
 using namespace sf;
 using namespace std;
 
+struct ActionStruct {
+	Globals::ActionType action;
+	int actionType;
+};
+
 class Character : public Graphic {
 protected:
+	FloatRect hitbox;
+
 	int MS_PER_FRAME = 50;
 	int const MOVE_1 = 0;
 	int const ATTACK_1 = 0;
@@ -42,8 +50,6 @@ protected:
 	virtual void handleMove(float elapsedTime, int moveType) = 0;
 	virtual void handleAttack(float elapsedTime, int attackType) = 0;
 	virtual void handleIdle(float elapsedTime, int idleType) = 0;
-private:
-	FloatRect hitbox;
 public:
 	void flipHorizontally();
 	virtual void update(float elapsedTime) = 0;

@@ -26,3 +26,9 @@ Garnet::Garnet() {
 	sprite.scale(Vector2f(4.0f, 4.0f));
 	SpriteHolder::setSprite(sprite, spriteName, "idle", IDLE_1, idleFrame);
 }
+
+void Garnet::update(float elapsedTime) {
+	handleIdle(elapsedTime, IDLE_1);
+
+	sprite.setPosition(position);
+}

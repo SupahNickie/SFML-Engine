@@ -3,6 +3,7 @@
 #include <iostream>
 #include <sstream>
 #include <fstream>
+#include "Globals.h"
 #include "SpriteHolder.h"
 
 using namespace sf;
@@ -68,7 +69,7 @@ void SpriteHolder::deleteSprite(string const& spriteName) {
 
 
 void SpriteHolder::handleCharacterLine(vector<string> line, string* currentlySetting, unsigned int* numberOfActions, string spriteName, int* outIndex, int* inIndex, unsigned int* numberOfFrames, unsigned int* startFrame) {
-	if (actionStringToEnum(line[0]) != ActionType::NONE) {
+	if (actionStringToEnum(line[0]) != Globals::ActionType::NONE) {
 		*currentlySetting = line[0];
 		*numberOfActions = stoi(line[1]);
 		initActionSprites(spriteName, actionStringToEnum(*currentlySetting), *numberOfActions);
@@ -132,21 +133,21 @@ int SpriteHolder::getStartFramesForAction(string const& spriteName, string const
 	return shInstance->spriteStartFrameMap[spriteName][actionStringToEnum(actionCategory)][actionType];
 }
 
-void SpriteHolder::initActionSprites(string const& spriteName, ActionType action, unsigned int actionCount) {
+void SpriteHolder::initActionSprites(string const& spriteName, Globals::ActionType action, unsigned int actionCount) {
 	shInstance->spriteOriginsMap[spriteName][action] = vector<vector<Vector2i>>(actionCount);
 	shInstance->spriteBoundsMap[spriteName][action] = vector<vector<Vector2i>>(actionCount);
 	shInstance->spriteMaxFrameMap[spriteName][action] = vector<int>(actionCount);
 	shInstance->spriteStartFrameMap[spriteName][action] = vector<int>(actionCount);
 }
 
-void SpriteHolder::addActionSpriteFrames(string const& spriteName, ActionType action, int numberOfActions, int numberOfFrames, int startFrame) {
+void SpriteHolder::addActionSpriteFrames(string const& spriteName, Globals::ActionType action, int numberOfActions, int numberOfFrames, int startFrame) {
 	shInstance->spriteOriginsMap[spriteName][action][numberOfActions] = vector<Vector2i>(numberOfFrames);
 	shInstance->spriteBoundsMap[spriteName][action][numberOfActions] = vector<Vector2i>(numberOfFrames);
 	shInstance->spriteMaxFrameMap[spriteName][action][numberOfActions] = numberOfFrames - 1;
 	shInstance->spriteStartFrameMap[spriteName][action][numberOfActions] = startFrame;
 }
 
-void SpriteHolder::setActionSpriteFrames(string const& spriteName, ActionType action, int outIndex, int inIndex, Vector2i origin, Vector2i bound) {
+void SpriteHolder::setActionSpriteFrames(string const& spriteName, Globals::ActionType action, int outIndex, int inIndex, Vector2i origin, Vector2i bound) {
 	shInstance->spriteOriginsMap[spriteName][action][outIndex][inIndex] = origin;
 	shInstance->spriteBoundsMap[spriteName][action][outIndex][inIndex] = bound;
 }
@@ -163,11 +164,11 @@ void SpriteHolder::setIsStored(string const& spriteName) {
 	shInstance->isStoredMap[spriteName] = true;
 }
 
-SpriteHolder::ActionType SpriteHolder::actionStringToEnum(string const& action) {
-	if (action == "move") return ActionType::MOVE;
-	if (action == "attack") return ActionType::ATTACK;
-	if (action == "idle") return ActionType::IDLE;
-	return ActionType::NONE;
+Globals::ActionType SpriteHolder::actionStringToEnum(string const& action) {
+	if (action == "move") return Globals::ActionType::MOVE;
+	if (action == "attack") return Globals::ActionType::ATTACK;
+	if (action == "idle") return Globals::ActionType::IDLE;
+	return Globals::ActionType::NONE;
 }
 
 SpriteHolder::HandlingType SpriteHolder::handlingStringToEnum(string const& handling) {
