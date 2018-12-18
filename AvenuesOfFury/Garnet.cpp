@@ -27,8 +27,9 @@ Garnet::Garnet() {
 	SpriteHolder::setSprite(sprite, spriteName, "idle", IDLE_1, idleFrame);
 }
 
-void Garnet::update(float elapsedTime) {
-	handleIdle(elapsedTime, IDLE_1);
-
-	sprite.setPosition(position);
+ActionStruct Garnet::handleAI(float elapsedTime) {
+	ActionStruct output;
+	output.actionType = Globals::ActionType::IDLE;
+	output.action = IDLE_1;
+	return output;
 }

@@ -4,5 +4,5 @@
 class Garnet : public EnemyCharacter {
 public:
 	Garnet();
-	void update(float elapsedTime);
+	ActionStruct handleAI(float elapsedTime);
 };

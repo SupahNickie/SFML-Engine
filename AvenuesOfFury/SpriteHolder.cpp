@@ -69,10 +69,10 @@ void SpriteHolder::deleteSprite(string const& spriteName) {
 
 
 void SpriteHolder::handleCharacterLine(vector<string> line, string* currentlySetting, unsigned int* numberOfActions, string spriteName, int* outIndex, int* inIndex, unsigned int* numberOfFrames, unsigned int* startFrame) {
-	if (actionStringToEnum(line[0]) != Globals::ActionType::NONE) {
+	if (Globals::actionStringToEnum(line[0]) != Globals::ActionType::NONE) {
 		*currentlySetting = line[0];
 		*numberOfActions = stoi(line[1]);
-		initActionSprites(spriteName, actionStringToEnum(*currentlySetting), *numberOfActions);
+		initActionSprites(spriteName, Globals::actionStringToEnum(*currentlySetting), *numberOfActions);
 	}
 	else if (line[0] == "frames") {
 		*inIndex = 0;
@@ -83,7 +83,7 @@ void SpriteHolder::handleCharacterLine(vector<string> line, string* currentlySet
 			++i;
 			*startFrame = stoi(line[i]);
 			++i;
-			addActionSpriteFrames(spriteName, actionStringToEnum(*currentlySetting), *numberOfActions, *numberOfFrames, *startFrame);
+			addActionSpriteFrames(spriteName, Globals::actionStringToEnum(*currentlySetting), *numberOfActions, *numberOfFrames, *startFrame);
 		}
 	}
 	else if (line[0] == "skip") {
@@ -93,7 +93,7 @@ void SpriteHolder::handleCharacterLine(vector<string> line, string* currentlySet
 	else {
 		setActionSpriteFrames(
 			spriteName,
-			actionStringToEnum(*currentlySetting),
+			Globals::actionStringToEnum(*currentlySetting),
 			*outIndex,
 			*inIndex,
 			Vector2i(stoi(line[0]), stoi(line[1])),
@@ -108,8 +108,8 @@ void SpriteHolder::handleBackgroundLine(vector<string> line, string* currentlySe
 }
 
 void SpriteHolder::setSprite(Sprite& sprite, string const& spriteName, string const& actionCategory, int actionType, int actionFrame) {
-	Vector2i originPos = shInstance->spriteOriginsMap[spriteName][actionStringToEnum(actionCategory)][actionType][actionFrame];
-	Vector2i boundPos = shInstance->spriteBoundsMap[spriteName][actionStringToEnum(actionCategory)][actionType][actionFrame];
+	Vector2i originPos = shInstance->spriteOriginsMap[spriteName][Globals::actionStringToEnum(actionCategory)][actionType][actionFrame];
+	Vector2i boundPos = shInstance->spriteBoundsMap[spriteName][Globals::actionStringToEnum(actionCategory)][actionType][actionFrame];
 
 	sprite.setTextureRect(
 		IntRect(
@@ -126,11 +126,11 @@ void SpriteHolder::setSprite(Sprite& sprite, string const& spriteName, string co
 }
 
 int SpriteHolder::getMaxFramesForAction(string const& spriteName, string const& actionCategory, int actionType) {
-	return shInstance->spriteMaxFrameMap[spriteName][actionStringToEnum(actionCategory)][actionType];
+	return shInstance->spriteMaxFrameMap[spriteName][Globals::actionStringToEnum(actionCategory)][actionType];
 }
 
 int SpriteHolder::getStartFramesForAction(string const& spriteName, string const& actionCategory, int actionType) {
-	return shInstance->spriteStartFrameMap[spriteName][actionStringToEnum(actionCategory)][actionType];
+	return shInstance->spriteStartFrameMap[spriteName][Globals::actionStringToEnum(actionCategory)][actionType];
 }
 
 void SpriteHolder::initActionSprites(string const& spriteName, Globals::ActionType action, unsigned int actionCount) {
@@ -162,13 +162,6 @@ bool SpriteHolder::getIsStored(string const& spriteName) {
 
 void SpriteHolder::setIsStored(string const& spriteName) {
 	shInstance->isStoredMap[spriteName] = true;
-}
-
-Globals::ActionType SpriteHolder::actionStringToEnum(string const& action) {
-	if (action == "move") return Globals::ActionType::MOVE;
-	if (action == "attack") return Globals::ActionType::ATTACK;
-	if (action == "idle") return Globals::ActionType::IDLE;
-	return Globals::ActionType::NONE;
 }
 
 SpriteHolder::HandlingType SpriteHolder::handlingStringToEnum(string const& handling) {

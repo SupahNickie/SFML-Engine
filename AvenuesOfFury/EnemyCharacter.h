@@ -6,6 +6,9 @@ protected:
 	void handleMove(float elapsedTime, int moveType);
 	void handleAttack(float elapsedTime, int attackType);
 	void handleIdle(float elapsedTime, int idleType);
+private:
+	void delegateHandling(float elapsedTime, ActionStruct toRender);
 public:
-	virtual void update(float elapsedTime) = 0;
+	void update(float elapsedTime);
+	virtual ActionStruct handleAI(float elapsedTime) = 0;
 };

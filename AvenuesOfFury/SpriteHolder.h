@@ -27,7 +27,6 @@ private:
 	static void setActionSpriteFrames(string const& spriteName, Globals::ActionType action, int outIndex, int inIndex, Vector2i origin, Vector2i bound);
 	static bool getIsStored(string const& spriteName);
 	static void setIsStored(string const& spriteName);
-	static Globals::ActionType actionStringToEnum(string const& action);
 	static HandlingType handlingStringToEnum(string const& handling);
 public:
 	SpriteHolder();

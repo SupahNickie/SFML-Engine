@@ -6,8 +6,8 @@ using namespace sf;
 using namespace std;
 
 struct ActionStruct {
-	Globals::ActionType action;
-	int actionType;
+	Globals::ActionType actionType;
+	int action;
 };
 
 class Character : public Graphic {
