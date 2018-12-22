@@ -16,9 +16,9 @@ private:
 	View mainView;
 	
 	PlayerCharacter** players;
-	Character** sprites;
+	EnemyCharacter** enemies;
 	int numPlayers = 0;
-	int numSprites = 0;
+	int numEnemies = 0;
 
 	void input();
 	void update(float timeElapsed);

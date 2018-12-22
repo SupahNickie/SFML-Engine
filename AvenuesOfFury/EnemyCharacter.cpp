@@ -1,11 +1,21 @@
 #include "pch.h"
-#include <iostream>
 #include "EnemyCharacter.h"
 
-void EnemyCharacter::update(float elapsedTime) {
-	ActionStruct result = handleAI(elapsedTime);
-	delegateHandling(elapsedTime, result);
-	sprite.setPosition(position);
+void EnemyCharacter::update(float elapsedTime, PlayerCharacter** players) {
+	if (health <= 0) {
+		isActive = false;
+		deleteSprite();
+		return;
+	}
+	if (isActive) {
+		ActionStruct result = handleAI(elapsedTime, players);
+		delegateHandling(elapsedTime, result);
+		sprite.setPosition(position);
+	}
+}
+
+void EnemyCharacter::registerHit(int hp) {
+	health -= hp;
 }
 
 void EnemyCharacter::handleMove(float elapsedTime, int moveType) {

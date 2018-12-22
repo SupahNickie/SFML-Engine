@@ -3,11 +3,11 @@
 
 void Engine::update(float timeElapsed) {
 	for (int i = 0; i < numPlayers; ++i) {
-		players[i]->update(timeElapsed);
+		players[i]->update(timeElapsed, enemies, numEnemies);
 	}
-	for (int i = 0; i < numSprites; ++i) {
-		if (sprites[i]->isActive) {
-			sprites[i]->update(timeElapsed);
+	for (int i = 0; i < numEnemies; ++i) {
+		if (enemies[i]->isActive) {
+			enemies[i]->update(timeElapsed, players);
 		}
 	}
 }

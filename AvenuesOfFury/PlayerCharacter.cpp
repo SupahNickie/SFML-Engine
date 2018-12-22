@@ -2,7 +2,7 @@
 #include "PlayerCharacter.h"
 #include "SpriteHolder.h"
 
-void PlayerCharacter::update(float elapsedTime) {
+void PlayerCharacter::update(float elapsedTime, EnemyCharacter** enemies, int numEnemies) {
 	if (primaryAttackPressed) {
 		handleAttack(elapsedTime, ATTACK_1);
 	}
@@ -45,6 +45,14 @@ void PlayerCharacter::update(float elapsedTime) {
 	}
 
 	sprite.setPosition(position);
+
+	for (int i = 0; i < numEnemies; ++i) {
+		if (enemies[i]->isActive) {
+			if (hits(enemies [i])) {
+				enemies[i]->registerHit(1);
+			}
+		}
+	}
 }
 
 void PlayerCharacter::handleMove(float elapsedTime, int moveType) {

@@ -9,7 +9,7 @@ void Engine::input() {
 				window.close();
 			}
 			if (Keyboard::isKeyPressed(Keyboard::BackSpace)) {
-				sprites[0]->deleteSprite();
+				enemies[0]->deleteSprite();
 			}
 		}
 	}

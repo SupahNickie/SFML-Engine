@@ -52,5 +52,5 @@ protected:
 	virtual void handleIdle(float elapsedTime, int idleType) = 0;
 public:
 	void flipHorizontally();
-	virtual void update(float elapsedTime) = 0;
+	bool hits(Character* otherChar);
 };

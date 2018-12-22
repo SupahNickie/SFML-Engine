@@ -1,6 +1,11 @@
 #pragma once
-#include "Character.h"
+#ifndef PLAYER_CHARACTER_H
+#define PLAYER_CHARACTER_H
 
+#include "Character.h"
+#include "EnemyCharacter.h"
+
+class EnemyCharacter;
 class PlayerCharacter : public Character {
 protected:
 	bool upPressed;
@@ -16,5 +21,7 @@ private:
 	void handleIdle(float elapsedTime, int idleType);
 public:
 	virtual void handleInput() = 0;
-	void update(float elapsedTime);
+	void update(float elapsedTime, EnemyCharacter** enemies, int numEnemies);
 };
+
+#endif

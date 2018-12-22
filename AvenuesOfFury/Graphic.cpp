@@ -3,12 +3,22 @@
 #include "SpriteHolder.h"
 #include "TextureHolder.h"
 
+using namespace sf;
+
+void Graphic::flipHorizontally() {
+	sprite.scale(-1, 1);
+}
+
 void Graphic::setPosition(Vector2f newPosition) {
 	position = newPosition;
 }
 
-void Graphic::flipHorizontally() {
-	sprite.scale(-1, 1);
+FloatRect Graphic::getPosition() {
+	return sprite.getGlobalBounds();
+}
+
+Vector2f Graphic::getCenter() {
+	return position;
 }
 
 void Graphic::deleteSprite() {

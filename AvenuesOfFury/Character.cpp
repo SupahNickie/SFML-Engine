@@ -1,4 +1,5 @@
 #include "pch.h"
+#include <iostream>
 #include "Character.h"
 #include "SpriteHolder.h"
 
@@ -6,6 +7,11 @@ void Character::flipHorizontally() {
 	Graphic::flipHorizontally();
 	facingLeft = !facingLeft;
 	facingRight = !facingRight;
+}
+
+bool Character::hits(Character* otherChar) {
+	if (this->spriteState != SpriteState::ATTACKING) return false;
+	return this->getPosition().intersects(otherChar->getPosition());
 }
 
 void Character::renderMove(float elapsedTime, int moveType) {

@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "Garnet.h"
+#include "Globals.h"
 #include "TextureHolder.h"
 #include "SpriteHolder.h"
 
@@ -18,18 +19,27 @@ Garnet::Garnet() {
 	spriteName = "garnet";
 	isActive = true;
 
+	health = 500;
+	aggression = 1500;
+	defense = 200;
+
 	SpriteHolder::initSprites("character", spriteName);
-	resetMoveFrame(MOVE_1);
-	resetAttackFrame(ATTACK_1);
-	resetIdleFrame(IDLE_1);
+	resetMoveFrame(MOVE_WALK);
+	resetAttackFrame(ATTACK_SLAP);
+	resetIdleFrame(IDLE_HAIR);
 
 	sprite.scale(Vector2f(4.0f, 4.0f));
-	SpriteHolder::setSprite(sprite, spriteName, "idle", IDLE_1, idleFrame);
+	SpriteHolder::setSprite(sprite, spriteName, "idle", IDLE_HAIR, idleFrame);
 }
 
-ActionStruct Garnet::handleAI(float elapsedTime) {
+ActionStruct Garnet::handleAI(float elapsedTime, PlayerCharacter** players) {
 	ActionStruct output;
+
+	
+
 	output.actionType = Globals::ActionType::IDLE;
-	output.action = IDLE_1;
+	output.action = IDLE_HAIR;
+
+
 	return output;
 }

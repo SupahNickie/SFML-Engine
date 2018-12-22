@@ -27,10 +27,10 @@ void Engine::run() {
 	++numPlayers;
 	players[1]->setPosition(Vector2f(250, 400));
 
-	sprites = new Character*[100];
-	sprites[0] = new Garnet;
-	++numSprites;
-	sprites[0]->setPosition(Vector2f(500, 400));
+	enemies = new EnemyCharacter*[100];
+	enemies[0] = new Garnet;
+	++numEnemies;
+	enemies[0]->setPosition(Vector2f(500, 400));
 
 	while (window.isOpen()) {
 		Time dt = clock.restart();
