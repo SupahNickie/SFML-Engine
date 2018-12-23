@@ -26,7 +26,10 @@ void Character::updateFrameState(float elapsedTime) {
 		if (currentFrame >= SpriteHolder::getMaxFramesForAction(spriteName, currentAction, currentActionType) && !spriteCycleDown) {
 			--currentFrame;
 			spriteCycleDown = true;
-			if (!animationCycle) resetFrameState();
+			if (!animationCycle) {
+				resetFrameState();
+				currentActionDone = true;
+			}
 		}
 		else if (currentFrame <= 0 && spriteCycleDown) {
 			++currentFrame;

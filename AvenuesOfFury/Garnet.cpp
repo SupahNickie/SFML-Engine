@@ -31,13 +31,9 @@ Garnet::Garnet() {
 
 void Garnet::handleAI(float elapsedTime, PlayerCharacter** players) {
 	if (currentActionDone) {
+		spriteState = Globals::ActionType::IDLE;
 		currentAction = "idle";
 		currentActionType = IDLE_HAIR;
 		resetFrameState();
-	}
-
-	if (spriteState == Globals::ActionType::INJURE) {
-		currentAction = "injure";
-		currentActionType = INJURE_1;
 	}
 }
