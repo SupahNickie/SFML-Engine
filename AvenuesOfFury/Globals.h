@@ -8,7 +8,7 @@ using namespace std;
 
 class Globals {
 public:
-	enum class ActionType { MOVE, ATTACK, IDLE, NONE };
+	enum class ActionType { MOVE, ATTACK, IDLE, INJURE, NONE };
 
 	static ActionType actionStringToEnum(string const& action);
 };

@@ -18,16 +18,10 @@ protected:
 	int health = 0;
 	int aggression = 0; // minimum milliseconds before attacking again
 	int defense = 0; // minimum milliseconds "reaction time" to player attack
-
-	void handleMove(float elapsedTime, int moveType);
-	void handleAttack(float elapsedTime, int attackType);
-	void handleIdle(float elapsedTime, int idleType);
-private:
-	void delegateHandling(float elapsedTime, ActionStruct toRender);
 public:
 	void update(float elapsedTime, PlayerCharacter** players);
-	void registerHit(int hp);
-	virtual ActionStruct handleAI(float elapsedTime, PlayerCharacter** players) = 0;
+	void registerHit(int hp, float elapsedTime);
+	virtual void handleAI(float elapsedTime, PlayerCharacter** players) = 0;
 };
 
 #endif

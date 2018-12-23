@@ -16,9 +16,7 @@ protected:
 	bool secondaryAttackPressed;
 	bool attackDisabled = false;
 private:
-	void handleMove(float elapsedTime, int moveType);
-	void handleAttack(float elapsedTime, int attackType);
-	void handleIdle(float elapsedTime, int idleType);
+	void handleAttack();
 public:
 	virtual void handleInput() = 0;
 	void update(float elapsedTime, EnemyCharacter** enemies, int numEnemies);

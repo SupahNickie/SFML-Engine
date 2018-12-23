@@ -8,14 +8,10 @@ Garnet::Garnet() {
 	MS_PER_FRAME = 100;
 	texturePath = "graphics/characters/garnet_sheet.png";
 	sprite = Sprite(TextureHolder::getTexture(texturePath));
-	spriteState = SpriteState::IDLE;
+	spriteState = Globals::ActionType::IDLE;
 	facingLeft = false;
 	facingRight = true;
 	speed = 500;
-	animationCycle = false;
-	moveSpriteCycleDown = false;
-	attackSpriteCycleDown = false;
-	idleSpriteCycleDown = false;
 	spriteName = "garnet";
 	isActive = true;
 
@@ -24,22 +20,24 @@ Garnet::Garnet() {
 	defense = 200;
 
 	SpriteHolder::initSprites("character", spriteName);
-	resetMoveFrame(MOVE_WALK);
-	resetAttackFrame(ATTACK_SLAP);
-	resetIdleFrame(IDLE_HAIR);
-
 	sprite.scale(Vector2f(4.0f, 4.0f));
-	SpriteHolder::setSprite(sprite, spriteName, "idle", IDLE_HAIR, idleFrame);
+
+	animationCycle = false;
+	currentAction = "idle";
+	currentActionType = IDLE_HAIR;
+	resetFrameState();
+	render();
 }
 
-ActionStruct Garnet::handleAI(float elapsedTime, PlayerCharacter** players) {
-	ActionStruct output;
+void Garnet::handleAI(float elapsedTime, PlayerCharacter** players) {
+	if (currentActionDone) {
+		currentAction = "idle";
+		currentActionType = IDLE_HAIR;
+		resetFrameState();
+	}
 
-	
-
-	output.actionType = Globals::ActionType::IDLE;
-	output.action = IDLE_HAIR;
-
-
-	return output;
+	if (spriteState == Globals::ActionType::INJURE) {
+		currentAction = "injure";
+		currentActionType = INJURE_1;
+	}
 }

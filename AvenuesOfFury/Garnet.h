@@ -10,5 +10,5 @@ protected:
 
 public:
 	Garnet();
-	ActionStruct handleAI(float elapsedTime, PlayerCharacter** players);
+	void handleAI(float elapsedTime, PlayerCharacter** players);
 };

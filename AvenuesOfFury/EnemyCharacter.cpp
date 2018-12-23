@@ -8,30 +8,19 @@ void EnemyCharacter::update(float elapsedTime, PlayerCharacter** players) {
 		return;
 	}
 	if (isActive) {
-		ActionStruct result = handleAI(elapsedTime, players);
-		delegateHandling(elapsedTime, result);
+		updateFrameState(elapsedTime);
+		handleAI(elapsedTime, players);
 		sprite.setPosition(position);
+		render();
 	}
 }
 
-void EnemyCharacter::registerHit(int hp) {
+void EnemyCharacter::registerHit(int hp, float elapsedTime) {
+	if (spriteState != Globals::ActionType::INJURE) {
+		spriteState = Globals::ActionType::INJURE;
+		currentAction = "injure";
+		currentActionType = INJURE_1;
+		resetFrameState();
+	}
 	health -= hp;
-}
-
-void EnemyCharacter::handleMove(float elapsedTime, int moveType) {
-	renderMove(elapsedTime, moveType);
-}
-
-void EnemyCharacter::handleAttack(float elapsedTime, int attackType) {
-	renderAttack(elapsedTime, attackType);
-}
-
-void EnemyCharacter::handleIdle(float elapsedTime, int idleType) {
-	renderIdle(elapsedTime, idleType);
-}
-
-void EnemyCharacter::delegateHandling(float elapsedTime, ActionStruct toRender) {
-	if (toRender.actionType == Globals::ActionType::MOVE) handleMove(elapsedTime, toRender.action);
-	if (toRender.actionType == Globals::ActionType::ATTACK) handleAttack(elapsedTime, toRender.action);
-	if (toRender.actionType == Globals::ActionType::IDLE) handleIdle(elapsedTime, toRender.action);
 }
