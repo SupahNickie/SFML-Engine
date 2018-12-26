@@ -28,23 +28,17 @@ void EnemyCharacter::turnToFaceFocusChar() {
 }
 
 void EnemyCharacter::attack(float elapsedTime) {
-	spriteState = Globals::ActionType::ATTACK;
-	if (timeSinceAttackBegan != 0) timeSinceAttackBegan += elapsedTime * 1000;
-	if (timeSinceAttackBegan > 1000) {
-		timeSinceAttackBegan = 0;
-		currentActionDone = true;
-		attackDisabled = false;
-		return;
+	if (timeSinceAttackBegan == 0) {
+		spriteState = Globals::ActionType::ATTACK;
+		currentAction = "attack";
+		currentActionType = ATTACK_1;
+		resetFrameState();
+		++timeSinceAttackBegan;
 	}
-	if (!attackDisabled && hits(focusChar)) {
-		if (timeSinceAttackBegan == 0) {
-			currentAction = "attack";
-			currentActionType = ATTACK_1;
-			resetFrameState();
-			++timeSinceAttackBegan;
-			attackDisabled = true;
-		}
-		focusChar->registerHit(1, elapsedTime);
+	timeSinceAttackBegan += elapsedTime * 1000;
+	if (timeSinceAttackBegan > (MS_PER_FRAME * 2) && !attackDisabled) {
+		attackDisabled = true;
+		focusChar->registerHit(attackPower[currentActionType], elapsedTime);
 		focusChar->disableInputs();
 	}
 }
@@ -53,9 +47,19 @@ void EnemyCharacter::handleAI(float elapsedTime, PlayerCharacter** players) {
 	timeSinceDecision += elapsedTime * 1000;
 	if (spriteState != Globals::ActionType::ATTACK) timeSinceAttackEnded += elapsedTime * 1000;
 	if (currentActionDone) {
+		if (spriteState == Globals::ActionType::ATTACK) timeSinceAttackEnded = 0;
 		spriteState = Globals::ActionType::IDLE;
 		currentAction = "idle";
 		currentActionType = IDLE_1;
 		resetFrameState();
+		attackDisabled = false;
+		timeSinceAttackBegan = 0;
+	}
+	if (!attackDisabled &&
+		(timeSinceAttackEnded > aggression) &&
+		spriteState != Globals::ActionType::INJURE &&
+		hits(focusChar)
+		) {
+		attack(elapsedTime);
 	}
 }

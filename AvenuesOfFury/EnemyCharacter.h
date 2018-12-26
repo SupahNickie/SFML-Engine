@@ -2,6 +2,7 @@
 #ifndef ENEMY_CHARACTER_H
 #define ENEMY_CHARACTER_H
 
+#include <vector>
 #include "Character.h"
 #include "PlayerCharacter.h"
 
@@ -16,6 +17,7 @@ protected:
 	float varianceHealth = 0.0f;
 	float varianceAggression = 0.0f;
 	float varianceDefensiveness = 0.0f;
+	vector<int> attackPower;
 	int aggression = 0; // minimum milliseconds before attacking again
 	int defense = 0; // minimum milliseconds "reaction time" to player attack
 public:

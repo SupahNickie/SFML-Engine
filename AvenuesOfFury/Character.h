@@ -10,6 +10,7 @@ protected:
 	FloatRect hitbox;
 
 	int MS_PER_FRAME = 50;
+	int STUN_LENGTH = 100;
 	int const MOVE_1 = 0;
 	int const ATTACK_1 = 0;
 	int const ATTACK_2 = 1;

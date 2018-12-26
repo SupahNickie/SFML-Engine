@@ -3,10 +3,11 @@
 #include "Globals.h"
 #include "TextureHolder.h"
 #include "SpriteHolder.h"
-#include <iostream>
 
 Garnet::Garnet(PlayerCharacter** players) {
 	MS_PER_FRAME = 100;
+	attackPower = vector<int>(1);
+	attackPower[0] = 2000;
 	texturePath = "graphics/characters/garnet_sheet.png";
 	sprite = Sprite(TextureHolder::getTexture(texturePath));
 	spriteState = Globals::ActionType::IDLE;
@@ -17,7 +18,7 @@ Garnet::Garnet(PlayerCharacter** players) {
 	isActive = true;
 
 	health = 500;
-	aggression = 1500;
+	aggression = 300;
 	defense = 200;
 
 	focusChar = players[1];
@@ -34,12 +35,4 @@ Garnet::Garnet(PlayerCharacter** players) {
 
 void Garnet::handleAI(float elapsedTime, PlayerCharacter** players) {
 	EnemyCharacter::handleAI(elapsedTime, players);
-
-	if (timeSinceDecision > 2000) {
-
-	}
-
-	if (timeSinceAttackEnded > 500) {
-		attack(elapsedTime);
-	}
 }

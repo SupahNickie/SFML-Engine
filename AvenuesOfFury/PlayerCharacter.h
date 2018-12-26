@@ -8,8 +8,6 @@
 class EnemyCharacter;
 class PlayerCharacter : public Character {
 protected:
-	int STUN_LENGTH = 100;
-
 	bool upPressed;
 	bool downPressed;
 	bool leftPressed;

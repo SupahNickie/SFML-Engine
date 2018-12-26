@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Character.h"
 #include "SpriteHolder.h"
+#include <iostream>
 
 void Character::flipHorizontally() {
 	Graphic::flipHorizontally();
@@ -9,7 +10,6 @@ void Character::flipHorizontally() {
 }
 
 bool Character::hits(Character* otherChar) {
-	if (this->spriteState != Globals::ActionType::ATTACK) return false;
 	return this->getPosition().intersects(otherChar->getPosition());
 }
 
