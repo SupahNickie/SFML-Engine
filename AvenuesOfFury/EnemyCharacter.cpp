@@ -27,33 +27,25 @@ void EnemyCharacter::turnToFaceFocusChar() {
 	}
 }
 
-void EnemyCharacter::registerHit(int hp, float elapsedTime) {
-	if (spriteState != Globals::ActionType::INJURE) {
-		spriteState = Globals::ActionType::INJURE;
-		currentAction = "injure";
-		currentActionType = INJURE_1;
-		resetFrameState();
-	}
-	health -= hp;
-}
-
 void EnemyCharacter::attack(float elapsedTime) {
-	cout << "IN ATTACK FUNCTION \n";
 	spriteState = Globals::ActionType::ATTACK;
 	if (timeSinceAttackBegan != 0) timeSinceAttackBegan += elapsedTime * 1000;
 	if (timeSinceAttackBegan > 1000) {
 		timeSinceAttackBegan = 0;
 		currentActionDone = true;
+		attackDisabled = false;
 		return;
 	}
-	if (hits(focusChar)) {
+	if (!attackDisabled && hits(focusChar)) {
 		if (timeSinceAttackBegan == 0) {
 			currentAction = "attack";
 			currentActionType = ATTACK_1;
 			resetFrameState();
 			++timeSinceAttackBegan;
+			attackDisabled = true;
 		}
-		cout << "HIT DETECTED!\n";
+		focusChar->registerHit(1, elapsedTime);
+		focusChar->disableInputs();
 	}
 }
 

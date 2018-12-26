@@ -3,6 +3,33 @@
 #include "SpriteHolder.h"
 
 void PlayerCharacter::update(float elapsedTime, EnemyCharacter** enemies, int numEnemies) {
+	if (spriteState == Globals::ActionType::ATTACK) {
+		for (int i = 0; i < numEnemies; ++i) {
+			if (enemies[i]->isActive) {
+				if (!attackDisabled && hits(enemies[i])) {
+					enemies[i]->registerHit(1, elapsedTime);
+				}
+			}
+		}
+	}
+
+	updateFrameState(elapsedTime);
+	sprite.setPosition(position);
+	render();
+
+	if (inputsDisabled) {
+		timeSinceLastAction += elapsedTime * 1000;
+		if (timeSinceLastAction <= STUN_LENGTH) {
+			return;
+		}
+		timeSinceLastAction = 0;
+		inputsDisabled = false;
+		spriteState = Globals::ActionType::IDLE;
+		currentAction = "idle";
+		currentActionType = IDLE_1;
+		resetFrameState();
+	}
+
 	if (rightPressed && !leftPressed) {
 		position.x += speed * elapsedTime;
 		if (!facingRight) flipHorizontally();
@@ -50,8 +77,9 @@ void PlayerCharacter::update(float elapsedTime, EnemyCharacter** enemies, int nu
 	}
 
 	if (primaryAttackPressed) {
-		handleAttack();
+		handleAttack(elapsedTime);
 		if (!attackDisabled) {
+			timeSinceLastAction = 0;
 			currentAction = "attack";
 			if (currentActionType != ATTACK_1) {
 				currentActionType = ATTACK_1;
@@ -64,8 +92,9 @@ void PlayerCharacter::update(float elapsedTime, EnemyCharacter** enemies, int nu
 		}
 	}
 	else if (secondaryAttackPressed) {
-		handleAttack();
+		handleAttack(elapsedTime);
 		if (!attackDisabled) {
+			timeSinceLastAction = 0;
 			currentAction = "attack";
 			if (currentActionType != ATTACK_2) {
 				currentActionType = ATTACK_2;
@@ -94,20 +123,13 @@ void PlayerCharacter::update(float elapsedTime, EnemyCharacter** enemies, int nu
 			resetFrameState();
 		}
 	}
-
-	updateFrameState(elapsedTime);
-	sprite.setPosition(position);
-	render();
-
-	for (int i = 0; i < numEnemies; ++i) {
-		if (enemies[i]->isActive) {
-			if (hits(enemies [i])) {
-				enemies[i]->registerHit(1, elapsedTime);
-			}
-		}
-	}
 }
 
-void PlayerCharacter::handleAttack() {
+void PlayerCharacter::disableInputs() {
+	inputsDisabled = true;
+	timeSinceLastAction = 0;
+}
 
+void PlayerCharacter::handleAttack(float elapsedTime) {
+	timeSinceLastAction += elapsedTime * 1000;
 }

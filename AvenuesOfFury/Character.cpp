@@ -13,6 +13,16 @@ bool Character::hits(Character* otherChar) {
 	return this->getPosition().intersects(otherChar->getPosition());
 }
 
+void Character::registerHit(int hp, float elapsedTime) {
+	if (spriteState != Globals::ActionType::INJURE) {
+		spriteState = Globals::ActionType::INJURE;
+		currentAction = "injure";
+		currentActionType = INJURE_1;
+		resetFrameState();
+	}
+	health -= hp;
+}
+
 void Character::resetFrameState() {
 	spriteCycleDown = false;
 	currentActionDone = false;

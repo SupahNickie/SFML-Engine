@@ -5,5 +5,4 @@ class Link : public PlayerCharacter {
 public:
 	Link();
 	void handleInput();
-	void setSecondPlayer();
 };

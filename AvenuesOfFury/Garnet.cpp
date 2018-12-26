@@ -20,7 +20,7 @@ Garnet::Garnet(PlayerCharacter** players) {
 	aggression = 1500;
 	defense = 200;
 
-	focusChar = players[0];
+	focusChar = players[1];
 
 	SpriteHolder::initSprites("character", spriteName);
 	sprite.scale(Vector2f(4.0f, 4.0f));

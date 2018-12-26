@@ -13,6 +13,7 @@ Skate::Skate() {
 	facingLeft = false;
 	facingRight = true;
 	speed = 700;
+	health = 4000;
 	spriteName = "skate";
 	isActive = true;
 
@@ -24,11 +25,6 @@ Skate::Skate() {
 	currentActionType = IDLE_1;
 	resetFrameState();
 	render();
-
-}
-
-void Skate::setSecondPlayer() {
-	speed = 400;
 }
 
 void Skate::handleInput() {

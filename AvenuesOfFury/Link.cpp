@@ -24,10 +24,6 @@ Link::Link() {
 	render();
 }
 
-void Link::setSecondPlayer() {
-	speed = 400;
-}
-
 void Link::handleInput() {
 	Keyboard::isKeyPressed(Keyboard::W) ? upPressed = true : upPressed = false;
 	Keyboard::isKeyPressed(Keyboard::S) ? downPressed = true : downPressed = false;

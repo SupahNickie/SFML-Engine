@@ -5,5 +5,4 @@ class Skate : public PlayerCharacter {
 public:
 	Skate();
 	void handleInput();
-	void setSecondPlayer();
 };

@@ -21,6 +21,8 @@ protected:
 	bool facingLeft;
 	bool facingRight;
 	bool jumping;
+	int health = 0;
+	bool attackDisabled = false;
 
 	bool currentActionDone = false;
 	int currentFrame = 0;
@@ -35,4 +37,5 @@ protected:
 public:
 	void flipHorizontally();
 	bool hits(Character* otherChar);
+	void registerHit(int hp, float elapsedTime);
 };

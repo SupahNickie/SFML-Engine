@@ -8,18 +8,22 @@
 class EnemyCharacter;
 class PlayerCharacter : public Character {
 protected:
+	int STUN_LENGTH = 100;
+
 	bool upPressed;
 	bool downPressed;
 	bool leftPressed;
 	bool rightPressed;
 	bool primaryAttackPressed;
 	bool secondaryAttackPressed;
-	bool attackDisabled = false;
+	bool inputsDisabled = false;
+	int timeSinceLastAction = 0;
 private:
-	void handleAttack();
+	void handleAttack(float elapsedTime);
 public:
 	virtual void handleInput() = 0;
 	void update(float elapsedTime, EnemyCharacter** enemies, int numEnemies);
+	void disableInputs();
 };
 
 #endif
