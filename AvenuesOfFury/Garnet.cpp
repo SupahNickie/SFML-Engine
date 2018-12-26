@@ -4,7 +4,7 @@
 #include "TextureHolder.h"
 #include "SpriteHolder.h"
 
-Garnet::Garnet() {
+Garnet::Garnet(PlayerCharacter** players) {
 	MS_PER_FRAME = 100;
 	texturePath = "graphics/characters/garnet_sheet.png";
 	sprite = Sprite(TextureHolder::getTexture(texturePath));
@@ -18,6 +18,8 @@ Garnet::Garnet() {
 	health = 500;
 	aggression = 1500;
 	defense = 200;
+
+	focusChar = players[0];
 
 	SpriteHolder::initSprites("character", spriteName);
 	sprite.scale(Vector2f(4.0f, 4.0f));

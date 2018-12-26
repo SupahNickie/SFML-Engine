@@ -9,9 +9,20 @@ void EnemyCharacter::update(float elapsedTime, PlayerCharacter** players) {
 	}
 	if (isActive) {
 		updateFrameState(elapsedTime);
+		turnToFaceFocusChar();
 		handleAI(elapsedTime, players);
 		sprite.setPosition(position);
 		render();
+	}
+}
+
+void EnemyCharacter::turnToFaceFocusChar() {
+	bool playerToRightOfSelf = focusChar->getCenter().x > this->getCenter().x;
+	if (playerToRightOfSelf && facingLeft) {
+		flipHorizontally();
+	}
+	else if (!playerToRightOfSelf && facingRight) {
+		flipHorizontally();
 	}
 }
 

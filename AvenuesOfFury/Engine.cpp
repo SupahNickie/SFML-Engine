@@ -28,7 +28,7 @@ void Engine::run() {
 	players[1]->setPosition(Vector2f(250, 400));
 
 	enemies = new EnemyCharacter*[100];
-	enemies[0] = new Garnet;
+	enemies[0] = new Garnet(players);
 	++numEnemies;
 	enemies[0]->setPosition(Vector2f(500, 400));
 

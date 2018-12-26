@@ -9,6 +9,6 @@ protected:
 	int const IDLE_HAIR = IDLE_1;
 
 public:
-	Garnet();
+	Garnet(PlayerCharacter** players);
 	void handleAI(float elapsedTime, PlayerCharacter** players);
 };
