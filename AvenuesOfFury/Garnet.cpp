@@ -3,6 +3,7 @@
 #include "Globals.h"
 #include "TextureHolder.h"
 #include "SpriteHolder.h"
+#include <iostream>
 
 Garnet::Garnet(PlayerCharacter** players) {
 	MS_PER_FRAME = 100;
@@ -32,10 +33,13 @@ Garnet::Garnet(PlayerCharacter** players) {
 }
 
 void Garnet::handleAI(float elapsedTime, PlayerCharacter** players) {
-	if (currentActionDone) {
-		spriteState = Globals::ActionType::IDLE;
-		currentAction = "idle";
-		currentActionType = IDLE_HAIR;
-		resetFrameState();
+	EnemyCharacter::handleAI(elapsedTime, players);
+
+	if (timeSinceDecision > 2000) {
+
+	}
+
+	if (timeSinceAttackEnded > 500) {
+		attack(elapsedTime);
 	}
 }

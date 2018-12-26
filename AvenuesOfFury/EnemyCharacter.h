@@ -23,6 +23,7 @@ public:
 	void update(float elapsedTime, PlayerCharacter** players);
 	void turnToFaceFocusChar();
 	void registerHit(int hp, float elapsedTime);
+	void attack(float elapsedTime);
 	virtual void handleAI(float elapsedTime, PlayerCharacter** players) = 0;
 };
 
