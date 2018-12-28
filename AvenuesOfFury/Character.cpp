@@ -33,7 +33,13 @@ void Character::resetFrameState() {
 void Character::updateFrameState(float elapsedTime) {
 	timeSinceLastFrame += elapsedTime * 1000;
 	if (timeSinceLastFrame > MS_PER_FRAME) {
-		if (currentFrame >= SpriteHolder::getMaxFramesForAction(spriteName, currentAction, currentActionType) && !spriteCycleDown) {
+		int maxFrames = SpriteHolder::getMaxFramesForAction(spriteName, currentAction, currentActionType);
+		if (0 == maxFrames) {
+			// do nothing, no animation needed
+			timeSinceLastFrame = 0;
+			return;
+		}
+		else if (currentFrame >= maxFrames && !spriteCycleDown) {
 			--currentFrame;
 			spriteCycleDown = true;
 			if (!animationCycle) {

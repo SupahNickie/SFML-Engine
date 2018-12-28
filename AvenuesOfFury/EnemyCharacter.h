@@ -10,6 +10,7 @@ class PlayerCharacter;
 class EnemyCharacter : public Character {
 protected:
 	PlayerCharacter* focusChar;
+	bool deciding = false;
 	int timeSinceDecision = 0;
 	int timeSinceAttackBegan = 0;
 	int timeSinceAttackEnded = 0;

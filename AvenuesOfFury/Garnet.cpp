@@ -3,6 +3,7 @@
 #include "Globals.h"
 #include "TextureHolder.h"
 #include "SpriteHolder.h"
+#include <iostream>
 
 Garnet::Garnet(PlayerCharacter** players) {
 	MS_PER_FRAME = 100;
