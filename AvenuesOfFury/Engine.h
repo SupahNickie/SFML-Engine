@@ -1,5 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include "Globals.h"
 #include "TextureHolder.h"
 #include "SpriteHolder.h"
 #include "Link.h"
@@ -10,6 +11,7 @@ using namespace sf;
 
 class Engine {
 private:
+	Globals g;
 	TextureHolder th;
 	SpriteHolder sh;
 	RenderWindow window;

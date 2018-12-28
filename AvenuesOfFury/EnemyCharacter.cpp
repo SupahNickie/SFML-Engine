@@ -60,7 +60,7 @@ void EnemyCharacter::handleAI(float elapsedTime, PlayerCharacter** players) {
 		timeSinceAttackBegan = 0;
 	}
 
-	// Deciding
+	// Deciding which player to focus on, idle animation for a bit
 	if (deciding) {
 		if (timeSinceDecision == 0) {
 			spriteState = Globals::ActionType::IDLE;
@@ -115,19 +115,21 @@ void EnemyCharacter::handleAI(float elapsedTime, PlayerCharacter** players) {
 		resetFrameState();
 	}
 
-	// Move towards focused player
+	// Move towards focused player if they are not touching or within vertical threshold
 	if (spriteState == Globals::ActionType::MOVE) {
-		if (!hits(focusChar)) {
-			if (focusChar->getCenter().x > position.x) {
+		Vector2f focusCharCoords = focusChar->getCenter();
+		if ((abs(focusCharCoords.y - position.y) > (.015625f * Globals::getResolution().x)) ||
+			!hits(focusChar)) {
+			if (focusCharCoords.x > position.x) {
 				position.x += elapsedTime * speed;
 			}
-			else if (focusChar->getCenter().x < position.x) {
+			else if (focusCharCoords.x < position.x) {
 				position.x -= elapsedTime * speed;
 			}
-			if (focusChar->getCenter().y > position.y) {
+			if (focusCharCoords.y > position.y) {
 				position.y += elapsedTime * speed;
 			}
-			else if (focusChar->getCenter().y < position.y) {
+			else if (focusCharCoords.y < position.y) {
 					position.y -= elapsedTime * speed;
 			}
 		}

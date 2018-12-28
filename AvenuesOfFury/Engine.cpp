@@ -1,19 +1,17 @@
 #include "pch.h"
 #include "Engine.h"
+#include "Globals.h"
 
 using namespace sf;
 
 Engine::Engine() {
-	Vector2f resolution;
-	resolution.x = VideoMode::getDesktopMode().width / 2.0f;
-	resolution.y = VideoMode::getDesktopMode().height / 2.0f;
-	window.create(VideoMode(resolution.x, resolution.y), "Avenues of Fury", Style::Resize);
+	g.setResolution(VideoMode::getDesktopMode().width / 2.0f, VideoMode::getDesktopMode().height / 2.0f);
+	window.create(VideoMode(g.getResolution().x, g.getResolution().y), "Avenues of Fury", Style::Resize);
 
-	/*resolution.x = VideoMode::getDesktopMode().width;
-	resolution.y = VideoMode::getDesktopMode().height;
-	window.create(VideoMode(resolution.x, resolution.y), "Avenues of Fury", Style::Fullscreen);*/
+	//g.setResolution(VideoMode::getDesktopMode().width, VideoMode::getDesktopMode().height);
+	//window.create(VideoMode(g.getResolution().x, g.getResolution().y), "Avenues of Fury", Style::Fullscreen);
 
-	mainView.setSize(resolution);
+	mainView.setSize(g.getResolution());
 }
 
 void Engine::run() {

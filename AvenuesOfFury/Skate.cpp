@@ -12,13 +12,13 @@ Skate::Skate() {
 	spriteState = Globals::ActionType::IDLE;
 	facingLeft = false;
 	facingRight = true;
-	speed = 700;
+	speed = .33 * Globals::getResolution().x;
 	health = 4000;
 	spriteName = "skate";
 	isActive = true;
 
 	SpriteHolder::initSprites("character", spriteName);
-	sprite.scale(Vector2f(4.0f, 4.0f));
+	sprite.scale(Vector2f(4 * Globals::getScalingFactor(), 4 * Globals::getScalingFactor()));
 
 	animationCycle = false;
 	currentAction = "idle";

@@ -11,11 +11,13 @@ Link::Link() {
 	spriteState = Globals::ActionType::IDLE;
 	facingLeft = true;
 	facingRight = false;
-	speed = 700;
+	speed = .33 * Globals::getResolution().x;
+
 	spriteName = "link";
 	isActive = true;
 
 	SpriteHolder::initSprites("character", spriteName);
+	sprite.scale(Vector2f(Globals::getScalingFactor(), Globals::getScalingFactor()));
 	
 	animationCycle = true;
 	currentAction = "idle";

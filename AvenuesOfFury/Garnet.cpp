@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "Garnet.h"
-#include "Globals.h"
 #include "TextureHolder.h"
 #include "SpriteHolder.h"
 #include <iostream>
@@ -14,7 +13,7 @@ Garnet::Garnet(PlayerCharacter** players) {
 	spriteState = Globals::ActionType::IDLE;
 	facingLeft = false;
 	facingRight = true;
-	speed = 500;
+	speed = .25 * Globals::getResolution().x;
 	spriteName = "garnet";
 	isActive = true;
 
@@ -25,7 +24,7 @@ Garnet::Garnet(PlayerCharacter** players) {
 	focusChar = players[1];
 
 	SpriteHolder::initSprites("character", spriteName);
-	sprite.scale(Vector2f(4.0f, 4.0f));
+	sprite.scale(Vector2f(4 * Globals::getScalingFactor(), 4 * Globals::getScalingFactor()));
 
 	animationCycle = false;
 	currentAction = "idle";
