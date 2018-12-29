@@ -4,7 +4,7 @@
 #include "SpriteHolder.h"
 #include <iostream>
 
-Garnet::Garnet(PlayerCharacter** players) {
+Garnet::Garnet(vector<PlayerCharacter*> players) {
 	MS_PER_FRAME = 100;
 	attackPower = vector<int>(1);
 	attackPower[0] = 2000;
@@ -17,7 +17,7 @@ Garnet::Garnet(PlayerCharacter** players) {
 	spriteName = "garnet";
 	isActive = true;
 
-	health = 500;
+	health = 5000;
 	aggression = 300;
 	defense = 200;
 
@@ -33,6 +33,6 @@ Garnet::Garnet(PlayerCharacter** players) {
 	render();
 }
 
-void Garnet::handleAI(float elapsedTime, PlayerCharacter** players) {
+void Garnet::handleAI(float elapsedTime, vector<PlayerCharacter*> players) {
 	EnemyCharacter::handleAI(elapsedTime, players);
 }

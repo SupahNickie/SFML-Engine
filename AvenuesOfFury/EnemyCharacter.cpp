@@ -2,10 +2,9 @@
 #include "EnemyCharacter.h"
 #include <iostream>
 
-void EnemyCharacter::update(float elapsedTime, PlayerCharacter** players) {
+void EnemyCharacter::update(float elapsedTime, vector<PlayerCharacter*> players) {
 	if (health <= 0) {
 		isActive = false;
-		deleteSprite();
 		return;
 	}
 	if (isActive) {
@@ -43,7 +42,7 @@ void EnemyCharacter::attack(float elapsedTime) {
 	}
 }
 
-void EnemyCharacter::handleAI(float elapsedTime, PlayerCharacter** players) {
+void EnemyCharacter::handleAI(float elapsedTime, vector<PlayerCharacter*> players) {
 	if (spriteState != Globals::ActionType::ATTACK) timeSinceAttackEnded += elapsedTime * 1000;
 
 	// Resetting states after finishing current action

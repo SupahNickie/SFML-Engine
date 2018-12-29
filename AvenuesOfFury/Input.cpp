@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "Engine.h"
 
+using namespace std;
+
 void Engine::input() {
 	Event event;
 	while (window.pollEvent(event)) {
@@ -13,7 +15,5 @@ void Engine::input() {
 			}
 		}
 	}
-	for (int i = 0; i < numPlayers; ++i) {
-		players[i]->handleInput();
-	}
+	for_each(players.begin(), players.end(), [](PlayerCharacter* p) { p->handleInput(); });
 }

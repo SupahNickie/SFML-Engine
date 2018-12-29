@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 #include "EnemyCharacter.h"
 #include "PlayerCharacter.h"
 
@@ -9,6 +10,6 @@ protected:
 	int const IDLE_HAIR = IDLE_1;
 
 public:
-	Garnet(PlayerCharacter** players);
-	void handleAI(float elapsedTime, PlayerCharacter** players);
+	Garnet(vector<PlayerCharacter*> players);
+	void handleAI(float elapsedTime, vector<PlayerCharacter*> players);
 };

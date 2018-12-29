@@ -22,7 +22,9 @@ protected:
 	bool facingLeft;
 	bool facingRight;
 	bool jumping;
+
 	int health = 0;
+	vector<int> attackPower;
 	bool attackDisabled = false;
 
 	bool currentActionDone = false;

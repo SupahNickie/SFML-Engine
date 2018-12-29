@@ -2,15 +2,14 @@
 #include "PlayerCharacter.h"
 #include "SpriteHolder.h"
 
-void PlayerCharacter::update(float elapsedTime, EnemyCharacter** enemies, int numEnemies) {
+void PlayerCharacter::update(float elapsedTime, vector<EnemyCharacter*> enemies) {
 	if (spriteState == Globals::ActionType::ATTACK) {
-		for (int i = 0; i < numEnemies; ++i) {
-			if (enemies[i]->isActive) {
-				if (!attackDisabled && hits(enemies[i])) {
-					enemies[i]->registerHit(1, elapsedTime);
-				}
+		for_each(enemies.begin(), enemies.end(), [&](EnemyCharacter* e) { 
+			if (!attackDisabled && hits(e)) {
+				attackDisabled = true;
+				e->registerHit(attackPower[currentActionType], elapsedTime);
 			}
-		}
+		});
 	}
 
 	updateFrameState(elapsedTime);

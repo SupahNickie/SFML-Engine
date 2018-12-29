@@ -6,6 +6,9 @@
 Link::Link() {
 	texturePath = "graphics/characters/link_sheet.jpg";
 	sprite = Sprite(TextureHolder::getTexture(texturePath));
+	attackPower = vector<int>(2);
+	attackPower[0] = 1000;
+	attackPower[1] = 4000;
 	primaryAttackPressed = false;
 	secondaryAttackPressed = false;
 	spriteState = Globals::ActionType::IDLE;

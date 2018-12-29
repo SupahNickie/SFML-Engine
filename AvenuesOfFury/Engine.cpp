@@ -17,18 +17,24 @@ Engine::Engine() {
 void Engine::run() {
 	Clock clock;
 	
-	players = new PlayerCharacter*[2];
-	players[0] = new Link;
-	++numPlayers;
+	players = vector<PlayerCharacter*>(2);
+	Link link;
+	players[0] = &link;
 	players[0]->setPosition(Vector2f(100, 300));
-	players[1] = new Skate;
-	++numPlayers;
+	Skate skate;
+	players[1] = &skate;
 	players[1]->setPosition(Vector2f(250, 400));
 
-	enemies = new EnemyCharacter*[100];
-	enemies[0] = new Garnet(players);
-	++numEnemies;
+	enemies = vector<EnemyCharacter*>();
+	Garnet garnet(players);
+	enemies.push_back(&garnet);
 	enemies[0]->setPosition(Vector2f(500, 400));
+	Garnet garnet2(players);
+	enemies.push_back(&garnet2);
+	enemies[1]->setPosition(Vector2f(700, 300));
+	Garnet garnet3(players);
+	enemies.push_back(&garnet3);
+	enemies[2]->setPosition(Vector2f(300, 100));
 
 	while (window.isOpen()) {
 		Time dt = clock.restart();

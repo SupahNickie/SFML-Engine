@@ -2,6 +2,7 @@
 #ifndef PLAYER_CHARACTER_H
 #define PLAYER_CHARACTER_H
 
+#include <vector>
 #include "Character.h"
 #include "EnemyCharacter.h"
 
@@ -20,7 +21,7 @@ private:
 	void handleAttack(float elapsedTime);
 public:
 	virtual void handleInput() = 0;
-	void update(float elapsedTime, EnemyCharacter** enemies, int numEnemies);
+	void update(float elapsedTime, vector<EnemyCharacter*> enemies);
 	void disableInputs();
 };
 
