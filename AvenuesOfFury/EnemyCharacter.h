@@ -21,6 +21,7 @@ protected:
 	int aggression = 0; // minimum milliseconds before attacking again
 	int reactionSpeed = 0; // minimum milliseconds "reaction time" to player attack
 public:
+	EnemyCharacter(vector<PlayerCharacter*> players);
 	void update(float elapsedTime, vector<PlayerCharacter*> players);
 	void turnToFaceFocusChar();
 	void attack(float elapsedTime);

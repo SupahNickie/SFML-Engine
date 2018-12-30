@@ -24,7 +24,7 @@ void Engine::run() {
 	players[0]->setPosition(Vector2f(100, 300));
 	Skate skate;
 	players[1] = &skate;
-	players[1]->setPosition(Vector2f(250, 400));
+	players[1]->setPosition(Vector2f(800, 400));
 
 	enemies = vector<EnemyCharacter*>();
 	Garnet garnet(players);

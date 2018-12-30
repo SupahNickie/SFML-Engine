@@ -2,6 +2,15 @@
 #include "EnemyCharacter.h"
 #include <iostream>
 
+EnemyCharacter::EnemyCharacter(vector<PlayerCharacter*> players) {
+	attackPower = vector<int>(1);
+	focusChar = players[rand() % 2];
+	spriteState = Globals::ActionType::IDLE;
+	isActive = true;
+	currentAction = "idle";
+	currentActionType = IDLE_1;
+}
+
 void EnemyCharacter::update(float elapsedTime, vector<PlayerCharacter*> players) {
 	if (health <= 0) {
 		isActive = false;
