@@ -16,6 +16,7 @@ Engine::Engine() {
 
 void Engine::run() {
 	Clock clock;
+	srand(time(NULL));
 	
 	players = vector<PlayerCharacter*>(2);
 	Link link;

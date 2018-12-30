@@ -68,8 +68,8 @@ void EnemyCharacter::handleAI(float elapsedTime, vector<PlayerCharacter*> player
 			resetFrameState();
 
 			// get nearest player
-			Vector2f player1coords = players[0]->getCenter();
-			Vector2f player2coords = players[1]->getCenter();
+			Vector2f player1coords = players[0]->getPastPosition(reactionSpeed);
+			Vector2f player2coords = players[1]->getPastPosition(reactionSpeed);
 			float player1closeness = abs(abs(player1coords.x - position.x) - abs(player1coords.y - position.y));
 			float player2closeness = abs(abs(player2coords.x - position.x) - abs(player2coords.y - position.y));
 			if (player1closeness < player2closeness) {
@@ -116,7 +116,7 @@ void EnemyCharacter::handleAI(float elapsedTime, vector<PlayerCharacter*> player
 
 	// Move towards focused player if they are not touching or within vertical threshold
 	if (spriteState == Globals::ActionType::MOVE) {
-		Vector2f focusCharCoords = focusChar->getCenter();
+		Vector2f focusCharCoords = focusChar->getPastPosition(reactionSpeed);
 		if ((abs(focusCharCoords.y - position.y) > (.015625f * Globals::getResolution().x)) ||
 			!hits(focusChar)) {
 			if (focusCharCoords.x > position.x) {

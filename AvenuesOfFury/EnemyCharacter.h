@@ -14,12 +14,12 @@ protected:
 	int timeSinceDecision = 0;
 	int timeSinceAttackBegan = 0;
 	int timeSinceAttackEnded = 0;
-	float varianceSpeed = 0.0f;
-	float varianceHealth = 0.0f;
-	float varianceAggression = 0.0f;
-	float varianceDefensiveness = 0.0f;
+	int varianceSpeed = 0;
+	int varianceHealth = 0;
+	int varianceAggression = 0;
+	int varianceReaction = 0;
 	int aggression = 0; // minimum milliseconds before attacking again
-	int defense = 0; // minimum milliseconds "reaction time" to player attack
+	int reactionSpeed = 0; // minimum milliseconds "reaction time" to player attack
 public:
 	void update(float elapsedTime, vector<PlayerCharacter*> players);
 	void turnToFaceFocusChar();
