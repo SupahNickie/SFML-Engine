@@ -9,6 +9,8 @@ EnemyCharacter::EnemyCharacter(vector<PlayerCharacter*> players) {
 	isActive = true;
 	currentAction = "idle";
 	currentActionType = IDLE_1;
+	recalculateAggression();
+	recalculateDecisionSpeed(false);
 }
 
 void EnemyCharacter::update(float elapsedTime, vector<PlayerCharacter*> players) {
@@ -42,6 +44,7 @@ void EnemyCharacter::attack(float elapsedTime) {
 		currentActionType = ATTACK_1;
 		resetFrameState();
 		++timeSinceAttackBegan;
+		recalculateAggression();
 	}
 	timeSinceAttackBegan += elapsedTime * 1000;
 	if (timeSinceAttackBegan > STUN_LENGTH && !attackDisabled) {
@@ -49,6 +52,18 @@ void EnemyCharacter::attack(float elapsedTime) {
 		focusChar->registerHit(attackPower[currentActionType], elapsedTime);
 		focusChar->disableInputs();
 	}
+}
+
+void EnemyCharacter::recalculateAggression() {
+	varianceAggression = rand() % maxAggression;
+	aggression = baseAggression + varianceAggression;
+}
+
+void EnemyCharacter::recalculateDecisionSpeed(bool decisionState) {
+	deciding = decisionState;
+	timeSinceDecision = 0;
+	varianceDecision = rand() % maxDecisionSpeed;
+	decisionSpeed = baseDecisionSpeed + varianceDecision;
 }
 
 void EnemyCharacter::handleAI(float elapsedTime, vector<PlayerCharacter*> players) {
@@ -90,8 +105,7 @@ void EnemyCharacter::handleAI(float elapsedTime, vector<PlayerCharacter*> player
 			++timeSinceDecision;
 		}
 		if (timeSinceDecision > 500) {
-			timeSinceDecision = 0;
-			deciding = false;
+			recalculateDecisionSpeed(false);
 		}
 		timeSinceDecision += elapsedTime * 1000;
 		return;
@@ -109,9 +123,8 @@ void EnemyCharacter::handleAI(float elapsedTime, vector<PlayerCharacter*> player
 	}
 
 	// Check decision timer and act accordingly
-	if (timeSinceDecision > 3000) {
-		deciding = true;
-		timeSinceDecision = 0;
+	if (timeSinceDecision > decisionSpeed) {
+		recalculateDecisionSpeed(true);
 		return;
 	}
 

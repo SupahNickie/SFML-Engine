@@ -18,11 +18,10 @@ Garnet::Garnet(vector<PlayerCharacter*> players) : EnemyCharacter(players) {
 	speed = .25 * Globals::getResolution().x + varianceSpeed;
 	varianceHealth = rand() % 1000;
 	health = 5000 + varianceHealth;
-	varianceAggression = rand() % 100;
-	aggression = 200 + varianceAggression;
 	varianceReaction = (rand() % 250) + 50;
 	reactionSpeed = (150 + varianceReaction) + 25;
 	reactionSpeed -= reactionSpeed % 50;
+	maxDecisionSpeed = 2000;
 
 	SpriteHolder::initSprites("character", spriteName);
 	sprite.scale(Vector2f(4 * Globals::getScalingFactor(), 4 * Globals::getScalingFactor()));
