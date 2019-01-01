@@ -10,9 +10,6 @@ void Engine::input() {
 			if (Keyboard::isKeyPressed(Keyboard::Escape)) {
 				window.close();
 			}
-			if (Keyboard::isKeyPressed(Keyboard::BackSpace)) {
-				enemies[0]->deleteSprite();
-			}
 		}
 	}
 	for_each(players.begin(), players.end(), [](PlayerCharacter* p) { p->handleInput(); });

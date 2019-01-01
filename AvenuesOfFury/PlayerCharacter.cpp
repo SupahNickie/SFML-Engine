@@ -3,28 +3,8 @@
 #include "SpriteHolder.h"
 
 void PlayerCharacter::update(float elapsedTime, vector<EnemyCharacter*> enemies) {
-	if (timeSincePastPositionsUpdate > 50) {
-		int positionToUpdate = 500;
-		int positionToGrab = 450;
-		while (positionToUpdate > 0) {
-			pastPositions[positionToUpdate] = pastPositions[positionToGrab];
-			positionToUpdate = positionToGrab;
-			positionToGrab -= 50;
-		}
-		pastPositions[0] = position;
-		timeSincePastPositionsUpdate = 0;
-	}
-	timeSincePastPositionsUpdate += elapsedTime * 1000;
-
-	if (spriteState == Globals::ActionType::ATTACK) {
-		for_each(enemies.begin(), enemies.end(), [&](EnemyCharacter* e) { 
-			if (!attackDisabled && hits(e)) {
-				attackDisabled = true;
-				e->registerHit(attackPower[currentActionType], elapsedTime);
-			}
-		});
-	}
-
+	updatePastPositions(elapsedTime);
+	hitEnemies(elapsedTime, enemies);
 	updateFrameState(elapsedTime);
 	sprite.setPosition(position);
 	render();
@@ -142,10 +122,36 @@ void PlayerCharacter::disableInputs() {
 	timeSinceLastAction = 0;
 }
 
-void PlayerCharacter::handleAttack(float elapsedTime) {
-	timeSinceLastAction += elapsedTime * 1000;
-}
-
 Vector2f PlayerCharacter::getPastPosition(int time) {
 	return pastPositions[time];
+}
+
+void PlayerCharacter::updatePastPositions(float elapsedTime) {
+	if (timeSincePastPositionsUpdate > 50) {
+		int positionToUpdate = 500;
+		int positionToGrab = 450;
+		while (positionToUpdate > 0) {
+			pastPositions[positionToUpdate] = pastPositions[positionToGrab];
+			positionToUpdate = positionToGrab;
+			positionToGrab -= 50;
+		}
+		pastPositions[0] = position;
+		timeSincePastPositionsUpdate = 0;
+	}
+	timeSincePastPositionsUpdate += elapsedTime * 1000;
+}
+
+void PlayerCharacter::hitEnemies(float elapsedTime, vector<EnemyCharacter*> enemies) {
+	if (spriteState == Globals::ActionType::ATTACK) {
+		for_each(enemies.begin(), enemies.end(), [&](EnemyCharacter* e) {
+			if (!attackDisabled && hits(e)) {
+				attackDisabled = true;
+				e->registerHit(attackPower[currentActionType], elapsedTime);
+			}
+		});
+	}
+}
+
+void PlayerCharacter::handleAttack(float elapsedTime) {
+	timeSinceLastAction += elapsedTime * 1000;
 }

@@ -18,13 +18,11 @@ void EnemyCharacter::update(float elapsedTime, vector<PlayerCharacter*> players)
 		isActive = false;
 		return;
 	}
-	if (isActive) {
-		updateFrameState(elapsedTime);
-		turnToFaceFocusChar();
-		handleAI(elapsedTime, players);
-		sprite.setPosition(position);
-		render();
-	}
+	updateFrameState(elapsedTime);
+	turnToFaceFocusChar();
+	handleAI(elapsedTime, players);
+	sprite.setPosition(position);
+	render();
 }
 
 void EnemyCharacter::turnToFaceFocusChar() {

@@ -37,6 +37,8 @@ private:
 		{0, Vector2f(0,0)}
 	};
 
+	void updatePastPositions(float elapsedTime);
+	void hitEnemies(float elapsedTime, vector<EnemyCharacter*> enemies);
 	void handleAttack(float elapsedTime);
 public:
 	virtual void handleInput() = 0;
