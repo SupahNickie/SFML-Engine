@@ -4,3 +4,4 @@ AvenuesOfFury/Debug
 *.vcxproj*
 *.dll
 *.sln
+.gitattributes
