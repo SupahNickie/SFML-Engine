@@ -9,7 +9,7 @@ protected:
 	int const ATTACK_SLAP = ATTACK_1;
 	int const IDLE_HAIR = IDLE_1;
 
+	bool handleAttacking(float elapsedTime);
 public:
 	Garnet(vector<PlayerCharacter*> players);
-	void handleAI(float elapsedTime, vector<PlayerCharacter*> players);
 };

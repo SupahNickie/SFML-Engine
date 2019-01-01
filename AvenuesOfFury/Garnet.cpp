@@ -31,6 +31,6 @@ Garnet::Garnet(vector<PlayerCharacter*> players) : EnemyCharacter(players) {
 	render();
 }
 
-void Garnet::handleAI(float elapsedTime, vector<PlayerCharacter*> players) {
-	EnemyCharacter::handleAI(elapsedTime, players);
+bool Garnet::handleAttacking(float elapsedTime) {
+	return basicAttack(elapsedTime);
 }

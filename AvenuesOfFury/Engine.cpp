@@ -1,15 +1,16 @@
 #include "pch.h"
 #include "Engine.h"
 #include "Globals.h"
+#include <iostream>
 
 using namespace sf;
 
 Engine::Engine() {
-	g.setResolution(VideoMode::getDesktopMode().width / 2.0f, VideoMode::getDesktopMode().height / 2.0f);
-	window.create(VideoMode(g.getResolution().x, g.getResolution().y), "Avenues of Fury", Style::Resize);
+//	g.setResolution(VideoMode::getDesktopMode().width / 2.0f, VideoMode::getDesktopMode().height / 2.0f);
+//	window.create(VideoMode(g.getResolution().x, g.getResolution().y), "Avenues of Fury", Style::Resize);
 
-	//g.setResolution(VideoMode::getDesktopMode().width, VideoMode::getDesktopMode().height);
-	//window.create(VideoMode(g.getResolution().x, g.getResolution().y), "Avenues of Fury", Style::Fullscreen);
+	g.setResolution(VideoMode::getDesktopMode().width, VideoMode::getDesktopMode().height);
+	window.create(VideoMode(g.getResolution().x, g.getResolution().y), "Avenues of Fury", Style::Fullscreen);
 
 	mainView.setSize(g.getResolution());
 }
@@ -40,6 +41,7 @@ void Engine::run() {
 	while (window.isOpen()) {
 		Time dt = clock.restart();
 		float dtAsSeconds = dt.asSeconds();
+		cout << "TIME: " << dtAsSeconds * 1000 << "\n";
 		input();
 		update(dtAsSeconds);
 		draw();

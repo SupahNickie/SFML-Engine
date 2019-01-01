@@ -66,10 +66,7 @@ void EnemyCharacter::recalculateDecisionSpeed(bool decisionState) {
 	decisionSpeed = baseDecisionSpeed + varianceDecision;
 }
 
-void EnemyCharacter::handleAI(float elapsedTime, vector<PlayerCharacter*> players) {
-	if (spriteState != Globals::ActionType::ATTACK) timeSinceAttackEnded += elapsedTime * 1000;
-
-	// Resetting states after finishing current action
+void EnemyCharacter::resetStateAfterFinishingAction() {
 	if (currentActionDone) {
 		if (spriteState == Globals::ActionType::ATTACK) {
 			timeSinceAttackEnded = 0;
@@ -82,9 +79,10 @@ void EnemyCharacter::handleAI(float elapsedTime, vector<PlayerCharacter*> player
 		attackDisabled = false;
 		timeSinceAttackBegan = 0;
 	}
+}
 
-	// Deciding which player to focus on, idle animation for a bit
-	if (deciding) {
+bool EnemyCharacter::handleDecidingState(float elapsedTime, vector<PlayerCharacter*> players) {
+	if (decisionSpeed != 0 && deciding) {
 		if (timeSinceDecision == 0) {
 			spriteState = Globals::ActionType::IDLE;
 			currentAction = "idle";
@@ -104,39 +102,48 @@ void EnemyCharacter::handleAI(float elapsedTime, vector<PlayerCharacter*> player
 			}
 			++timeSinceDecision;
 		}
-		if (timeSinceDecision > 500) {
+		if (timeSinceDecision > decisionSpeed) {
 			recalculateDecisionSpeed(false);
 		}
 		timeSinceDecision += elapsedTime * 1000;
-		return;
+		return true;
 	}
-	timeSinceDecision += elapsedTime * 1000;
+	else {
+		timeSinceDecision += elapsedTime * 1000;
+		return false;
+	}
+}
 
-	// Attacking
+bool EnemyCharacter::basicAttack(float elapsedTime) {
 	if (!attackDisabled &&
 		(timeSinceAttackEnded > aggression) &&
 		spriteState != Globals::ActionType::INJURE &&
 		hits(focusChar)
 		) {
 		attack(elapsedTime);
-		return;
+		return true;
 	}
+	return false;
+}
 
-	// Check decision timer and act accordingly
-	if (timeSinceDecision > decisionSpeed) {
+bool EnemyCharacter::checkDecidingState() {
+	if (decisionSpeed != 0 && timeSinceDecision > decisionSpeed) {
 		recalculateDecisionSpeed(true);
-		return;
+		return true;
 	}
+	return false;
+}
 
-	// Idle state, get the enemy moving
+void EnemyCharacter::enterMovingState() {
 	if (spriteState == Globals::ActionType::IDLE) {
 		spriteState = Globals::ActionType::MOVE;
 		currentAction = "move";
 		currentActionType = MOVE_1;
 		resetFrameState();
 	}
+}
 
-	// Move towards focused player if they are not touching or within vertical threshold
+void EnemyCharacter::moveTowardsFocusChar(float elapsedTime) {
 	if (spriteState == Globals::ActionType::MOVE) {
 		Vector2f focusCharCoords = focusChar->getPastPosition(reactionSpeed);
 		if ((abs(focusCharCoords.y - position.y) > (.015625f * Globals::getResolution().x)) ||
@@ -151,8 +158,18 @@ void EnemyCharacter::handleAI(float elapsedTime, vector<PlayerCharacter*> player
 				position.y += elapsedTime * speed;
 			}
 			else if (focusCharCoords.y < position.y) {
-					position.y -= elapsedTime * speed;
+				position.y -= elapsedTime * speed;
 			}
 		}
 	}
+}
+
+void EnemyCharacter::handleAI(float elapsedTime, vector<PlayerCharacter*> players) {
+	if (spriteState != Globals::ActionType::ATTACK) timeSinceAttackEnded += elapsedTime * 1000;
+	resetStateAfterFinishingAction();
+	if (handleDecidingState(elapsedTime, players)) return;
+	if (handleAttacking(elapsedTime)) return;
+	if (checkDecidingState()) return;
+	enterMovingState();
+	moveTowardsFocusChar(elapsedTime);
 }
