@@ -18,6 +18,28 @@ void PlayerCharacter::update(float elapsedTime, vector<EnemyCharacter*> enemies)
 		setIdleState();
 	}
 
+	if (!attackDisabled) {
+		if (primaryAttackPressed) {
+			setAttackState(elapsedTime, ATTACK_1);
+			return;
+		}
+		else if (secondaryAttackPressed) {
+			setAttackState(elapsedTime, ATTACK_2);
+			return;
+		}
+	}
+	else if (primaryAttackPressed || secondaryAttackPressed) {
+		if (!upPressed && !downPressed && !leftPressed && !rightPressed) {
+			setIdleState();
+		}
+		else {
+			setMoveState();
+		}
+	}
+	else {
+		attackDisabled = false;
+	}
+
 	if (rightPressed && !leftPressed) {
 		position.x += speed * elapsedTime;
 		if (!facingRight) flipHorizontally();
@@ -40,18 +62,8 @@ void PlayerCharacter::update(float elapsedTime, vector<EnemyCharacter*> enemies)
 		setMoveState();
 	}
 
-	if (primaryAttackPressed) {
-		setAttackState(elapsedTime, ATTACK_1);
-	}
-	else if (secondaryAttackPressed) {
-		setAttackState(elapsedTime, ATTACK_2);
-	}
-	else if (!upPressed && !downPressed && !leftPressed && !rightPressed) {
+	if (!upPressed && !downPressed && !leftPressed && !rightPressed) {
 		setIdleState();
-	}
-
-	if (!primaryAttackPressed && !secondaryAttackPressed) {
-		attackDisabled = false;
 	}
 }
 
@@ -82,9 +94,9 @@ void PlayerCharacter::updatePastPositions(float elapsedTime) {
 void PlayerCharacter::hitEnemies(float elapsedTime, vector<EnemyCharacter*> enemies) {
 	if (spriteState == Globals::ActionType::ATTACK) {
 		for_each(enemies.begin(), enemies.end(), [&](EnemyCharacter* e) {
-			if (!attackDisabled && hits(e)) {
-				attackDisabled = true;
+			if (!hitRegistered && hits(e)) {
 				e->registerHit(attackPower[currentActionType]);
+				hitRegistered = true;
 			}
 		});
 	}
@@ -97,6 +109,7 @@ void PlayerCharacter::setMoveState() {
 		spriteState = Globals::ActionType::MOVE;
 		resetFrameState();
 	}
+	hitRegistered = false;
 }
 
 void PlayerCharacter::setIdleState() {
@@ -106,6 +119,7 @@ void PlayerCharacter::setIdleState() {
 		spriteState = Globals::ActionType::IDLE;
 		resetFrameState();
 	}
+	hitRegistered = false;
 }
 
 void PlayerCharacter::setAttackState(float elapsedTime, int attackType) {
@@ -122,4 +136,5 @@ void PlayerCharacter::setAttackState(float elapsedTime, int attackType) {
 			resetFrameState();
 		}
 	}
+	if (currentActionDone) attackDisabled = true;
 }

@@ -20,6 +20,7 @@ protected:
 	bool primaryAttackPressed;
 	bool secondaryAttackPressed;
 	bool inputsDisabled = false;
+	bool hitRegistered = false;
 	int timeSinceLastAction = 0;
 	int timeSincePastPositionsUpdate = 0;
 private:
