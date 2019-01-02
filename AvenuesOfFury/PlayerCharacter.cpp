@@ -98,15 +98,6 @@ void PlayerCharacter::update(float elapsedTime, vector<EnemyCharacter*> enemies)
 			}
 		}
 	}
-	else if (spriteState == Globals::ActionType::ATTACK && !primaryAttackPressed && !secondaryAttackPressed) {
-		currentAction = "idle";
-		currentActionType = IDLE_1;
-		if (spriteState != Globals::ActionType::IDLE) {
-			spriteState = Globals::ActionType::IDLE;
-			resetFrameState();
-		}
-		attackDisabled = false;
-	}
 	else if (!upPressed && !downPressed && !leftPressed && !rightPressed) {
 		currentAction = "idle";
 		currentActionType = IDLE_1;
@@ -114,6 +105,10 @@ void PlayerCharacter::update(float elapsedTime, vector<EnemyCharacter*> enemies)
 			spriteState = Globals::ActionType::IDLE;
 			resetFrameState();
 		}
+	}
+
+	if (!primaryAttackPressed && !secondaryAttackPressed) {
+		attackDisabled = false;
 	}
 }
 
@@ -146,7 +141,7 @@ void PlayerCharacter::hitEnemies(float elapsedTime, vector<EnemyCharacter*> enem
 		for_each(enemies.begin(), enemies.end(), [&](EnemyCharacter* e) {
 			if (!attackDisabled && hits(e)) {
 				attackDisabled = true;
-				e->registerHit(attackPower[currentActionType], elapsedTime);
+				e->registerHit(attackPower[currentActionType]);
 			}
 		});
 	}

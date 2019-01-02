@@ -47,7 +47,7 @@ void EnemyCharacter::attack(float elapsedTime) {
 	timeSinceAttackBegan += elapsedTime * 1000;
 	if (timeSinceAttackBegan > STUN_LENGTH && !attackDisabled) {
 		attackDisabled = true;
-		focusChar->registerHit(attackPower[currentActionType], elapsedTime);
+		focusChar->registerHit(attackPower[currentActionType]);
 		focusChar->disableInputs();
 	}
 }

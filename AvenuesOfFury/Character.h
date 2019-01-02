@@ -40,5 +40,5 @@ protected:
 public:
 	void flipHorizontally();
 	bool hits(Character* otherChar);
-	void registerHit(int hp, float elapsedTime);
+	void registerHit(int hp);
 };
