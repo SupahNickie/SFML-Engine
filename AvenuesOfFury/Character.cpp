@@ -42,7 +42,7 @@ void Character::updateFrameState(float elapsedTime) {
 		else if (currentFrame >= maxFrames && !spriteCycleDown) {
 			--currentFrame;
 			spriteCycleDown = true;
-			if (!animationCycle) {
+			if (!animationCycle[currentAction]) {
 				resetFrameState();
 				currentActionDone = true;
 			}

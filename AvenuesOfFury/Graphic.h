@@ -1,5 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <map>
 
 using namespace sf;
 using namespace std;
@@ -7,7 +8,7 @@ using namespace std;
 class Graphic : public Drawable {
 protected:
 	string spriteName;
-	bool animationCycle;
+	map<string, bool> animationCycle;
 	string texturePath;
 	Sprite sprite;
 	Vector2f position;

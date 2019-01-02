@@ -11,100 +11,43 @@ void PlayerCharacter::update(float elapsedTime, vector<EnemyCharacter*> enemies)
 
 	if (inputsDisabled) {
 		timeSinceLastAction += elapsedTime * 1000;
-		if (timeSinceLastAction <= STUN_LENGTH) {
-			return;
-		}
+		if (timeSinceLastAction <= STUN_LENGTH) return;
 		timeSinceLastAction = 0;
 		inputsDisabled = false;
-		spriteState = Globals::ActionType::IDLE;
-		currentAction = "idle";
-		currentActionType = IDLE_1;
-		resetFrameState();
+		attackDisabled = false;
+		setIdleState();
 	}
 
 	if (rightPressed && !leftPressed) {
 		position.x += speed * elapsedTime;
 		if (!facingRight) flipHorizontally();
-		currentAction = "move";
-		currentActionType = MOVE_1;
-		if (spriteState != Globals::ActionType::MOVE) {
-			spriteState = Globals::ActionType::MOVE;
-			resetFrameState();
-		}
+		setMoveState();
 	}
 
 	if (leftPressed && !rightPressed) {
 		position.x -= speed * elapsedTime;
 		if (!facingLeft) flipHorizontally();
-		currentAction = "move";
-		currentActionType = MOVE_1;
-		if (spriteState != Globals::ActionType::MOVE) {
-			spriteState = Globals::ActionType::MOVE;
-			resetFrameState();
-		}
+		setMoveState();
 	}
 
 	if (upPressed && !downPressed) {
 		position.y -= speed * elapsedTime;
-		if (!rightPressed && !leftPressed) {
-			currentAction = "move";
-			currentActionType = MOVE_1;
-			if (spriteState != Globals::ActionType::MOVE) {
-				spriteState = Globals::ActionType::MOVE;
-				resetFrameState();
-			}
-		}
+		setMoveState();
 	}
 
 	if (downPressed && !upPressed) {
 		position.y += speed * elapsedTime;
-		if (!rightPressed && !leftPressed) {
-			currentAction = "move";
-			currentActionType = MOVE_1;
-			if (spriteState != Globals::ActionType::MOVE) {
-				spriteState = Globals::ActionType::MOVE;
-				resetFrameState();
-			}
-		}
+		setMoveState();
 	}
 
 	if (primaryAttackPressed) {
-		handleAttack(elapsedTime);
-		if (!attackDisabled) {
-			timeSinceLastAction = 0;
-			currentAction = "attack";
-			if (currentActionType != ATTACK_1) {
-				currentActionType = ATTACK_1;
-				resetFrameState();
-			} 
-			if (spriteState != Globals::ActionType::ATTACK ) {
-				spriteState = Globals::ActionType::ATTACK;
-				resetFrameState();
-			}
-		}
+		setAttackState(elapsedTime, ATTACK_1);
 	}
 	else if (secondaryAttackPressed) {
-		handleAttack(elapsedTime);
-		if (!attackDisabled) {
-			timeSinceLastAction = 0;
-			currentAction = "attack";
-			if (currentActionType != ATTACK_2) {
-				currentActionType = ATTACK_2;
-				resetFrameState();
-			} 
-			if (spriteState != Globals::ActionType::ATTACK) {
-				spriteState = Globals::ActionType::ATTACK;
-				resetFrameState();
-			}
-		}
+		setAttackState(elapsedTime, ATTACK_2);
 	}
 	else if (!upPressed && !downPressed && !leftPressed && !rightPressed) {
-		currentAction = "idle";
-		currentActionType = IDLE_1;
-		if (spriteState != Globals::ActionType::IDLE) {
-			spriteState = Globals::ActionType::IDLE;
-			resetFrameState();
-		}
+		setIdleState();
 	}
 
 	if (!primaryAttackPressed && !secondaryAttackPressed) {
@@ -147,6 +90,36 @@ void PlayerCharacter::hitEnemies(float elapsedTime, vector<EnemyCharacter*> enem
 	}
 }
 
-void PlayerCharacter::handleAttack(float elapsedTime) {
+void PlayerCharacter::setMoveState() {
+	currentAction = "move";
+	currentActionType = MOVE_1;
+	if (spriteState != Globals::ActionType::MOVE) {
+		spriteState = Globals::ActionType::MOVE;
+		resetFrameState();
+	}
+}
+
+void PlayerCharacter::setIdleState() {
+	currentAction = "idle";
+	currentActionType = IDLE_1;
+	if (spriteState != Globals::ActionType::IDLE) {
+		spriteState = Globals::ActionType::IDLE;
+		resetFrameState();
+	}
+}
+
+void PlayerCharacter::setAttackState(float elapsedTime, int attackType) {
 	timeSinceLastAction += elapsedTime * 1000;
+	if (!attackDisabled) {
+		timeSinceLastAction = 0;
+		currentAction = "attack";
+		if (currentActionType != attackType) {
+			currentActionType = attackType;
+			resetFrameState();
+		}
+		if (spriteState != Globals::ActionType::ATTACK) {
+			spriteState = Globals::ActionType::ATTACK;
+			resetFrameState();
+		}
+	}
 }

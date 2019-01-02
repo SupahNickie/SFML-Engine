@@ -22,7 +22,7 @@ Link::Link() {
 	SpriteHolder::initSprites("character", spriteName);
 	sprite.scale(Vector2f(Globals::getScalingFactor(), Globals::getScalingFactor()));
 	
-	animationCycle = true;
+	animationCycle = { {"move", true}, {"attack", false}, {"idle", false}, {"injure", false} };
 	currentAction = "idle";
 	currentActionType = IDLE_1;
 	resetFrameState();

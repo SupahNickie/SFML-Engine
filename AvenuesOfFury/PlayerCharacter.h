@@ -39,7 +39,9 @@ private:
 
 	void updatePastPositions(float elapsedTime);
 	void hitEnemies(float elapsedTime, vector<EnemyCharacter*> enemies);
-	void handleAttack(float elapsedTime);
+	void setMoveState();
+	void setIdleState();
+	void setAttackState(float elapsedTime, int attackType);
 public:
 	virtual void handleInput() = 0;
 	void update(float elapsedTime, vector<EnemyCharacter*> enemies);
