@@ -37,5 +37,6 @@ bool Garnet::handleAttacking(float elapsedTime) {
 }
 
 void Garnet::handleMoving(float elapsedTime) {
-	return moveTowardsFocusChar(elapsedTime);
+	//moveTowardsFocusChar(elapsedTime);
+	predictPlayerLocation(elapsedTime);
 }

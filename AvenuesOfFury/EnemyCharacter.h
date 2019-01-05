@@ -10,6 +10,7 @@ class PlayerCharacter;
 class EnemyCharacter : public Character {
 protected:
 	PlayerCharacter* focusChar;
+	Vector2f target;
 	bool deciding = false;
 	int timeSinceDecision = 0;
 	int timeSinceAttackBegan = 0;
@@ -34,6 +35,7 @@ protected:
 	bool checkDecidingState();
 	void enterMovingState();
 	void moveTowardsFocusChar(float elapsedTime);
+	void predictPlayerLocation(float elapsedTime);
 	void handleAI(float elapsedTime, vector<PlayerCharacter*> players);
 	virtual bool handleAttacking(float elapsedTime) = 0;
 	virtual void handleMoving(float elapsedTime) = 0;
@@ -43,6 +45,7 @@ private:
 	void recalculateAggression();
 	void recalculateDecisionSpeed(bool decisionState);
 	void resetStateAfterFinishingAction();
+	void moveTowardsTarget(float elapsedTime);
 public:
 	EnemyCharacter(vector<PlayerCharacter*> players);
 	void update(float elapsedTime, vector<PlayerCharacter*> players);

@@ -8,7 +8,7 @@
 #include "EnemyCharacter.h"
 #include <SFML/Graphics.hpp>
 
-struct PlayerPastPosition {
+struct PlayerVelocity {
 	Vector2f position;
 	Character::DirectionHeaded direction;
 };
@@ -53,7 +53,7 @@ public:
 	virtual void handleInput() = 0;
 	void update(float elapsedTime, vector<EnemyCharacter*> enemies);
 	void disableInputs();
-	PlayerPastPosition getPastPosition(int time);
+	PlayerVelocity getVelocity(int time);
 };
 
 #endif

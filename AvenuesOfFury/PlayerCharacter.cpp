@@ -94,9 +94,9 @@ void PlayerCharacter::disableInputs() {
 	timeSinceLastAction = 0;
 }
 
-PlayerPastPosition PlayerCharacter::getPastPosition(int time) {
-	PlayerPastPosition output;
-	output.position = pastPositions[time];
+PlayerVelocity PlayerCharacter::getVelocity(int time) {
+	PlayerVelocity output;
+	time == 0 ? output.position = position : output.position = pastPositions[time];
 	output.direction = directionHeaded;
 	return output;
 }

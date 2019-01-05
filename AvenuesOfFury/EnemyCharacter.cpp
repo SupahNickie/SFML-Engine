@@ -95,8 +95,8 @@ bool EnemyCharacter::handleDecidingState(float elapsedTime, vector<PlayerCharact
 			resetFrameState();
 
 			// get nearest player
-			Vector2f player1coords = players[0]->getPastPosition(reactionSpeed).position;
-			Vector2f player2coords = players[1]->getPastPosition(reactionSpeed).position;
+			Vector2f player1coords = players[0]->getVelocity(reactionSpeed).position;
+			Vector2f player2coords = players[1]->getVelocity(reactionSpeed).position;
 			float player1closeness = abs(abs(player1coords.x - position.x) - abs(player1coords.y - position.y));
 			float player2closeness = abs(abs(player2coords.x - position.x) - abs(player2coords.y - position.y));
 			if (player1closeness < player2closeness) {
@@ -150,22 +150,73 @@ void EnemyCharacter::enterMovingState() {
 
 void EnemyCharacter::moveTowardsFocusChar(float elapsedTime) {
 	if (spriteState == Globals::ActionType::MOVE) {
-		Vector2f focusCharCoords = focusChar->getPastPosition(reactionSpeed).position;
-		if ((abs(focusCharCoords.y - position.y) > (.015625f * Globals::getResolution().x)) ||
+		target = focusChar->getVelocity(reactionSpeed).position;
+		if ((abs(target.y - position.y) > (.015625f * Globals::getResolution().x)) ||
 			!hits(focusChar)) {
-			if (focusCharCoords.x > position.x) {
-				position.x += elapsedTime * speed;
-			}
-			else if (focusCharCoords.x < position.x) {
-				position.x -= elapsedTime * speed;
-			}
-			if (focusCharCoords.y > position.y) {
-				position.y += elapsedTime * speed;
-			}
-			else if (focusCharCoords.y < position.y) {
-				position.y -= elapsedTime * speed;
-			}
+			moveTowardsTarget(elapsedTime);
 		}
+	}
+}
+
+void EnemyCharacter::predictPlayerLocation(float elapsedTime) {
+	if (spriteState == Globals::ActionType::MOVE) {
+		PlayerVelocity pv = focusChar->getVelocity(reactionSpeed);
+		switch (pv.direction) {
+		case Character::DirectionHeaded::U:
+			target.x = pv.position.x;
+			target.y = pv.position.y - focusChar->speed;
+			break;
+		case Character::DirectionHeaded::UR:
+			target.x = pv.position.x + (sqrt(pow(focusChar->speed, 2.0) / 2.0));
+			target.y = pv.position.y - (sqrt(pow(focusChar->speed, 2.0) / 2.0));
+			break;
+		case Character::DirectionHeaded::R:
+			target.x = pv.position.x + focusChar->speed;
+			target.y = pv.position.y;
+			break;
+		case Character::DirectionHeaded::DR:
+			target.x = pv.position.x + (sqrt(pow(focusChar->speed, 2.0) / 2.0));
+			target.y = pv.position.y + (sqrt(pow(focusChar->speed, 2.0) / 2.0));
+			break;
+		case Character::DirectionHeaded::D:
+			target.x = pv.position.x;
+			target.y = pv.position.y + focusChar->speed;
+			break;
+		case Character::DirectionHeaded::DL:
+			target.x = pv.position.x - (sqrt(pow(focusChar->speed, 2.0) / 2.0));
+			target.y = pv.position.y + (sqrt(pow(focusChar->speed, 2.0) / 2.0));
+			break;
+		case Character::DirectionHeaded::L:
+			target.x = pv.position.x - focusChar->speed;
+			target.y = pv.position.y;
+			break;
+		case Character::DirectionHeaded::UL:
+			target.x = pv.position.x - (sqrt(pow(focusChar->speed, 2.0) / 2.0));
+			target.y = pv.position.y - (sqrt(pow(focusChar->speed, 2.0) / 2.0));
+			break;
+		case Character::DirectionHeaded::NONE:
+			target = pv.position;
+			break;
+		}
+	}
+	if ((abs(target.y - position.y) > (.015625f * Globals::getResolution().x)) ||
+		!hits(focusChar)) {
+		moveTowardsTarget(elapsedTime);
+	}
+}
+
+void EnemyCharacter::moveTowardsTarget(float elapsedTime) {
+	if (target.x > position.x) {
+		position.x += elapsedTime * speed;
+	}
+	else if (target.x < position.x) {
+		position.x -= elapsedTime * speed;
+	}
+	if (target.y > position.y) {
+		position.y += elapsedTime * speed;
+	}
+	else if (target.y < position.y) {
+		position.y -= elapsedTime * speed;
 	}
 }
 

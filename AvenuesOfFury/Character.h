@@ -20,7 +20,6 @@ protected:
 	bool facingLeft;
 	bool facingRight;
 	float baseSpeed;
-	float speed;
 	bool jumping = false;
 	bool running = false;
 
@@ -44,6 +43,7 @@ protected:
 public:
 	enum class DirectionHeaded { U, UR, R, DR, D, DL, L, UL, NONE };
 	DirectionHeaded directionHeaded = DirectionHeaded::NONE;
+	float speed;
 
 	void flipHorizontally();
 	DirectionHeaded stringToDirection(string const& direction);
