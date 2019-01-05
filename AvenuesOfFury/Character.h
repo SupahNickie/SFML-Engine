@@ -7,8 +7,6 @@ using namespace std;
 
 class Character : public Graphic {
 protected:
-	FloatRect hitbox;
-
 	int MS_PER_FRAME = 50;
 	int STUN_LENGTH = 100;
 	int const MOVE_1 = 0;
@@ -33,13 +31,19 @@ protected:
 	string currentAction;
 	int currentActionType = 0;
 	int timeSinceLastFrame = 0;
+	int timeSinceLastAction = 0;
 	bool spriteCycleDown = false;
 
 	void resetFrameState();
 	void updateFrameState(float elapsedTime);
 	void render();
+	virtual void setDirectionHeaded() = 0;
 public:
+	enum class DirectionHeaded { U, UR, R, DR, D, DL, L, UL, NONE };
+	DirectionHeaded directionHeaded = DirectionHeaded::NONE;
+
 	void flipHorizontally();
+	DirectionHeaded stringToDirection(string const& direction);
 	bool hits(Character* otherChar);
 	void registerHit(int hp);
 };

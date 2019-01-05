@@ -35,6 +35,10 @@ void EnemyCharacter::turnToFaceFocusChar() {
 	}
 }
 
+void EnemyCharacter::setDirectionHeaded() {
+
+}
+
 void EnemyCharacter::attack(float elapsedTime) {
 	if (timeSinceAttackBegan == 0) {
 		spriteState = Globals::ActionType::ATTACK;
@@ -91,8 +95,8 @@ bool EnemyCharacter::handleDecidingState(float elapsedTime, vector<PlayerCharact
 			resetFrameState();
 
 			// get nearest player
-			Vector2f player1coords = players[0]->getPastPosition(reactionSpeed);
-			Vector2f player2coords = players[1]->getPastPosition(reactionSpeed);
+			Vector2f player1coords = players[0]->getPastPosition(reactionSpeed).position;
+			Vector2f player2coords = players[1]->getPastPosition(reactionSpeed).position;
 			float player1closeness = abs(abs(player1coords.x - position.x) - abs(player1coords.y - position.y));
 			float player2closeness = abs(abs(player2coords.x - position.x) - abs(player2coords.y - position.y));
 			if (player1closeness < player2closeness) {
@@ -146,7 +150,7 @@ void EnemyCharacter::enterMovingState() {
 
 void EnemyCharacter::moveTowardsFocusChar(float elapsedTime) {
 	if (spriteState == Globals::ActionType::MOVE) {
-		Vector2f focusCharCoords = focusChar->getPastPosition(reactionSpeed);
+		Vector2f focusCharCoords = focusChar->getPastPosition(reactionSpeed).position;
 		if ((abs(focusCharCoords.y - position.y) > (.015625f * Globals::getResolution().x)) ||
 			!hits(focusChar)) {
 			if (focusCharCoords.x > position.x) {

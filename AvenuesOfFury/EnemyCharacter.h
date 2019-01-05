@@ -39,6 +39,7 @@ protected:
 	virtual void handleMoving(float elapsedTime) = 0;
 private:
 	void turnToFaceFocusChar();
+	void setDirectionHeaded();
 	void recalculateAggression();
 	void recalculateDecisionSpeed(bool decisionState);
 	void resetStateAfterFinishingAction();
