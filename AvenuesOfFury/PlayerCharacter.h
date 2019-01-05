@@ -49,6 +49,7 @@ private:
 	void setAttackState(float elapsedTime, int attackType);
 public:
 	PlayerCharacter();
+	~PlayerCharacter();
 	virtual void handleInput() = 0;
 	void update(float elapsedTime, vector<EnemyCharacter*> enemies);
 	void disableInputs();

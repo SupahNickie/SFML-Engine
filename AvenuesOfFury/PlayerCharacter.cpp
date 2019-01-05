@@ -12,6 +12,10 @@ PlayerCharacter::PlayerCharacter() {
 	pastDirectionsPressed[4] = Character::DirectionHeaded::NONE;
 }
 
+PlayerCharacter::~PlayerCharacter() {
+	delete[] pastDirectionsPressed;
+}
+
 void PlayerCharacter::update(float elapsedTime, vector<EnemyCharacter*> enemies) {
 	updatePastPositions(elapsedTime);
 	hitEnemies(elapsedTime, enemies);
