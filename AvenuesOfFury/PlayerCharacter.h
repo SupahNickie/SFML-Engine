@@ -26,19 +26,7 @@ protected:
 	int timeSincePastPositionsUpdate = 0;
 	int timeSinceLastDirectionPress = 0;
 private:
-	map<int, Vector2f> pastPositions = {
-		{500, Vector2f(0,0)},
-		{450, Vector2f(0,0)},
-		{400, Vector2f(0,0)},
-		{350, Vector2f(0,0)},
-		{300, Vector2f(0,0)},
-		{250, Vector2f(0,0)},
-		{200, Vector2f(0,0)},
-		{150, Vector2f(0,0)},
-		{100, Vector2f(0,0)},
-		{50, Vector2f(0,0)},
-		{0, Vector2f(0,0)}
-	};
+	map<int, PlayerVelocity> pastPositions;
 	Character::DirectionHeaded* pastDirectionsPressed;
 
 	void updatePastPositions(float elapsedTime);

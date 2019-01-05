@@ -4,12 +4,31 @@
 #include <iostream>
 
 PlayerCharacter::PlayerCharacter() {
+	// Init array of direction presses remembered
 	pastDirectionsPressed = new Character::DirectionHeaded[5];
 	pastDirectionsPressed[0] = Character::DirectionHeaded::NONE;
 	pastDirectionsPressed[1] = Character::DirectionHeaded::NONE;
 	pastDirectionsPressed[2] = Character::DirectionHeaded::NONE;
 	pastDirectionsPressed[3] = Character::DirectionHeaded::NONE;
 	pastDirectionsPressed[4] = Character::DirectionHeaded::NONE;
+
+	// Init player position data for enemies
+	PlayerVelocity pv;
+	pv.direction = Character::DirectionHeaded::NONE;
+	pv.position = position;
+	pastPositions = {
+		{500, pv},
+		{450, pv},
+		{400, pv},
+		{350, pv},
+		{300, pv},
+		{250, pv},
+		{200, pv},
+		{150, pv},
+		{100, pv},
+		{50, pv},
+		{0, pv}
+	};
 }
 
 PlayerCharacter::~PlayerCharacter() {
@@ -96,7 +115,7 @@ void PlayerCharacter::disableInputs() {
 
 PlayerVelocity PlayerCharacter::getVelocity(int time) {
 	PlayerVelocity output;
-	time == 0 ? output.position = position : output.position = pastPositions[time];
+	time == 0 ? output.position = position : output.position = pastPositions[time].position;
 	output.direction = directionHeaded;
 	return output;
 }
@@ -110,7 +129,10 @@ void PlayerCharacter::updatePastPositions(float elapsedTime) {
 			positionToUpdate = positionToGrab;
 			positionToGrab -= 50;
 		}
-		pastPositions[0] = position;
+		PlayerVelocity current;
+		current.position = position;
+		current.direction = directionHeaded;
+		pastPositions[0] = current;
 		timeSincePastPositionsUpdate = 0;
 	}
 	timeSincePastPositionsUpdate += elapsedTime * 1000;
