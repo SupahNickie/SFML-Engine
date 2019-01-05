@@ -14,7 +14,8 @@ Link::Link() {
 	spriteState = Globals::ActionType::IDLE;
 	facingLeft = true;
 	facingRight = false;
-	speed = .33 * Globals::getResolution().x;
+	baseSpeed = .33 * Globals::getResolution().x;
+	speed = baseSpeed;
 
 	spriteName = "link";
 	isActive = true;

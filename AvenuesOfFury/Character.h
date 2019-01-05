@@ -10,16 +10,19 @@ protected:
 	int MS_PER_FRAME = 50;
 	int STUN_LENGTH = 100;
 	int const MOVE_1 = 0;
+	int const MOVE_2 = 1;
 	int const ATTACK_1 = 0;
 	int const ATTACK_2 = 1;
 	int const IDLE_1 = 0;
 	int const INJURE_1 = 0;
-	float speed;
 
 	Globals::ActionType spriteState;
 	bool facingLeft;
 	bool facingRight;
-	bool jumping;
+	float baseSpeed;
+	float speed;
+	bool jumping = false;
+	bool running = false;
 
 	int health = 0;
 	vector<int> attackPower;

@@ -14,7 +14,8 @@ Skate::Skate() {
 	spriteState = Globals::ActionType::IDLE;
 	facingLeft = false;
 	facingRight = true;
-	speed = .33 * Globals::getResolution().x;
+	baseSpeed = .33 * Globals::getResolution().x;
+	speed = baseSpeed;
 	health = 4000;
 	spriteName = "skate";
 	isActive = true;

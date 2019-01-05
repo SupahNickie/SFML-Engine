@@ -30,21 +30,27 @@ void PlayerCharacter::update(float elapsedTime, vector<EnemyCharacter*> enemies)
 		inputsDisabled = false;
 		attackDisabled = false;
 		setIdleState(elapsedTime);
+		memmove(&pastDirectionsPressed[0], &pastDirectionsPressed[1], (size_t)4 * sizeof(pastDirectionsPressed[0]));
+		pastDirectionsPressed[4] = Character::DirectionHeaded::NONE;
+		running = false;
 	}
 
 	if (!attackDisabled) {
 		if (primaryAttackPressed) {
 			setAttackState(elapsedTime, ATTACK_1);
+			running = false;
 			return;
 		}
 		else if (secondaryAttackPressed) {
 			setAttackState(elapsedTime, ATTACK_2);
+			running = false;
 			return;
 		}
 	}
 	else if (primaryAttackPressed || secondaryAttackPressed) {
 		if (!upPressed && !downPressed && !leftPressed && !rightPressed) {
 			setIdleState(elapsedTime);
+			running = false;
 		}
 		else {
 			setMoveState(elapsedTime);
@@ -78,6 +84,7 @@ void PlayerCharacter::update(float elapsedTime, vector<EnemyCharacter*> enemies)
 
 	if (!upPressed && !downPressed && !leftPressed && !rightPressed) {
 		setIdleState(elapsedTime);
+		running = false;
 	}
 	setDirectionHeaded();
 }
@@ -117,7 +124,7 @@ void PlayerCharacter::setDirectionHeaded() {
 	if (rightPressed && !leftPressed) output += "R";
 
 	Character::DirectionHeaded current = stringToDirection(output);
-	if ((current == Character::DirectionHeaded::NONE && timeSinceLastDirectionPress < 200) ||
+	if ((current == Character::DirectionHeaded::NONE && timeSinceLastDirectionPress < 100) ||
 		(current == directionHeaded && timeSinceLastDirectionPress > 0) ||
 		(directionHeaded == Character::DirectionHeaded::NONE && current == Character::DirectionHeaded::NONE)) {
 		return;
@@ -145,7 +152,17 @@ void PlayerCharacter::hitEnemies(float elapsedTime, vector<EnemyCharacter*> enem
 void PlayerCharacter::setMoveState(float elapsedTime) {
 	timeSinceLastDirectionPress += elapsedTime * 1000;
 	currentAction = "move";
-	currentActionType = MOVE_1;
+	if ((pastDirectionsPressed[4] != Character::DirectionHeaded::NONE) &&
+		((pastDirectionsPressed[3] == pastDirectionsPressed[4]) || running)) {
+		currentActionType = MOVE_2;
+		speed = baseSpeed * 2.0;
+		running = true;
+	}
+	else {
+		currentActionType = MOVE_1;
+		speed = baseSpeed;
+		running = false;
+	}
 	if (spriteState != Globals::ActionType::MOVE) {
 		spriteState = Globals::ActionType::MOVE;
 		resetFrameState();

@@ -15,7 +15,8 @@ Garnet::Garnet(vector<PlayerCharacter*> players) : EnemyCharacter(players) {
 
 	// randomize some traits
 	varianceSpeed = rand() % (int)(.03 * Globals::getResolution().x);
-	speed = .25 * Globals::getResolution().x + varianceSpeed;
+	baseSpeed = .25 * Globals::getResolution().x + varianceSpeed;
+	speed = baseSpeed;
 	varianceHealth = rand() % 1000;
 	health = 5000 + varianceHealth;
 	varianceReaction = (rand() % 250) + 50;
