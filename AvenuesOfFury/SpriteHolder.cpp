@@ -23,8 +23,6 @@ void SpriteHolder::initSprites(string const& handlingType, string const& spriteN
 	unsigned int numberOfActions = 0;
 	int outIndex = 0;
 	int inIndex = 0;
-	unsigned int numberOfFrames = 0;
-	unsigned int startFrame = 0;
 
 	stringstream ss;
 	ss << handlingType << "s/" << spriteName << "_coords.txt";
@@ -45,10 +43,10 @@ void SpriteHolder::initSprites(string const& handlingType, string const& spriteN
 		line.push_back(s);
 
 		if (handlingStringToEnum(handlingType) == HandlingType::CHARACTER) {
-			handleCharacterLine(line, &currentlySetting, &numberOfActions, spriteName, &outIndex, &inIndex, &numberOfFrames, &startFrame);
+			handleCharacterLine(line, &currentlySetting, &numberOfActions, spriteName, &outIndex, &inIndex);
 		}
 		else if (handlingStringToEnum(handlingType) == HandlingType::BACKGROUND) {
-			handleBackgroundLine(line, &currentlySetting, &numberOfActions, spriteName, &outIndex, &inIndex, &numberOfFrames, &startFrame);
+			handleBackgroundLine(line, &currentlySetting, &numberOfActions, spriteName, &outIndex, &inIndex);
 		}
 		else {
 			break;
@@ -63,12 +61,13 @@ void SpriteHolder::initSprites(string const& handlingType, string const& spriteN
 void SpriteHolder::deleteSprite(string const& spriteName) {
 	shInstance->spriteOriginsMap.erase(spriteName);
 	shInstance->spriteBoundsMap.erase(spriteName);
+	shInstance->spriteDamageFramesMap.erase(spriteName);
 	shInstance->spriteMaxFrameMap.erase(spriteName);
 	shInstance->spriteStartFrameMap.erase(spriteName);
 }
 
 
-void SpriteHolder::handleCharacterLine(vector<string> line, string* currentlySetting, unsigned int* numberOfActions, string spriteName, int* outIndex, int* inIndex, unsigned int* numberOfFrames, unsigned int* startFrame) {
+void SpriteHolder::handleCharacterLine(vector<string> line, string* currentlySetting, unsigned int* numberOfActions, string spriteName, int* outIndex, int* inIndex) {
 	if (Globals::actionStringToEnum(line[0]) != Globals::ActionType::NONE) {
 		*currentlySetting = line[0];
 		*numberOfActions = stoi(line[1]);
@@ -79,11 +78,20 @@ void SpriteHolder::handleCharacterLine(vector<string> line, string* currentlySet
 		*outIndex = 0;
 		*numberOfActions = 0;
 		for (unsigned int i = 1; i < line.size(); ++*numberOfActions) {
-			*numberOfFrames = stoi(line[i]);
+			unsigned int numberOfFrames = 0;
+			unsigned int startFrame = 0;
+			vector<int> damageFrames;
+
+			numberOfFrames = stoi(line[i]);
 			++i;
-			*startFrame = stoi(line[i]);
+			startFrame = stoi(line[i]);
 			++i;
-			addActionSpriteFrames(spriteName, Globals::actionStringToEnum(*currentlySetting), *numberOfActions, *numberOfFrames, *startFrame);
+			while (line[i] != ";") {
+				damageFrames.push_back(stoi(line[i]));
+				++i;
+			}
+			++i;
+			addActionSpriteFrames(spriteName, Globals::actionStringToEnum(*currentlySetting), *numberOfActions, numberOfFrames, startFrame, damageFrames);
 		}
 	}
 	else if (line[0] == "skip") {
@@ -103,7 +111,7 @@ void SpriteHolder::handleCharacterLine(vector<string> line, string* currentlySet
 	}
 }
 
-void SpriteHolder::handleBackgroundLine(vector<string> line, string* currentlySetting, unsigned int* numberOfActions, string spriteName, int* outIndex, int* inIndex, unsigned int* numberOfFrames, unsigned int* startFrame) {
+void SpriteHolder::handleBackgroundLine(vector<string> line, string* currentlySetting, unsigned int* numberOfActions, string spriteName, int* outIndex, int* inIndex) {
 	
 }
 
@@ -125,6 +133,10 @@ void SpriteHolder::setSprite(Sprite& sprite, string const& spriteName, string co
 	);
 }
 
+vector<int> SpriteHolder::getDamageFramesForAction(string const& spriteName, string const& actionCategory, int actionType) {
+	return shInstance->spriteDamageFramesMap[spriteName][Globals::actionStringToEnum(actionCategory)][actionType];
+}
+
 int SpriteHolder::getMaxFramesForAction(string const& spriteName, string const& actionCategory, int actionType) {
 	return shInstance->spriteMaxFrameMap[spriteName][Globals::actionStringToEnum(actionCategory)][actionType];
 }
@@ -136,13 +148,15 @@ int SpriteHolder::getStartFramesForAction(string const& spriteName, string const
 void SpriteHolder::initActionSprites(string const& spriteName, Globals::ActionType action, unsigned int actionCount) {
 	shInstance->spriteOriginsMap[spriteName][action] = vector<vector<Vector2i>>(actionCount);
 	shInstance->spriteBoundsMap[spriteName][action] = vector<vector<Vector2i>>(actionCount);
+	shInstance->spriteDamageFramesMap[spriteName][action] = vector<vector<int>>(actionCount);
 	shInstance->spriteMaxFrameMap[spriteName][action] = vector<int>(actionCount);
 	shInstance->spriteStartFrameMap[spriteName][action] = vector<int>(actionCount);
 }
 
-void SpriteHolder::addActionSpriteFrames(string const& spriteName, Globals::ActionType action, int numberOfActions, int numberOfFrames, int startFrame) {
+void SpriteHolder::addActionSpriteFrames(string const& spriteName, Globals::ActionType action, int numberOfActions, int numberOfFrames, int startFrame, vector<int> &damageFrames) {
 	shInstance->spriteOriginsMap[spriteName][action][numberOfActions] = vector<Vector2i>(numberOfFrames);
 	shInstance->spriteBoundsMap[spriteName][action][numberOfActions] = vector<Vector2i>(numberOfFrames);
+	shInstance->spriteDamageFramesMap[spriteName][action][numberOfActions] = damageFrames;
 	shInstance->spriteMaxFrameMap[spriteName][action][numberOfActions] = numberOfFrames - 1;
 	shInstance->spriteStartFrameMap[spriteName][action][numberOfActions] = startFrame;
 }

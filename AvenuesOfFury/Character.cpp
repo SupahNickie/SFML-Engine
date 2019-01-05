@@ -33,6 +33,7 @@ void Character::resetFrameState() {
 void Character::updateFrameState(float elapsedTime) {
 	timeSinceLastFrame += elapsedTime * 1000;
 	if (timeSinceLastFrame > MS_PER_FRAME) {
+		hitRegistered = false;
 		int maxFrames = SpriteHolder::getMaxFramesForAction(spriteName, currentAction, currentActionType);
 		if (0 == maxFrames) {
 			// do nothing, no animation needed

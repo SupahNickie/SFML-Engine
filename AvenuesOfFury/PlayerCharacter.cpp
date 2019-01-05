@@ -95,8 +95,11 @@ void PlayerCharacter::hitEnemies(float elapsedTime, vector<EnemyCharacter*> enem
 	if (spriteState == Globals::ActionType::ATTACK) {
 		for_each(enemies.begin(), enemies.end(), [&](EnemyCharacter* e) {
 			if (!hitRegistered && hits(e)) {
-				e->registerHit(attackPower[currentActionType]);
-				hitRegistered = true;
+				vector<int> v = SpriteHolder::getDamageFramesForAction(spriteName, currentAction, currentActionType);
+				if (find(v.begin(), v.end(), currentFrame) != v.end()) {
+					e->registerHit(attackPower[currentActionType]);
+					hitRegistered = true;
+				}
 			}
 		});
 	}

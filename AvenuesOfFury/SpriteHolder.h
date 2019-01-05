@@ -16,14 +16,15 @@ private:
 
 	map<string, map<Globals::ActionType, vector<vector<Vector2i>>>> spriteOriginsMap;
 	map<string, map<Globals::ActionType, vector<vector<Vector2i>>>> spriteBoundsMap;
+	map<string, map<Globals::ActionType, vector<vector<int>>>> spriteDamageFramesMap;
 	map<string, map<Globals::ActionType, vector<int>>> spriteMaxFrameMap;
 	map<string, map<Globals::ActionType, vector<int>>> spriteStartFrameMap;
 	map<string, bool> isStoredMap;
 
-	static void handleCharacterLine(vector<string> line, string* currentlySetting, unsigned int* numberOfActions, string spriteName, int* outIndex, int* inIndex, unsigned int* numberOfFrames, unsigned int* startFrame);
-	static void handleBackgroundLine(vector<string> line, string* currentlySetting, unsigned int* numberOfActions, string spriteName, int* outIndex, int* inIndex, unsigned int* numberOfFrames, unsigned int* startFrame);
+	static void handleCharacterLine(vector<string> line, string* currentlySetting, unsigned int* numberOfActions, string spriteName, int* outIndex, int* inIndex);
+	static void handleBackgroundLine(vector<string> line, string* currentlySetting, unsigned int* numberOfActions, string spriteName, int* outIndex, int* inIndex);
 	static void initActionSprites(string const& spriteName, Globals::ActionType action, unsigned int moveCount);
-	static void addActionSpriteFrames(string const& spriteName, Globals::ActionType action, int numberOfActions, int numberOfFrames, int startFrame);
+	static void addActionSpriteFrames(string const& spriteName, Globals::ActionType action, int numberOfActions, int numberOfFrames, int startFrame, vector<int> &damageFrames);
 	static void setActionSpriteFrames(string const& spriteName, Globals::ActionType action, int outIndex, int inIndex, Vector2i origin, Vector2i bound);
 	static bool getIsStored(string const& spriteName);
 	static void setIsStored(string const& spriteName);
@@ -33,6 +34,7 @@ public:
 	static void initSprites(string const& handlingType, string const& spriteName);
 	static void deleteSprite(string const& spriteName);
 	static void setSprite(Sprite& sprite, string const& spriteName, string const& actionCategory, int actionType, int actionFrame);
+	static vector<int> getDamageFramesForAction(string const& spriteName, string const& actionCategory, int actionType);
 	static int getMaxFramesForAction(string const& spriteName, string const& actionCategory, int actionType);
 	static int getStartFramesForAction(string const& spriteName, string const& actionCategory, int actionType);
 };

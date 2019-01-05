@@ -26,6 +26,7 @@ protected:
 	int health = 0;
 	vector<int> attackPower;
 	bool attackDisabled = false;
+	bool hitRegistered = false;
 
 	bool currentActionDone = false;
 	int currentFrame = 0;

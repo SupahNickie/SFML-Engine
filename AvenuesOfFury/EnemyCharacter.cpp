@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "EnemyCharacter.h"
-#include <iostream>
+#include "SpriteHolder.h"
 
 EnemyCharacter::EnemyCharacter(vector<PlayerCharacter*> players) {
 	attackPower = vector<int>(1);
@@ -45,10 +45,13 @@ void EnemyCharacter::attack(float elapsedTime) {
 		recalculateAggression();
 	}
 	timeSinceAttackBegan += elapsedTime * 1000;
-	if (timeSinceAttackBegan > STUN_LENGTH && !attackDisabled) {
-		attackDisabled = true;
-		focusChar->registerHit(attackPower[currentActionType]);
-		focusChar->disableInputs();
+	if (!hitRegistered) {
+		vector<int> v = SpriteHolder::getDamageFramesForAction(spriteName, currentAction, currentActionType);
+		if (find(v.begin(), v.end(), currentFrame) != v.end()) {
+			hitRegistered = true;
+			focusChar->registerHit(attackPower[currentActionType]);
+			focusChar->disableInputs();
+		}
 	}
 }
 
