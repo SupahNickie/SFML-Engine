@@ -10,6 +10,7 @@ protected:
 	int const IDLE_HAIR = IDLE_1;
 
 	bool handleAttacking(float elapsedTime);
+	void handleMoving(float elapsedTime);
 public:
 	Garnet(vector<PlayerCharacter*> players);
 };

@@ -172,5 +172,5 @@ void EnemyCharacter::handleAI(float elapsedTime, vector<PlayerCharacter*> player
 	if (handleAttacking(elapsedTime)) return;
 	if (checkDecidingState()) return;
 	enterMovingState();
-	moveTowardsFocusChar(elapsedTime);
+	handleMoving(elapsedTime);
 }

@@ -36,6 +36,7 @@ protected:
 	void moveTowardsFocusChar(float elapsedTime);
 	void handleAI(float elapsedTime, vector<PlayerCharacter*> players);
 	virtual bool handleAttacking(float elapsedTime) = 0;
+	virtual void handleMoving(float elapsedTime) = 0;
 private:
 	void turnToFaceFocusChar();
 	void recalculateAggression();
