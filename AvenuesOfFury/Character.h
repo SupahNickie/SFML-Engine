@@ -13,7 +13,7 @@ struct CharacterVelocity {
 class Character : public Graphic {
 protected:
 	int MS_PER_FRAME = 50;
-	int STUN_LENGTH = 100;
+	int STUN_LENGTH = 200;
 	int const MOVE_1 = 0;
 	int const MOVE_2 = 1;
 	int const ATTACK_1 = 0;

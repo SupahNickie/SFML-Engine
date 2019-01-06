@@ -119,6 +119,7 @@ void PlayerCharacter::hitCharacters(float elapsedTime) {
 			if (find(v.begin(), v.end(), currentFrame) != v.end()) {
 				e->registerHit(attackPower[currentActionType]);
 				hitRegistered = true;
+				e->focusChar = this;
 			}
 		});
 		for_each(playersTouching.begin(), playersTouching.end(), [&](Character* p) {
