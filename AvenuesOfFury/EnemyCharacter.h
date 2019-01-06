@@ -9,7 +9,6 @@
 class Character;
 class EnemyCharacter : public Character {
 protected:
-	Character* focusChar;
 	Vector2f target;
 	bool deciding = false;
 	int timeSinceDecision = 0;
@@ -35,7 +34,7 @@ protected:
 	bool checkDecidingState();
 	void enterMovingState();
 	void moveTowardsFocusChar(float elapsedTime);
-	void predictPlayerLocation(float elapsedTime);
+	void predictFocusCharLocation(float elapsedTime);
 	void handleAI(float elapsedTime, vector<Character*> players);
 	virtual bool handleAttacking(float elapsedTime) = 0;
 	virtual void handleMoving(float elapsedTime) = 0;

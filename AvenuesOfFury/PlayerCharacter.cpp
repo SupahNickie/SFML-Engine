@@ -112,22 +112,19 @@ void PlayerCharacter::setDirectionHeaded() {
 
 void PlayerCharacter::hitCharacters(float elapsedTime) {
 	if (spriteState == Globals::ActionType::ATTACK &&
-		playersTouching.size() + enemiesTouching.size() > 0) {
+		playersTouching.size() + enemiesTouching.size() > 0 &&
+		!hitRegistered) {
 		vector<int> v = SpriteHolder::getDamageFramesForAction(spriteName, currentAction, currentActionType);
 		for_each(enemiesTouching.begin(), enemiesTouching.end(), [&](Character* e) {
-			if (!hitRegistered && hits(e)) {
-				if (find(v.begin(), v.end(), currentFrame) != v.end()) {
-					e->registerHit(attackPower[currentActionType]);
-					hitRegistered = true;
-				}
+			if (find(v.begin(), v.end(), currentFrame) != v.end()) {
+				e->registerHit(attackPower[currentActionType]);
+				hitRegistered = true;
 			}
 		});
 		for_each(playersTouching.begin(), playersTouching.end(), [&](Character* p) {
-			if (!hitRegistered && hits(p)) {
-				if (find(v.begin(), v.end(), currentFrame) != v.end()) {
-					p->registerHit(attackPower[currentActionType]);
-					hitRegistered = true;
-				}
+			if (find(v.begin(), v.end(), currentFrame) != v.end()) {
+				p->registerHit(attackPower[currentActionType]);
+				hitRegistered = true;
 			}
 		});
 	}

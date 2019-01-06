@@ -54,11 +54,12 @@ protected:
 	void render();
 	virtual void setDirectionHeaded() = 0;
 public:
-	Character();
 	Graphic::DirectionHeaded directionHeaded = Graphic::DirectionHeaded::NONE;
 	float speed;
 	uint64_t uniqueID;
+	Character* focusChar;
 
+	Character();
 	void flipHorizontally();
 	void disable();
 	Graphic::DirectionHeaded stringToDirection(string const& direction);

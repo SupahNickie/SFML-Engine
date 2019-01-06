@@ -37,7 +37,7 @@ void EnemyCharacter::turnToFaceFocusChar() {
 }
 
 void EnemyCharacter::setDirectionHeaded() {
-
+	// going to be used for throwing
 }
 
 void EnemyCharacter::attack(float elapsedTime) {
@@ -53,9 +53,24 @@ void EnemyCharacter::attack(float elapsedTime) {
 	if (!hitRegistered) {
 		vector<int> v = SpriteHolder::getDamageFramesForAction(spriteName, currentAction, currentActionType);
 		if (find(v.begin(), v.end(), currentFrame) != v.end()) {
-			hitRegistered = true;
-			focusChar->registerHit(attackPower[currentActionType]);
-			focusChar->disable();
+			for_each(enemiesTouching.begin(), enemiesTouching.end(), [&](Character* e) {
+				Vector2f target = e->getCenter();
+				if (find(v.begin(), v.end(), currentFrame) != v.end() &&
+					(abs(target.y - position.y) < (.015625f * Globals::getResolution().x))) {
+					e->registerHit(attackPower[currentActionType]);
+					hitRegistered = true;
+					e->disable();
+				}
+			});
+			for_each(playersTouching.begin(), playersTouching.end(), [&](Character* p) {
+				Vector2f target = p->getCenter();
+				if (find(v.begin(), v.end(), currentFrame) != v.end() &&
+					(abs(target.y - position.y) < (.015625f * Globals::getResolution().x))) {
+					p->registerHit(attackPower[currentActionType]);
+					hitRegistered = true;
+					p->disable();
+				}
+			});
 		}
 	}
 }
@@ -159,44 +174,44 @@ void EnemyCharacter::moveTowardsFocusChar(float elapsedTime) {
 	}
 }
 
-void EnemyCharacter::predictPlayerLocation(float elapsedTime) {
+void EnemyCharacter::predictFocusCharLocation(float elapsedTime) {
 	if (spriteState == Globals::ActionType::MOVE) {
-		CharacterVelocity pv = focusChar->getVelocity(reactionSpeed);
-		switch (pv.direction) {
+		CharacterVelocity cv = focusChar->getVelocity(reactionSpeed);
+		switch (cv.direction) {
 		case Graphic::DirectionHeaded::U:
-			target.x = pv.position.x;
-			target.y = pv.position.y - focusChar->speed;
+			target.x = cv.position.x;
+			target.y = cv.position.y - focusChar->speed;
 			break;
 		case Graphic::DirectionHeaded::UR:
-			target.x = pv.position.x + (sqrt(pow(focusChar->speed, 2.0) / 2.0));
-			target.y = pv.position.y - (sqrt(pow(focusChar->speed, 2.0) / 2.0));
+			target.x = cv.position.x + (sqrt(pow(focusChar->speed, 2.0) / 2.0));
+			target.y = cv.position.y - (sqrt(pow(focusChar->speed, 2.0) / 2.0));
 			break;
 		case Graphic::DirectionHeaded::R:
-			target.x = pv.position.x + focusChar->speed;
-			target.y = pv.position.y;
+			target.x = cv.position.x + focusChar->speed;
+			target.y = cv.position.y;
 			break;
 		case Graphic::DirectionHeaded::DR:
-			target.x = pv.position.x + (sqrt(pow(focusChar->speed, 2.0) / 2.0));
-			target.y = pv.position.y + (sqrt(pow(focusChar->speed, 2.0) / 2.0));
+			target.x = cv.position.x + (sqrt(pow(focusChar->speed, 2.0) / 2.0));
+			target.y = cv.position.y + (sqrt(pow(focusChar->speed, 2.0) / 2.0));
 			break;
 		case Graphic::DirectionHeaded::D:
-			target.x = pv.position.x;
-			target.y = pv.position.y + focusChar->speed;
+			target.x = cv.position.x;
+			target.y = cv.position.y + focusChar->speed;
 			break;
 		case Graphic::DirectionHeaded::DL:
-			target.x = pv.position.x - (sqrt(pow(focusChar->speed, 2.0) / 2.0));
-			target.y = pv.position.y + (sqrt(pow(focusChar->speed, 2.0) / 2.0));
+			target.x = cv.position.x - (sqrt(pow(focusChar->speed, 2.0) / 2.0));
+			target.y = cv.position.y + (sqrt(pow(focusChar->speed, 2.0) / 2.0));
 			break;
 		case Graphic::DirectionHeaded::L:
-			target.x = pv.position.x - focusChar->speed;
-			target.y = pv.position.y;
+			target.x = cv.position.x - focusChar->speed;
+			target.y = cv.position.y;
 			break;
 		case Graphic::DirectionHeaded::UL:
-			target.x = pv.position.x - (sqrt(pow(focusChar->speed, 2.0) / 2.0));
-			target.y = pv.position.y - (sqrt(pow(focusChar->speed, 2.0) / 2.0));
+			target.x = cv.position.x - (sqrt(pow(focusChar->speed, 2.0) / 2.0));
+			target.y = cv.position.y - (sqrt(pow(focusChar->speed, 2.0) / 2.0));
 			break;
 		case Graphic::DirectionHeaded::NONE:
-			target = pv.position;
+			target = cv.position;
 			break;
 		}
 	}
