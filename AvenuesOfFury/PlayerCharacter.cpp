@@ -70,7 +70,7 @@ void PlayerCharacter::update(float elapsedTime, vector<Character*> players, vect
 
 	if (leftPressed && !rightPressed) {
 		position.x -= speed * elapsedTime;
-		if (!facingLeft) flipHorizontally();
+		if (facingRight) flipHorizontally();
 		setMoveState(elapsedTime);
 	}
 

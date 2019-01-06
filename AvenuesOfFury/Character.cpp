@@ -28,7 +28,6 @@ Character::Character() {
 
 void Character::flipHorizontally() {
 	Graphic::flipHorizontally();
-	facingLeft = !facingLeft;
 	facingRight = !facingRight;
 }
 
@@ -54,12 +53,10 @@ bool Character::hits(Character* otherChar) {
 }
 
 void Character::registerHit(int hp) {
-	if (spriteState != Globals::ActionType::INJURE) {
-		spriteState = Globals::ActionType::INJURE;
-		currentAction = "injure";
-		currentActionType = INJURE_1;
-		resetFrameState();
-	}
+	spriteState = Globals::ActionType::INJURE;
+	currentAction = "injure";
+	currentActionType = INJURE_1;
+	resetFrameState();
 	health -= hp;
 }
 

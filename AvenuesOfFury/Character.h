@@ -24,7 +24,6 @@ protected:
 	map<int, CharacterVelocity> pastPositions;
 	int timeSincePastPositionsUpdate = 0;
 	Globals::ActionType spriteState;
-	bool facingLeft;
 	bool facingRight;
 	float baseSpeed;
 	bool jumping = false;

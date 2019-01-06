@@ -28,7 +28,7 @@ void EnemyCharacter::update(float elapsedTime, vector<Character*> players, vecto
 
 void EnemyCharacter::turnToFaceFocusChar() {
 	bool playerToRightOfSelf = focusChar->getCenter().x > this->getCenter().x;
-	if (playerToRightOfSelf && facingLeft) {
+	if (playerToRightOfSelf && !facingRight) {
 		flipHorizontally();
 	}
 	else if (!playerToRightOfSelf && facingRight) {

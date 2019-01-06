@@ -12,7 +12,6 @@ Link::Link() {
 	primaryAttackPressed = false;
 	secondaryAttackPressed = false;
 	spriteState = Globals::ActionType::IDLE;
-	facingLeft = true;
 	facingRight = false;
 	baseSpeed = .33 * Globals::getResolution().x;
 	speed = baseSpeed;

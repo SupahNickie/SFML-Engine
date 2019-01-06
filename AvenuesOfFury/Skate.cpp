@@ -12,7 +12,6 @@ Skate::Skate() {
 	primaryAttackPressed = false;
 	secondaryAttackPressed = false;
 	spriteState = Globals::ActionType::IDLE;
-	facingLeft = false;
 	facingRight = true;
 	baseSpeed = .33 * Globals::getResolution().x;
 	speed = baseSpeed;

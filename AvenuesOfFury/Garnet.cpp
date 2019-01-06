@@ -9,7 +9,6 @@ Garnet::Garnet(vector<Character*> players) : EnemyCharacter(players) {
 	attackPower[0] = 2000;
 	texturePath = "graphics/characters/garnet_sheet.png";
 	sprite = Sprite(TextureHolder::getTexture(texturePath));
-	facingLeft = false;
 	facingRight = true;
 	spriteName = "garnet";
 
