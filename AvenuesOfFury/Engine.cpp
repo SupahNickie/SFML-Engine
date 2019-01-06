@@ -19,7 +19,7 @@ void Engine::run() {
 	Clock clock;
 	srand(time(NULL));
 	
-	players = vector<PlayerCharacter*>(2);
+	players = vector<Character*>(2);
 	Link link;
 	players[0] = &link;
 	players[0]->setPosition(Vector2f(100, 300));
@@ -27,7 +27,7 @@ void Engine::run() {
 	players[1] = &skate;
 	players[1]->setPosition(Vector2f(800, 400));
 
-	enemies = vector<EnemyCharacter*>();
+	enemies = vector<Character*>();
 	Garnet garnet(players);
 	enemies.push_back(&garnet);
 	enemies[0]->setPosition(Vector2f(500, 400));

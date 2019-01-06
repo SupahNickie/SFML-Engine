@@ -12,5 +12,5 @@ void Engine::input() {
 			}
 		}
 	}
-	for_each(players.begin(), players.end(), [](PlayerCharacter* p) { p->handleInput(); });
+	for_each(players.begin(), players.end(), [](Character* p) { ((PlayerCharacter*)p)->handleInput(); });
 }

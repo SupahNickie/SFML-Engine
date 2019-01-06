@@ -8,6 +8,7 @@ Globals* Globals::gInstance = nullptr;
 
 Globals::Globals() {
 	assert(gInstance == nullptr);
+	idSerial = 0;
 	gInstance = this;
 }
 
@@ -31,4 +32,8 @@ Vector2f Globals::getResolution() {
 
 float Globals::getScalingFactor() {
 	return gInstance->scalingFactor;
+}
+
+uint64_t Globals::getAndIncrementIDSerial() {
+	return ++gInstance->idSerial;
 }

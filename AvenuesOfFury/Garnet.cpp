@@ -4,7 +4,7 @@
 #include "SpriteHolder.h"
 #include <iostream>
 
-Garnet::Garnet(vector<PlayerCharacter*> players) : EnemyCharacter(players) {
+Garnet::Garnet(vector<Character*> players) : EnemyCharacter(players) {
 	MS_PER_FRAME = 100;
 	attackPower[0] = 2000;
 	texturePath = "graphics/characters/garnet_sheet.png";

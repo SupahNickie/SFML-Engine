@@ -6,10 +6,10 @@
 #include "Character.h"
 #include "PlayerCharacter.h"
 
-class PlayerCharacter;
+class Character;
 class EnemyCharacter : public Character {
 protected:
-	PlayerCharacter* focusChar;
+	Character* focusChar;
 	Vector2f target;
 	bool deciding = false;
 	int timeSinceDecision = 0;
@@ -30,13 +30,13 @@ protected:
 	int varianceAggression = 0;
 	int aggression = 0; // minimum milliseconds before attacking again
 
-	bool handleDecidingState(float elapsedTime, vector<PlayerCharacter*> players);
+	bool handleDecidingState(float elapsedTime, vector<Character*> players);
 	bool basicAttack(float elapsedTime);
 	bool checkDecidingState();
 	void enterMovingState();
 	void moveTowardsFocusChar(float elapsedTime);
 	void predictPlayerLocation(float elapsedTime);
-	void handleAI(float elapsedTime, vector<PlayerCharacter*> players);
+	void handleAI(float elapsedTime, vector<Character*> players);
 	virtual bool handleAttacking(float elapsedTime) = 0;
 	virtual void handleMoving(float elapsedTime) = 0;
 private:
@@ -47,8 +47,8 @@ private:
 	void resetStateAfterFinishingAction();
 	void moveTowardsTarget(float elapsedTime);
 public:
-	EnemyCharacter(vector<PlayerCharacter*> players);
-	void update(float elapsedTime, vector<PlayerCharacter*> players);
+	EnemyCharacter(vector<Character*> players);
+	void update(float elapsedTime, vector<Character*> players, vector<Character*> enemies);
 	void attack(float elapsedTime);
 };
 

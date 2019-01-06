@@ -5,52 +5,35 @@
 
 PlayerCharacter::PlayerCharacter() {
 	// Init array of direction presses remembered
-	pastDirectionsPressed = new Character::DirectionHeaded[5];
-	pastDirectionsPressed[0] = Character::DirectionHeaded::NONE;
-	pastDirectionsPressed[1] = Character::DirectionHeaded::NONE;
-	pastDirectionsPressed[2] = Character::DirectionHeaded::NONE;
-	pastDirectionsPressed[3] = Character::DirectionHeaded::NONE;
-	pastDirectionsPressed[4] = Character::DirectionHeaded::NONE;
-
-	// Init player position data for enemies
-	PlayerVelocity pv;
-	pv.direction = Character::DirectionHeaded::NONE;
-	pv.position = position;
-	pastPositions = {
-		{500, pv},
-		{450, pv},
-		{400, pv},
-		{350, pv},
-		{300, pv},
-		{250, pv},
-		{200, pv},
-		{150, pv},
-		{100, pv},
-		{50, pv},
-		{0, pv}
-	};
+	pastDirectionsPressed = new Graphic::DirectionHeaded[5];
+	pastDirectionsPressed[0] = Graphic::DirectionHeaded::NONE;
+	pastDirectionsPressed[1] = Graphic::DirectionHeaded::NONE;
+	pastDirectionsPressed[2] = Graphic::DirectionHeaded::NONE;
+	pastDirectionsPressed[3] = Graphic::DirectionHeaded::NONE;
+	pastDirectionsPressed[4] = Graphic::DirectionHeaded::NONE;
 }
 
 PlayerCharacter::~PlayerCharacter() {
 	delete[] pastDirectionsPressed;
 }
 
-void PlayerCharacter::update(float elapsedTime, vector<EnemyCharacter*> enemies) {
+void PlayerCharacter::update(float elapsedTime, vector<Character*> players, vector<Character*> enemies) {
+	detectCollisions(players, enemies);
 	updatePastPositions(elapsedTime);
-	hitEnemies(elapsedTime, enemies);
+	hitCharacters(elapsedTime);
 	updateFrameState(elapsedTime);
 	sprite.setPosition(position);
 	render();
 
-	if (inputsDisabled) {
+	if (disabled) {
 		timeSinceLastAction += elapsedTime * 1000;
 		if (timeSinceLastAction <= STUN_LENGTH) return;
 		timeSinceLastAction = 0;
-		inputsDisabled = false;
+		disabled = false;
 		attackDisabled = false;
 		setIdleState(elapsedTime);
 		memmove(&pastDirectionsPressed[0], &pastDirectionsPressed[1], (size_t)4 * sizeof(pastDirectionsPressed[0]));
-		pastDirectionsPressed[4] = Character::DirectionHeaded::NONE;
+		pastDirectionsPressed[4] = Graphic::DirectionHeaded::NONE;
 		running = false;
 	}
 
@@ -108,36 +91,6 @@ void PlayerCharacter::update(float elapsedTime, vector<EnemyCharacter*> enemies)
 	setDirectionHeaded();
 }
 
-void PlayerCharacter::disableInputs() {
-	inputsDisabled = true;
-	timeSinceLastAction = 0;
-}
-
-PlayerVelocity PlayerCharacter::getVelocity(int time) {
-	PlayerVelocity output;
-	time == 0 ? output.position = position : output.position = pastPositions[time].position;
-	output.direction = directionHeaded;
-	return output;
-}
-
-void PlayerCharacter::updatePastPositions(float elapsedTime) {
-	if (timeSincePastPositionsUpdate > 50) {
-		int positionToUpdate = 500;
-		int positionToGrab = 450;
-		while (positionToUpdate > 0) {
-			pastPositions[positionToUpdate] = pastPositions[positionToGrab];
-			positionToUpdate = positionToGrab;
-			positionToGrab -= 50;
-		}
-		PlayerVelocity current;
-		current.position = position;
-		current.direction = directionHeaded;
-		pastPositions[0] = current;
-		timeSincePastPositionsUpdate = 0;
-	}
-	timeSincePastPositionsUpdate += elapsedTime * 1000;
-}
-
 void PlayerCharacter::setDirectionHeaded() {
 	string output = "";
 	if (upPressed && !downPressed) output += "U";
@@ -145,10 +98,10 @@ void PlayerCharacter::setDirectionHeaded() {
 	if (leftPressed && !rightPressed) output += "L";
 	if (rightPressed && !leftPressed) output += "R";
 
-	Character::DirectionHeaded current = stringToDirection(output);
-	if ((current == Character::DirectionHeaded::NONE && timeSinceLastDirectionPress < 100) ||
+	Graphic::DirectionHeaded current = stringToDirection(output);
+	if ((current == Graphic::DirectionHeaded::NONE && timeSinceLastDirectionPress < 100) ||
 		(current == directionHeaded && timeSinceLastDirectionPress > 0) ||
-		(directionHeaded == Character::DirectionHeaded::NONE && current == Character::DirectionHeaded::NONE)) {
+		(directionHeaded == Graphic::DirectionHeaded::NONE && current == Graphic::DirectionHeaded::NONE)) {
 		return;
 	}
 
@@ -157,13 +110,22 @@ void PlayerCharacter::setDirectionHeaded() {
 	pastDirectionsPressed[4] = directionHeaded;
 }
 
-void PlayerCharacter::hitEnemies(float elapsedTime, vector<EnemyCharacter*> enemies) {
-	if (spriteState == Globals::ActionType::ATTACK) {
-		for_each(enemies.begin(), enemies.end(), [&](EnemyCharacter* e) {
+void PlayerCharacter::hitCharacters(float elapsedTime) {
+	if (spriteState == Globals::ActionType::ATTACK &&
+		playersTouching.size() + enemiesTouching.size() > 0) {
+		vector<int> v = SpriteHolder::getDamageFramesForAction(spriteName, currentAction, currentActionType);
+		for_each(enemiesTouching.begin(), enemiesTouching.end(), [&](Character* e) {
 			if (!hitRegistered && hits(e)) {
-				vector<int> v = SpriteHolder::getDamageFramesForAction(spriteName, currentAction, currentActionType);
 				if (find(v.begin(), v.end(), currentFrame) != v.end()) {
 					e->registerHit(attackPower[currentActionType]);
+					hitRegistered = true;
+				}
+			}
+		});
+		for_each(playersTouching.begin(), playersTouching.end(), [&](Character* p) {
+			if (!hitRegistered && hits(p)) {
+				if (find(v.begin(), v.end(), currentFrame) != v.end()) {
+					p->registerHit(attackPower[currentActionType]);
 					hitRegistered = true;
 				}
 			}
@@ -174,7 +136,7 @@ void PlayerCharacter::hitEnemies(float elapsedTime, vector<EnemyCharacter*> enem
 void PlayerCharacter::setMoveState(float elapsedTime) {
 	timeSinceLastDirectionPress += elapsedTime * 1000;
 	currentAction = "move";
-	if ((pastDirectionsPressed[4] != Character::DirectionHeaded::NONE) &&
+	if ((pastDirectionsPressed[4] != Graphic::DirectionHeaded::NONE) &&
 		((pastDirectionsPressed[3] == pastDirectionsPressed[4]) || running)) {
 		currentActionType = MOVE_2;
 		speed = baseSpeed * 2.0;

@@ -5,8 +5,8 @@
 using namespace std;
 
 void Engine::update(float timeElapsed) {
-	for_each(players.begin(), players.end(), [&](PlayerCharacter* p) { p->update(timeElapsed, enemies); });
-	auto it = remove_if(enemies.begin(), enemies.end(), [](EnemyCharacter* e) { return !e->isActive; });
+	auto it = remove_if(enemies.begin(), enemies.end(), [](Character* e) { return !e->isActive; });
 	enemies.erase(it, enemies.end());
-	for_each(enemies.begin(), enemies.end(), [&](EnemyCharacter* e) { e->update(timeElapsed, players); });
+	for_each(players.begin(), players.end(), [&](Character* p) { p->update(timeElapsed, players, enemies); });
+	for_each(enemies.begin(), enemies.end(), [&](Character* e) { e->update(timeElapsed, players, enemies); });
 }

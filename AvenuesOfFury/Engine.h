@@ -17,8 +17,8 @@ private:
 	RenderWindow window;
 	View mainView;
 	
-	vector<PlayerCharacter*> players;
-	vector<EnemyCharacter*> enemies;
+	vector<Character*> players;
+	vector<Character*> enemies;
 
 	void input();
 	void update(float timeElapsed);

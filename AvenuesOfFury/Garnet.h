@@ -1,7 +1,6 @@
 #pragma once
 #include <vector>
 #include "EnemyCharacter.h"
-#include "PlayerCharacter.h"
 
 class Garnet : public EnemyCharacter {
 protected:
@@ -12,5 +11,5 @@ protected:
 	bool handleAttacking(float elapsedTime);
 	void handleMoving(float elapsedTime);
 public:
-	Garnet(vector<PlayerCharacter*> players);
+	Garnet(vector<Character*> players);
 };

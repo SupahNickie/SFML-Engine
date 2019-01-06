@@ -2,7 +2,7 @@
 #include "EnemyCharacter.h"
 #include "SpriteHolder.h"
 
-EnemyCharacter::EnemyCharacter(vector<PlayerCharacter*> players) {
+EnemyCharacter::EnemyCharacter(vector<Character*> players) {
 	attackPower = vector<int>(1);
 	focusChar = players[rand() % 2];
 	spriteState = Globals::ActionType::IDLE;
@@ -13,11 +13,12 @@ EnemyCharacter::EnemyCharacter(vector<PlayerCharacter*> players) {
 	recalculateDecisionSpeed(false);
 }
 
-void EnemyCharacter::update(float elapsedTime, vector<PlayerCharacter*> players) {
+void EnemyCharacter::update(float elapsedTime, vector<Character*> players, vector<Character*> enemies) {
 	if (health <= 0) {
 		isActive = false;
 		return;
 	}
+	detectCollisions(players, enemies);
 	updateFrameState(elapsedTime);
 	turnToFaceFocusChar();
 	handleAI(elapsedTime, players);
@@ -54,7 +55,7 @@ void EnemyCharacter::attack(float elapsedTime) {
 		if (find(v.begin(), v.end(), currentFrame) != v.end()) {
 			hitRegistered = true;
 			focusChar->registerHit(attackPower[currentActionType]);
-			focusChar->disableInputs();
+			focusChar->disable();
 		}
 	}
 }
@@ -86,7 +87,7 @@ void EnemyCharacter::resetStateAfterFinishingAction() {
 	}
 }
 
-bool EnemyCharacter::handleDecidingState(float elapsedTime, vector<PlayerCharacter*> players) {
+bool EnemyCharacter::handleDecidingState(float elapsedTime, vector<Character*> players) {
 	if (decisionSpeed != 0 && deciding) {
 		if (timeSinceDecision == 0) {
 			spriteState = Globals::ActionType::IDLE;
@@ -160,41 +161,41 @@ void EnemyCharacter::moveTowardsFocusChar(float elapsedTime) {
 
 void EnemyCharacter::predictPlayerLocation(float elapsedTime) {
 	if (spriteState == Globals::ActionType::MOVE) {
-		PlayerVelocity pv = focusChar->getVelocity(reactionSpeed);
+		CharacterVelocity pv = focusChar->getVelocity(reactionSpeed);
 		switch (pv.direction) {
-		case Character::DirectionHeaded::U:
+		case Graphic::DirectionHeaded::U:
 			target.x = pv.position.x;
 			target.y = pv.position.y - focusChar->speed;
 			break;
-		case Character::DirectionHeaded::UR:
+		case Graphic::DirectionHeaded::UR:
 			target.x = pv.position.x + (sqrt(pow(focusChar->speed, 2.0) / 2.0));
 			target.y = pv.position.y - (sqrt(pow(focusChar->speed, 2.0) / 2.0));
 			break;
-		case Character::DirectionHeaded::R:
+		case Graphic::DirectionHeaded::R:
 			target.x = pv.position.x + focusChar->speed;
 			target.y = pv.position.y;
 			break;
-		case Character::DirectionHeaded::DR:
+		case Graphic::DirectionHeaded::DR:
 			target.x = pv.position.x + (sqrt(pow(focusChar->speed, 2.0) / 2.0));
 			target.y = pv.position.y + (sqrt(pow(focusChar->speed, 2.0) / 2.0));
 			break;
-		case Character::DirectionHeaded::D:
+		case Graphic::DirectionHeaded::D:
 			target.x = pv.position.x;
 			target.y = pv.position.y + focusChar->speed;
 			break;
-		case Character::DirectionHeaded::DL:
+		case Graphic::DirectionHeaded::DL:
 			target.x = pv.position.x - (sqrt(pow(focusChar->speed, 2.0) / 2.0));
 			target.y = pv.position.y + (sqrt(pow(focusChar->speed, 2.0) / 2.0));
 			break;
-		case Character::DirectionHeaded::L:
+		case Graphic::DirectionHeaded::L:
 			target.x = pv.position.x - focusChar->speed;
 			target.y = pv.position.y;
 			break;
-		case Character::DirectionHeaded::UL:
+		case Graphic::DirectionHeaded::UL:
 			target.x = pv.position.x - (sqrt(pow(focusChar->speed, 2.0) / 2.0));
 			target.y = pv.position.y - (sqrt(pow(focusChar->speed, 2.0) / 2.0));
 			break;
-		case Character::DirectionHeaded::NONE:
+		case Graphic::DirectionHeaded::NONE:
 			target = pv.position;
 			break;
 		}
@@ -220,7 +221,7 @@ void EnemyCharacter::moveTowardsTarget(float elapsedTime) {
 	}
 }
 
-void EnemyCharacter::handleAI(float elapsedTime, vector<PlayerCharacter*> players) {
+void EnemyCharacter::handleAI(float elapsedTime, vector<Character*> players) {
 	if (spriteState != Globals::ActionType::ATTACK) timeSinceAttackEnded += elapsedTime * 1000;
 	resetStateAfterFinishingAction();
 	if (handleDecidingState(elapsedTime, players)) return;

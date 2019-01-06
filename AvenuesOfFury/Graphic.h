@@ -13,6 +13,8 @@ protected:
 	Sprite sprite;
 	Vector2f position;
 public:
+	enum class DirectionHeaded { U, UR, R, DR, D, DL, L, UL, NONE };
+
 	bool isActive;
 	void flipHorizontally();
 	void setPosition(Vector2f position);
