@@ -15,14 +15,14 @@ private:
 	float scalingFactor;
 public:
 	enum class ActionType { MOVE, ATTACK, IDLE, INJURE, NONE };
-	uint64_t idSerial;
+	unsigned int idSerial;
 
 	Globals();
 	static ActionType actionStringToEnum(string const& action);
 	static void setResolution(float x, float y);
 	static Vector2f getResolution();
 	static float getScalingFactor();
-	static uint64_t getAndIncrementIDSerial();
+	static unsigned int getAndIncrementIDSerial();
 };
 
 #endif

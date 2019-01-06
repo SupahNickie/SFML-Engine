@@ -34,6 +34,6 @@ float Globals::getScalingFactor() {
 	return gInstance->scalingFactor;
 }
 
-uint64_t Globals::getAndIncrementIDSerial() {
+unsigned int Globals::getAndIncrementIDSerial() {
 	return ++gInstance->idSerial;
 }

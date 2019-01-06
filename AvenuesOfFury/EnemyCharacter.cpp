@@ -57,7 +57,7 @@ void EnemyCharacter::attack(float elapsedTime) {
 				Vector2f target = e->getCenter();
 				if (find(v.begin(), v.end(), currentFrame) != v.end() &&
 					(abs(target.y - position.y) < (.015625f * Globals::getResolution().x))) {
-					e->registerHit(attackPower[currentActionType]);
+					e->registerHit(attackPower[currentActionType] * 0.05f);
 					hitRegistered = true;
 					e->disable();
 				}

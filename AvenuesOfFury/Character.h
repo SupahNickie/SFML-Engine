@@ -56,7 +56,7 @@ protected:
 public:
 	Graphic::DirectionHeaded directionHeaded = Graphic::DirectionHeaded::NONE;
 	float speed;
-	uint64_t uniqueID;
+	unsigned int uniqueID;
 	Character* focusChar;
 
 	Character();

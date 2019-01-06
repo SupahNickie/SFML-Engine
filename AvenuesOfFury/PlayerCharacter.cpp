@@ -124,7 +124,7 @@ void PlayerCharacter::hitCharacters(float elapsedTime) {
 		});
 		for_each(playersTouching.begin(), playersTouching.end(), [&](Character* p) {
 			if (find(v.begin(), v.end(), currentFrame) != v.end()) {
-				p->registerHit(attackPower[currentActionType]);
+				p->registerHit(attackPower[currentActionType] * 0.05f);
 				hitRegistered = true;
 			}
 		});
