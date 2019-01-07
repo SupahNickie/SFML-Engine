@@ -142,6 +142,21 @@ void Character::updatePastPositions(float elapsedTime) {
 	timeSincePastPositionsUpdate += elapsedTime * 1000;
 }
 
+void Character::setAttackState(int attackType) {
+	if (!attackDisabled) {
+		currentAction = "attack";
+		if (currentActionType != attackType) {
+			currentActionType = attackType;
+			resetFrameState();
+		}
+		if (spriteState != Globals::ActionType::ATTACK) {
+			spriteState = Globals::ActionType::ATTACK;
+			resetFrameState();
+		}
+	}
+	if (currentActionDone) attackDisabled = true;
+}
+
 void Character::render() {
 	SpriteHolder::setSprite(sprite, spriteName, currentAction, currentActionType, currentFrame);
 }

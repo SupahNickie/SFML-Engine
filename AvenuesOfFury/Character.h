@@ -50,6 +50,7 @@ protected:
 	void resetFrameState();
 	void updateFrameState(float elapsedTime);
 	void updatePastPositions(float elapsedTime);
+	void setAttackState(int attackType);
 	void render();
 	virtual void setDirectionHeaded() = 0;
 public:

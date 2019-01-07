@@ -30,9 +30,10 @@ protected:
 	int aggression = 0; // minimum milliseconds before attacking again
 
 	bool handleDecidingState(float elapsedTime, vector<Character*> players);
-	bool basicAttack(float elapsedTime);
+	bool attack(float elapsedTime, int actionType);
 	bool checkDecidingState();
-	void enterMovingState();
+	void setIdleState();
+	void setMoveState();
 	void moveTowardsFocusChar(float elapsedTime);
 	void predictFocusCharLocation(float elapsedTime);
 	void handleAI(float elapsedTime, vector<Character*> players);
@@ -48,7 +49,7 @@ private:
 public:
 	EnemyCharacter(vector<Character*> players);
 	void update(float elapsedTime, vector<Character*> players, vector<Character*> enemies);
-	void attack(float elapsedTime);
+	void calculateAttack(float elapsedTime);
 };
 
 #endif

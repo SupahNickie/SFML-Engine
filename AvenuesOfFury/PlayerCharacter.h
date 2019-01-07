@@ -24,7 +24,6 @@ private:
 	void hitCharacters(float elapsedTime);
 	void setMoveState(float elapsedTime);
 	void setIdleState(float elapsedTime);
-	void setAttackState(float elapsedTime, int attackType);
 public:
 	PlayerCharacter();
 	~PlayerCharacter();

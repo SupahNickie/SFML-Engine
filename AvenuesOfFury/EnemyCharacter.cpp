@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "EnemyCharacter.h"
 #include "SpriteHolder.h"
+#include <iostream>
 
 EnemyCharacter::EnemyCharacter(vector<Character*> players) {
 	attackPower = vector<int>(1);
@@ -40,15 +41,9 @@ void EnemyCharacter::setDirectionHeaded() {
 	// going to be used for throwing
 }
 
-void EnemyCharacter::attack(float elapsedTime) {
-	if (timeSinceAttackBegan == 0) {
-		spriteState = Globals::ActionType::ATTACK;
-		currentAction = "attack";
-		currentActionType = ATTACK_1;
-		resetFrameState();
-		++timeSinceAttackBegan;
-		recalculateAggression();
-	}
+void EnemyCharacter::calculateAttack(float elapsedTime) {
+	if (timeSinceAttackBegan == 0) recalculateAggression();
+
 	timeSinceAttackBegan += elapsedTime * 1000;
 	if (!hitRegistered) {
 		vector<int> v = SpriteHolder::getDamageFramesForAction(spriteName, currentAction, currentActionType);
@@ -135,16 +130,25 @@ bool EnemyCharacter::handleDecidingState(float elapsedTime, vector<Character*> p
 	}
 }
 
-bool EnemyCharacter::basicAttack(float elapsedTime) {
-	if (!attackDisabled &&
-		(timeSinceAttackEnded > aggression) &&
-		spriteState != Globals::ActionType::INJURE &&
-		hits(focusChar)
-		) {
-		attack(elapsedTime);
+bool EnemyCharacter::attack(float elapsedTime, int actionType) {
+	if (timeSinceAttackEnded > aggression) {
+		if (!attackDisabled &&
+			spriteState != Globals::ActionType::INJURE &&
+			hits(focusChar)
+			) {
+			setAttackState(actionType);
+			calculateAttack(elapsedTime);
+			return true;
+		}
+		return false;
+	}
+	else if (spriteState == Globals::ActionType::INJURE) {
 		return true;
 	}
-	return false;
+	else {
+		setIdleState();
+		return true;
+	}
 }
 
 bool EnemyCharacter::checkDecidingState() {
@@ -155,7 +159,16 @@ bool EnemyCharacter::checkDecidingState() {
 	return false;
 }
 
-void EnemyCharacter::enterMovingState() {
+void EnemyCharacter::setIdleState() {
+	currentAction = "idle";
+	currentActionType = IDLE_1;
+	if (spriteState != Globals::ActionType::IDLE) {
+		spriteState = Globals::ActionType::IDLE;
+		resetFrameState();
+	}
+}
+
+void EnemyCharacter::setMoveState() {
 	if (spriteState == Globals::ActionType::IDLE) {
 		spriteState = Globals::ActionType::MOVE;
 		currentAction = "move";
@@ -242,6 +255,6 @@ void EnemyCharacter::handleAI(float elapsedTime, vector<Character*> players) {
 	if (handleDecidingState(elapsedTime, players)) return;
 	if (handleAttacking(elapsedTime)) return;
 	if (checkDecidingState()) return;
-	enterMovingState();
+	setMoveState();
 	handleMoving(elapsedTime);
 }

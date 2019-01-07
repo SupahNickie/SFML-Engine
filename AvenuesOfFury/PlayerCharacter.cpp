@@ -39,12 +39,12 @@ void PlayerCharacter::update(float elapsedTime, vector<Character*> players, vect
 
 	if (!attackDisabled) {
 		if (primaryAttackPressed) {
-			setAttackState(elapsedTime, ATTACK_1);
+			setAttackState(ATTACK_1);
 			running = false;
 			return;
 		}
 		else if (secondaryAttackPressed) {
-			setAttackState(elapsedTime, ATTACK_2);
+			setAttackState(ATTACK_2);
 			running = false;
 			return;
 		}
@@ -163,19 +163,4 @@ void PlayerCharacter::setIdleState(float elapsedTime) {
 	}
 	timeSinceLastDirectionPress += elapsedTime * 1000;
 	hitRegistered = false;
-}
-
-void PlayerCharacter::setAttackState(float elapsedTime, int attackType) {
-	if (!attackDisabled) {
-		currentAction = "attack";
-		if (currentActionType != attackType) {
-			currentActionType = attackType;
-			resetFrameState();
-		}
-		if (spriteState != Globals::ActionType::ATTACK) {
-			spriteState = Globals::ActionType::ATTACK;
-			resetFrameState();
-		}
-	}
-	if (currentActionDone) attackDisabled = true;
 }
