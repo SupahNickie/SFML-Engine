@@ -1,7 +1,5 @@
 /.vs
 /Debug
 AvenuesOfFury/Debug
-*.vcxproj*
 *.dll
-*.sln
 .gitattributes
