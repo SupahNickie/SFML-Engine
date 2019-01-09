@@ -52,15 +52,17 @@ protected:
 	bool spriteCycleDown = false;
 
 	bool jumping = false;
+	bool jumpDisabled = false;
 	float prejumpY = 0.0f;
 	int jumpLength = 0;
 
 	void detectCollisions(vector<Character*> players, vector<Character*> enemies);
-	void resetFrameState();
+	void resetFrameState(bool clearAll = true);
 	void updateFrameState(float elapsedTime, bool prioritizedAction, bool jumping);
 	void updatePastPositions(float elapsedTime);
 	void setAttackState(int attackType);
 	void render();
+	virtual void setIdleState(float elapsedTime = 0.0f) = 0;
 	virtual void setDirectionHeaded() = 0;
 private:
 	bool handleJumpingAnimation(int maxFrames, bool attacking);

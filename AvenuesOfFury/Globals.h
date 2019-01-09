@@ -35,6 +35,7 @@ public:
 	static Vector2f getResolution();
 	static float getScalingFactor();
 	static unsigned int getAndIncrementIDSerial();
+	static bool isJumpingState(ActionType action);
 };
 
 #endif

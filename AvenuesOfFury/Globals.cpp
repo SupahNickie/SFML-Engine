@@ -43,3 +43,12 @@ float Globals::getScalingFactor() {
 unsigned int Globals::getAndIncrementIDSerial() {
 	return ++gInstance->idSerial;
 }
+
+bool Globals::isJumpingState(Globals::ActionType action) {
+	return (
+		action == Globals::ActionType::JUMP_START ||
+		action == Globals::ActionType::JUMP_AIR ||
+		action == Globals::ActionType::JUMP_ATTACK ||
+		action == Globals::ActionType::JUMP_LAND
+	);
+}

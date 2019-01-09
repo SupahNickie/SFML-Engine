@@ -172,7 +172,7 @@ bool EnemyCharacter::checkDecidingState() {
 	return false;
 }
 
-void EnemyCharacter::setIdleState() {
+void EnemyCharacter::setIdleState(float elapsedTime) {
 	currentAction = "idle";
 	currentActionType = IDLE_1;
 	if (spriteState != Globals::ActionType::IDLE) {

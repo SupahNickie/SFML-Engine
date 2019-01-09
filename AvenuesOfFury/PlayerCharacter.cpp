@@ -37,7 +37,7 @@ void PlayerCharacter::update(float elapsedTime, vector<Character*> players, vect
 		running = false;
 	}
 
-	if (jumpPressed) {
+	if (jumpPressed || jumping) {
 		handleJump(elapsedTime);
 		running = false;
 		return;
@@ -118,32 +118,29 @@ void PlayerCharacter::setDirectionHeaded() {
 }
 
 void PlayerCharacter::handleJump(float elapsedTime) {
-	timeSinceLastAction += elapsedTime * 1000;
-	if (spriteState == Globals::ActionType::MOVE ||
-		spriteState == Globals::ActionType::IDLE ||
-		spriteState == Globals::ActionType::ATTACK ||
-		spriteState == Globals::ActionType::INJURE ) {
+	if (!Globals::isJumpingState(spriteState)) {
 		spriteState = Globals::ActionType::JUMP_START;
 		currentAction = "jump_start";
 		currentActionType = JUMP_START;
 		resetFrameState();
-		timeSinceLastAction = 0;
 		jumping = true;
+		running = false;
+		if (prejumpY == 0.0f) prejumpY = position.y;
 	}
-	if (prejumpY == 0.0f) {
-		prejumpY = position.y;
-	}
-	//cout << "HALF JUMP LENGTH: " << jumpLength / 2 << "CURRENT: " << currentFrame * MS_PER_FRAME << "\n";
+
 	if ((timeSinceLastAction) < (jumpLength / 2)) {
-		position.y -= speed * elapsedTime;
+		position.y -= baseSpeed * 1.25 * elapsedTime;
 	}
 	else {
-		position.y += speed * elapsedTime;
+		position.y += baseSpeed * 1.25 * elapsedTime;
 	}
+
+	if (rightPressed) position.x += speed * elapsedTime;
+	if (leftPressed) position.x -= speed * elapsedTime;
 }
 
 void PlayerCharacter::hitCharacters(float elapsedTime) {
-	if (spriteState == Globals::ActionType::ATTACK &&
+	if ((spriteState == Globals::ActionType::ATTACK || (spriteState == Globals::ActionType::JUMP_ATTACK) || (spriteState == Globals::ActionType::RUN_ATTACK)) &&
 		playersTouching.size() + enemiesTouching.size() > 0 &&
 		!hitRegistered) {
 		vector<int> v = SpriteHolder::getDamageFramesForAction(spriteName, currentAction, currentActionType);

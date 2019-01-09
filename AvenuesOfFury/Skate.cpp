@@ -4,7 +4,7 @@
 #include "SpriteHolder.h"
 
 Skate::Skate() {
-	MS_PER_FRAME = 100;
+	MS_PER_FRAME = 75;
 	texturePath = "graphics/characters/skate_sheet.png";
 	sprite = Sprite(TextureHolder::getTexture(texturePath));
 	attackPower = vector<int>(1);
@@ -34,10 +34,10 @@ Skate::Skate() {
 }
 
 void Skate::handleInput() {
-	Keyboard::isKeyPressed(Keyboard::Up) ? upPressed = true : upPressed = false;
-	Keyboard::isKeyPressed(Keyboard::Down) ? downPressed = true : downPressed = false;
-	Keyboard::isKeyPressed(Keyboard::Left) ? leftPressed = true : leftPressed = false;
-	Keyboard::isKeyPressed(Keyboard::Right) ? rightPressed = true : rightPressed = false;
-	Keyboard::isKeyPressed(Keyboard::RControl) ? primaryAttackPressed = true : primaryAttackPressed = false;
-	Keyboard::isKeyPressed(Keyboard::RShift) ? jumpPressed = true : jumpPressed = false;
+	Keyboard::isKeyPressed(Keyboard::W) ? upPressed = true : upPressed = false;
+	Keyboard::isKeyPressed(Keyboard::S) ? downPressed = true : downPressed = false;
+	Keyboard::isKeyPressed(Keyboard::A) ? leftPressed = true : leftPressed = false;
+	Keyboard::isKeyPressed(Keyboard::D) ? rightPressed = true : rightPressed = false;
+	Keyboard::isKeyPressed(Keyboard::E) ? primaryAttackPressed = true : primaryAttackPressed = false;
+	Keyboard::isKeyPressed(Keyboard::Space) ? jumpPressed = true : jumpPressed = false;
 }

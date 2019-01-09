@@ -33,7 +33,7 @@ protected:
 	bool handleDecidingState(float elapsedTime, vector<Character*> players);
 	bool attack(float elapsedTime, int actionType);
 	bool checkDecidingState();
-	void setIdleState();
+	void setIdleState(float elapsedTime = 0.0f);
 	void setMoveState();
 	void moveTowardsFocusChar(float elapsedTime);
 	void predictFocusCharLocation(float elapsedTime);

@@ -42,7 +42,7 @@ jump_land,1
 frames,1,0,;
 12,729,28,47
 jump_attack,1
-frames,2,0,;
+frames,2,0,1,;
 543,705,34,60
 590,705,64,42
 run_attack,1

@@ -30,10 +30,10 @@ Link::Link() {
 }
 
 void Link::handleInput() {
-	Keyboard::isKeyPressed(Keyboard::W) ? upPressed = true : upPressed = false;
-	Keyboard::isKeyPressed(Keyboard::S) ? downPressed = true : downPressed = false;
-	Keyboard::isKeyPressed(Keyboard::A) ? leftPressed = true : leftPressed = false;
-	Keyboard::isKeyPressed(Keyboard::D) ? rightPressed = true : rightPressed = false;
-	Keyboard::isKeyPressed(Keyboard::Space) ? primaryAttackPressed = true : primaryAttackPressed = false;
-	Keyboard::isKeyPressed(Keyboard::E) ? secondaryAttackPressed = true : secondaryAttackPressed = false;
+	Keyboard::isKeyPressed(Keyboard::Up) ? upPressed = true : upPressed = false;
+	Keyboard::isKeyPressed(Keyboard::Down) ? downPressed = true : downPressed = false;
+	Keyboard::isKeyPressed(Keyboard::Left) ? leftPressed = true : leftPressed = false;
+	Keyboard::isKeyPressed(Keyboard::Right) ? rightPressed = true : rightPressed = false;
+	Keyboard::isKeyPressed(Keyboard::RControl) ? primaryAttackPressed = true : primaryAttackPressed = false;
+	Keyboard::isKeyPressed(Keyboard::RShift) ? secondaryAttackPressed = true : secondaryAttackPressed = false;
 }
