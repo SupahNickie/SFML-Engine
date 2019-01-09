@@ -45,6 +45,7 @@ private:
 	void recalculateAggression();
 	void recalculateDecisionSpeed(bool decisionState);
 	void resetStateAfterFinishingAction();
+	bool handleDisabledState(float elapsedTime);
 	void moveTowardsTarget(float elapsedTime);
 public:
 	EnemyCharacter(vector<Character*> players);

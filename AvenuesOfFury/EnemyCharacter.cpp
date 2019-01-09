@@ -97,6 +97,19 @@ void EnemyCharacter::resetStateAfterFinishingAction() {
 	}
 }
 
+bool EnemyCharacter::handleDisabledState(float elapsedTime) {
+	if (disabled) {
+		timeSinceLastAction += elapsedTime * 1000;
+		if (timeSinceLastAction <= STUN_LENGTH) return true;
+		timeSinceLastAction = 0;
+		disabled = false;
+		attackDisabled = false;
+		setIdleState();
+		return false;
+	}
+	return false;
+}
+
 bool EnemyCharacter::handleDecidingState(float elapsedTime, vector<Character*> players) {
 	if (decisionSpeed != 0 && deciding) {
 		if (timeSinceDecision == 0) {
@@ -251,6 +264,7 @@ void EnemyCharacter::moveTowardsTarget(float elapsedTime) {
 
 void EnemyCharacter::handleAI(float elapsedTime, vector<Character*> players) {
 	if (spriteState != Globals::ActionType::ATTACK) timeSinceAttackEnded += elapsedTime * 1000;
+	if (handleDisabledState(elapsedTime)) return;
 	resetStateAfterFinishingAction();
 	if (handleDecidingState(elapsedTime, players)) return;
 	if (handleAttacking(elapsedTime)) return;

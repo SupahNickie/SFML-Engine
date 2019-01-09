@@ -35,5 +35,5 @@ void Skate::handleInput() {
 	Keyboard::isKeyPressed(Keyboard::Left) ? leftPressed = true : leftPressed = false;
 	Keyboard::isKeyPressed(Keyboard::Right) ? rightPressed = true : rightPressed = false;
 	Keyboard::isKeyPressed(Keyboard::RControl) ? primaryAttackPressed = true : primaryAttackPressed = false;
-	Keyboard::isKeyPressed(Keyboard::RShift) ? secondaryAttackPressed = true : secondaryAttackPressed = false;
+	Keyboard::isKeyPressed(Keyboard::RShift) ? jumpPressed = true : jumpPressed = false;
 }

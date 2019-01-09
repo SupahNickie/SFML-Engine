@@ -17,6 +17,12 @@ Globals::ActionType Globals::actionStringToEnum(string const& action) {
 	if (action == "attack") return Globals::ActionType::ATTACK;
 	if (action == "idle") return Globals::ActionType::IDLE;
 	if (action == "injure") return Globals::ActionType::INJURE;
+	if (action == "jump_start") return Globals::ActionType::JUMP_START;
+	if (action == "jump_air") return Globals::ActionType::JUMP_AIR;
+	if (action == "jump_land") return Globals::ActionType::JUMP_LAND;
+	if (action == "jump_attack") return Globals::ActionType::JUMP_ATTACK;
+	if (action == "run_attack") return Globals::ActionType::RUN_ATTACK;
+	if (action == "run_attack_land") return Globals::ActionType::RUN_ATTACK_LAND;
 	return Globals::ActionType::NONE;
 }
 

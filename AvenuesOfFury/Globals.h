@@ -14,7 +14,19 @@ private:
 	Vector2f resolution;
 	float scalingFactor;
 public:
-	enum class ActionType { MOVE, ATTACK, IDLE, INJURE, NONE };
+	enum class ActionType {
+		MOVE,
+		ATTACK,
+		IDLE,
+		INJURE,
+		JUMP_START,
+		JUMP_AIR,
+		JUMP_LAND,
+		JUMP_ATTACK,
+		RUN_ATTACK,
+		RUN_ATTACK_LAND,
+		NONE
+	};
 	unsigned int idSerial;
 
 	Globals();

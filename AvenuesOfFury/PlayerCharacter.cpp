@@ -37,6 +37,12 @@ void PlayerCharacter::update(float elapsedTime, vector<Character*> players, vect
 		running = false;
 	}
 
+	if (jumpPressed) {
+		!attackDisabled && primaryAttackPressed ? handleJump(elapsedTime, true) : handleJump(elapsedTime, false);
+		running = false;
+		return;
+	}
+
 	if (!attackDisabled) {
 		if (primaryAttackPressed) {
 			setAttackState(ATTACK_1);
@@ -88,6 +94,7 @@ void PlayerCharacter::update(float elapsedTime, vector<Character*> players, vect
 		setIdleState(elapsedTime);
 		running = false;
 	}
+
 	setDirectionHeaded();
 }
 
@@ -110,6 +117,36 @@ void PlayerCharacter::setDirectionHeaded() {
 	pastDirectionsPressed[4] = directionHeaded;
 }
 
+void PlayerCharacter::handleJump(float elapsedTime, bool attacking) {
+	timeSinceLastAction += elapsedTime * 1000;
+	if (spriteState == Globals::ActionType::MOVE) {
+		spriteState = Globals::ActionType::JUMP_START;
+		currentAction = "jump_start";
+		resetFrameState();
+	}
+	if (prejumpY == 0.0f) {
+		prejumpY = position.y;
+	}
+	handleNextJumpFrame(elapsedTime, attacking);
+	if ((currentFrame * MS_PER_FRAME) < (jumpLength / 2)) {
+		position.y -= speed * elapsedTime;
+	}
+	else {
+		position.y += speed * elapsedTime;
+	}
+}
+
+void PlayerCharacter::handleNextJumpFrame(float elapsedTime, bool attacking) {
+	if (attacking && spriteState != Globals::ActionType::JUMP_ATTACK) {
+		spriteState = Globals::ActionType::JUMP_ATTACK;
+		currentAction = "jump_attack";
+		resetFrameState();
+	}
+	if (attacking && currentFrame >= SpriteHolder::getMaxFramesForAction(spriteName, "jump_attack", JUMP_ATTACK)) {
+		currentFrame = SpriteHolder::getMaxFramesForAction(spriteName, "jump_attack", JUMP_ATTACK);
+	}
+}
+
 void PlayerCharacter::hitCharacters(float elapsedTime) {
 	if (spriteState == Globals::ActionType::ATTACK &&
 		playersTouching.size() + enemiesTouching.size() > 0 &&
@@ -118,6 +155,7 @@ void PlayerCharacter::hitCharacters(float elapsedTime) {
 		for_each(enemiesTouching.begin(), enemiesTouching.end(), [&](Character* e) {
 			if (find(v.begin(), v.end(), currentFrame) != v.end()) {
 				e->registerHit(attackPower[currentActionType]);
+				e->disable();
 				hitRegistered = true;
 				e->focusChar = this;
 			}
@@ -125,6 +163,7 @@ void PlayerCharacter::hitCharacters(float elapsedTime) {
 		for_each(playersTouching.begin(), playersTouching.end(), [&](Character* p) {
 			if (find(v.begin(), v.end(), currentFrame) != v.end()) {
 				p->registerHit(attackPower[currentActionType] * 0.05f);
+				p->disable();
 				hitRegistered = true;
 			}
 		});

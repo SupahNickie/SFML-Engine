@@ -24,6 +24,8 @@ Character::Character() {
 		{50, cv},
 		{0, cv}
 	};
+
+	if (spriteName == "skate") jumpLength = SpriteHolder::getMaxFramesForAction(spriteName, "jump_air", 0) * MS_PER_FRAME;
 }
 
 void Character::flipHorizontally() {

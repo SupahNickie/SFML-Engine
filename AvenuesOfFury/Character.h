@@ -20,6 +20,12 @@ protected:
 	int const ATTACK_2 = 1;
 	int const IDLE_1 = 0;
 	int const INJURE_1 = 0;
+	int const JUMP_START = 0;
+	int const JUMP_AIR = 0;
+	int const JUMP_LAND = 0;
+	int const JUMP_ATTACK = 0;
+	int const RUN_ATTACK = 0;
+	int const RUN_ATTACK_LAND = 0;
 
 	map<int, CharacterVelocity> pastPositions;
 	int timeSincePastPositionsUpdate = 0;
@@ -45,6 +51,9 @@ protected:
 	int timeSinceLastFrame = 0;
 	int timeSinceLastAction = 0;
 	bool spriteCycleDown = false;
+
+	float prejumpY = 0.0f;
+	int jumpLength = 0;
 
 	void detectCollisions(vector<Character*> players, vector<Character*> enemies);
 	void resetFrameState();
