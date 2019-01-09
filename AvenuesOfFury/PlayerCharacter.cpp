@@ -21,7 +21,7 @@ void PlayerCharacter::update(float elapsedTime, vector<Character*> players, vect
 	detectCollisions(players, enemies);
 	updatePastPositions(elapsedTime);
 	hitCharacters(elapsedTime);
-	updateFrameState(elapsedTime);
+	updateFrameState(elapsedTime, primaryAttackPressed, jumping);
 	sprite.setPosition(position);
 	render();
 
@@ -38,7 +38,7 @@ void PlayerCharacter::update(float elapsedTime, vector<Character*> players, vect
 	}
 
 	if (jumpPressed) {
-		!attackDisabled && primaryAttackPressed ? handleJump(elapsedTime, true) : handleJump(elapsedTime, false);
+		handleJump(elapsedTime);
 		running = false;
 		return;
 	}
@@ -117,33 +117,28 @@ void PlayerCharacter::setDirectionHeaded() {
 	pastDirectionsPressed[4] = directionHeaded;
 }
 
-void PlayerCharacter::handleJump(float elapsedTime, bool attacking) {
+void PlayerCharacter::handleJump(float elapsedTime) {
 	timeSinceLastAction += elapsedTime * 1000;
-	if (spriteState == Globals::ActionType::MOVE) {
+	if (spriteState == Globals::ActionType::MOVE ||
+		spriteState == Globals::ActionType::IDLE ||
+		spriteState == Globals::ActionType::ATTACK ||
+		spriteState == Globals::ActionType::INJURE ) {
 		spriteState = Globals::ActionType::JUMP_START;
 		currentAction = "jump_start";
+		currentActionType = JUMP_START;
 		resetFrameState();
+		timeSinceLastAction = 0;
+		jumping = true;
 	}
 	if (prejumpY == 0.0f) {
 		prejumpY = position.y;
 	}
-	handleNextJumpFrame(elapsedTime, attacking);
-	if ((currentFrame * MS_PER_FRAME) < (jumpLength / 2)) {
+	//cout << "HALF JUMP LENGTH: " << jumpLength / 2 << "CURRENT: " << currentFrame * MS_PER_FRAME << "\n";
+	if ((timeSinceLastAction) < (jumpLength / 2)) {
 		position.y -= speed * elapsedTime;
 	}
 	else {
 		position.y += speed * elapsedTime;
-	}
-}
-
-void PlayerCharacter::handleNextJumpFrame(float elapsedTime, bool attacking) {
-	if (attacking && spriteState != Globals::ActionType::JUMP_ATTACK) {
-		spriteState = Globals::ActionType::JUMP_ATTACK;
-		currentAction = "jump_attack";
-		resetFrameState();
-	}
-	if (attacking && currentFrame >= SpriteHolder::getMaxFramesForAction(spriteName, "jump_attack", JUMP_ATTACK)) {
-		currentFrame = SpriteHolder::getMaxFramesForAction(spriteName, "jump_attack", JUMP_ATTACK);
 	}
 }
 

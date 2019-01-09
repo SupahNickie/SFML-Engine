@@ -20,7 +20,7 @@ void EnemyCharacter::update(float elapsedTime, vector<Character*> players, vecto
 		return;
 	}
 	detectCollisions(players, enemies);
-	updateFrameState(elapsedTime);
+	updateFrameState(elapsedTime, jumpAttacking, jumping);
 	turnToFaceFocusChar();
 	handleAI(elapsedTime, players);
 	sprite.setPosition(position);

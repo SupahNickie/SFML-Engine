@@ -32,7 +32,6 @@ protected:
 	Globals::ActionType spriteState;
 	bool facingRight;
 	float baseSpeed;
-	bool jumping = false;
 	bool running = false;
 	bool disabled = false;
 
@@ -52,16 +51,20 @@ protected:
 	int timeSinceLastAction = 0;
 	bool spriteCycleDown = false;
 
+	bool jumping = false;
 	float prejumpY = 0.0f;
 	int jumpLength = 0;
 
 	void detectCollisions(vector<Character*> players, vector<Character*> enemies);
 	void resetFrameState();
-	void updateFrameState(float elapsedTime);
+	void updateFrameState(float elapsedTime, bool prioritizedAction, bool jumping);
 	void updatePastPositions(float elapsedTime);
 	void setAttackState(int attackType);
 	void render();
 	virtual void setDirectionHeaded() = 0;
+private:
+	bool handleJumpingAnimation(int maxFrames, bool attacking);
+	void handleNormalAnimation(int maxFrames);
 public:
 	Graphic::DirectionHeaded directionHeaded = Graphic::DirectionHeaded::NONE;
 	float speed;

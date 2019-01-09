@@ -11,6 +11,7 @@ class EnemyCharacter : public Character {
 protected:
 	Vector2f target;
 	bool deciding = false;
+	bool jumpAttacking = false;
 	int timeSinceDecision = 0;
 	int timeSinceAttackBegan = 0;
 	int timeSinceAttackEnded = 0;

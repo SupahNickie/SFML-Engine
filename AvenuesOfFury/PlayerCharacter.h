@@ -22,8 +22,7 @@ private:
 	Graphic::DirectionHeaded* pastDirectionsPressed;
 
 	void setDirectionHeaded();
-	void handleJump(float elapsedTime, bool attacking);
-	void handleNextJumpFrame(float elapsedTime, bool attacking);
+	void handleJump(float elapsedTime);
 	void hitCharacters(float elapsedTime);
 	void setMoveState(float elapsedTime);
 	void setIdleState(float elapsedTime);
