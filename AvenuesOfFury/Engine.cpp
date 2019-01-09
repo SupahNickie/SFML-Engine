@@ -28,15 +28,15 @@ void Engine::run() {
 	players[1]->setPosition(Vector2f(800, 400));
 
 	enemies = vector<Character*>();
-	//Garnet garnet(players);
-	//enemies.push_back(&garnet);
-	//enemies[0]->setPosition(Vector2f(500, 400));
-	//Garnet garnet2(players);
-	//enemies.push_back(&garnet2);
-	//enemies[1]->setPosition(Vector2f(700, 300));
-	//Garnet garnet3(players);
-	//enemies.push_back(&garnet3);
-	//enemies[2]->setPosition(Vector2f(300, 100));
+	Garnet garnet(players);
+	enemies.push_back(&garnet);
+	enemies[0]->setPosition(Vector2f(500, 400));
+	Garnet garnet2(players);
+	enemies.push_back(&garnet2);
+	enemies[1]->setPosition(Vector2f(700, 300));
+	Garnet garnet3(players);
+	enemies.push_back(&garnet3);
+	enemies[2]->setPosition(Vector2f(300, 100));
 
 	while (window.isOpen()) {
 		Time dt = clock.restart();
