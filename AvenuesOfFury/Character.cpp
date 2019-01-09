@@ -94,7 +94,7 @@ void Character::updateFrameState(float elapsedTime, bool prioritizedAction, bool
 	timeSinceLastFrame += elapsedTime * 1000;
 	if (timeSinceLastFrame > MS_PER_FRAME) {
 		if (spriteName == "skate") {
-			cout << "JUMPING : " << jumping << " CURRENT ACTION " << currentAction << "\n";
+			cout << "TIME SINCE LAST FRAME : " << timeSinceLastFrame << " CURRENT ACTION " << currentAction << "\n";
 		}
 		int maxFrames = SpriteHolder::getMaxFramesForAction(spriteName, currentAction, currentActionType);
 		if (jumping && handleJumpingAnimation(maxFrames, prioritizedAction)) return;
@@ -109,6 +109,7 @@ bool Character::handleJumpingAnimation(int maxFrames, bool attacking) {
 		currentAction = "jump_land";
 		currentActionType = JUMP_LAND;
 		resetFrameState(false);
+		timeSinceLastFrame = 0;
 		jumping = false;
 		jumpDisabled = true;
 		prejumpY = 0.0f;
@@ -116,7 +117,6 @@ bool Character::handleJumpingAnimation(int maxFrames, bool attacking) {
 	}
 
 	if (maxFrames == currentFrame) {
-		int oldTimeSinceLastFrame = timeSinceLastFrame;
 		if (attacking) {
 			if (spriteState != Globals::ActionType::JUMP_ATTACK) {
 				spriteState = Globals::ActionType::JUMP_ATTACK;
@@ -143,6 +143,7 @@ bool Character::handleJumpingAnimation(int maxFrames, bool attacking) {
 			break;
 		}
 
+		timeSinceLastFrame = 0;
 		return true;
 	}
 
@@ -160,6 +161,7 @@ bool Character::handleJumpingAnimation(int maxFrames, bool attacking) {
 
 void Character::handleNormalAnimation(int maxFrames) {
 	hitRegistered = false;
+	jumpDisabled = false;
 
 	if (0 == maxFrames) {
 		// do nothing, no animation needed

@@ -37,7 +37,7 @@ void PlayerCharacter::update(float elapsedTime, vector<Character*> players, vect
 		running = false;
 	}
 
-	if (jumpPressed || jumping) {
+	if ((jumpPressed || jumping) && !jumpDisabled) {
 		handleJump(elapsedTime);
 		running = false;
 		return;
