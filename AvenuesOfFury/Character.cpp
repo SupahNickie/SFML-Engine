@@ -24,6 +24,14 @@ Character::Character() {
 		{50, cv},
 		{0, cv}
 	};
+
+	// Init array of direction presses remembered
+	pastDirectionsPressed = new Graphic::DirectionHeaded[5];
+	pastDirectionsPressed[0] = Graphic::DirectionHeaded::NONE;
+	pastDirectionsPressed[1] = Graphic::DirectionHeaded::NONE;
+	pastDirectionsPressed[2] = Graphic::DirectionHeaded::NONE;
+	pastDirectionsPressed[3] = Graphic::DirectionHeaded::NONE;
+	pastDirectionsPressed[4] = Graphic::DirectionHeaded::NONE;
 }
 
 void Character::flipHorizontally() {
@@ -46,6 +54,18 @@ Graphic::DirectionHeaded Character::stringToDirection(string const& direction) {
 	if (direction == "L") return Graphic::DirectionHeaded::L;
 	if (direction == "UL") return Graphic::DirectionHeaded::UL;
 	return Graphic::DirectionHeaded::NONE;
+}
+
+string Character::directionToString(Graphic::DirectionHeaded direction) {
+	if (direction == Graphic::DirectionHeaded::U) return "U";
+	if (direction == Graphic::DirectionHeaded::UR) return "UR";
+	if (direction == Graphic::DirectionHeaded::R) return "R";
+	if (direction == Graphic::DirectionHeaded::DR) return "DR";
+	if (direction == Graphic::DirectionHeaded::D) return "D";
+	if (direction == Graphic::DirectionHeaded::DL) return "DL";
+	if (direction == Graphic::DirectionHeaded::L) return "L";
+	if (direction == Graphic::DirectionHeaded::UL) return "UL";
+	return "NONE";
 }
 
 bool Character::hits(Character* otherChar) {
@@ -225,6 +245,12 @@ void Character::updatePastPositions(float elapsedTime) {
 	timeSincePastPositionsUpdate += elapsedTime * 1000;
 }
 
+void Character::insertAndShiftPastDirectionsPressed(Graphic::DirectionHeaded direction) {
+	directionHeaded = direction;
+	memmove(&pastDirectionsPressed[0], &pastDirectionsPressed[1], (size_t)4 * sizeof(pastDirectionsPressed[0]));
+	pastDirectionsPressed[4] = directionHeaded;
+}
+
 void Character::setAttackState(int attackType) {
 	if (!attackDisabled) {
 		currentAction = "attack";
@@ -236,6 +262,7 @@ void Character::setAttackState(int attackType) {
 			spriteState = Globals::ActionType::ATTACK;
 			resetFrameState();
 		}
+		insertAndShiftPastDirectionsPressed(Graphic::DirectionHeaded::NONE);
 	}
 	if (currentActionDone) attackDisabled = true;
 }

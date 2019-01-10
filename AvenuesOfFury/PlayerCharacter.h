@@ -19,15 +19,12 @@ protected:
 	bool jumpPressed;
 	int timeSinceLastDirectionPress = 0;
 private:
-	Graphic::DirectionHeaded* pastDirectionsPressed;
-
 	void setDirectionHeaded();
 	void handleJump(float elapsedTime);
 	void hitCharacters(float elapsedTime);
 	void setMoveState(float elapsedTime);
 	void setIdleState(float elapsedTime);
 public:
-	PlayerCharacter();
 	~PlayerCharacter();
 	virtual void handleInput() = 0;
 	void update(float elapsedTime, vector<Character*> players, vector<Character*> enemies);

@@ -3,16 +3,6 @@
 #include "SpriteHolder.h"
 #include <iostream>
 
-PlayerCharacter::PlayerCharacter() {
-	// Init array of direction presses remembered
-	pastDirectionsPressed = new Graphic::DirectionHeaded[5];
-	pastDirectionsPressed[0] = Graphic::DirectionHeaded::NONE;
-	pastDirectionsPressed[1] = Graphic::DirectionHeaded::NONE;
-	pastDirectionsPressed[2] = Graphic::DirectionHeaded::NONE;
-	pastDirectionsPressed[3] = Graphic::DirectionHeaded::NONE;
-	pastDirectionsPressed[4] = Graphic::DirectionHeaded::NONE;
-}
-
 PlayerCharacter::~PlayerCharacter() {
 	delete[] pastDirectionsPressed;
 }
@@ -33,8 +23,7 @@ void PlayerCharacter::update(float elapsedTime, vector<Character*> players, vect
 		disabled = false;
 		attackDisabled = false;
 		setIdleState(elapsedTime);
-		memmove(&pastDirectionsPressed[0], &pastDirectionsPressed[1], (size_t)4 * sizeof(pastDirectionsPressed[0]));
-		pastDirectionsPressed[4] = Graphic::DirectionHeaded::NONE;
+		insertAndShiftPastDirectionsPressed(Graphic::DirectionHeaded::NONE);
 		running = false;
 	}
 
@@ -113,9 +102,7 @@ void PlayerCharacter::setDirectionHeaded() {
 		return;
 	}
 
-	directionHeaded = current;
-	memmove(&pastDirectionsPressed[0], &pastDirectionsPressed[1], (size_t)4 * sizeof(pastDirectionsPressed[0]));
-	pastDirectionsPressed[4] = directionHeaded;
+	insertAndShiftPastDirectionsPressed(current);
 }
 
 void PlayerCharacter::handleJump(float elapsedTime) {
@@ -126,7 +113,8 @@ void PlayerCharacter::handleJump(float elapsedTime) {
 		resetFrameState();
 		jumping = true;
 		running = false;
-		if (prejumpY == 0.0f) prejumpY = position.y;
+		prejumpY = position.y;
+		insertAndShiftPastDirectionsPressed(Graphic::DirectionHeaded::NONE);
 	}
 
 	if ((timeSinceLastAction) < (jumpLength / 2)) {

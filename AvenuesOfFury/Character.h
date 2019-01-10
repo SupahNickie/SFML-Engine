@@ -33,6 +33,7 @@ protected:
 	int const RUN_ATTACK_LAND = 0;
 
 	map<int, CharacterVelocity> pastPositions;
+	Graphic::DirectionHeaded* pastDirectionsPressed;
 	int timeSincePastPositionsUpdate = 0;
 	Globals::ActionType spriteState;
 	bool facingRight;
@@ -68,6 +69,7 @@ protected:
 	void resetFrameState(bool clearAll = true);
 	void updateFrameState(float elapsedTime, bool prioritizedAction, bool jumping);
 	void updatePastPositions(float elapsedTime);
+	void insertAndShiftPastDirectionsPressed(Graphic::DirectionHeaded direction);
 	void setAttackState(int attackType);
 	void render();
 	virtual void setIdleState(float elapsedTime = 0.0f) = 0;
@@ -85,6 +87,7 @@ public:
 	void flipHorizontally();
 	void disable();
 	Graphic::DirectionHeaded stringToDirection(string const& direction);
+	string directionToString(Graphic::DirectionHeaded direction);
 	bool hits(Character* otherChar);
 	void registerHit(int hp, string const& attacker, unsigned short int frame);
 	CharacterVelocity getVelocity(int time);
