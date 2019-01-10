@@ -10,6 +10,11 @@ struct CharacterVelocity {
 	Graphic::DirectionHeaded direction;
 };
 
+struct HitRecord {
+	unsigned short int frame;
+	unsigned int timeSinceHitRegistered;
+};
+
 class Character : public Graphic {
 protected:
 	int MS_PER_FRAME = 50;
@@ -38,6 +43,8 @@ protected:
 	int health = 0;
 	vector<int> attackPower;
 	bool attackDisabled = false;
+
+	map<string, HitRecord> hitsRegistered;
 	bool hitRegistered = false;
 
 	vector<Character*> playersTouching;
@@ -56,6 +63,7 @@ protected:
 	float prejumpY = 0.0f;
 	int jumpLength = 0;
 
+	void advanceHitRecords(float elapsedTime);
 	void detectCollisions(vector<Character*> players, vector<Character*> enemies);
 	void resetFrameState(bool clearAll = true);
 	void updateFrameState(float elapsedTime, bool prioritizedAction, bool jumping);
@@ -78,7 +86,7 @@ public:
 	void disable();
 	Graphic::DirectionHeaded stringToDirection(string const& direction);
 	bool hits(Character* otherChar);
-	void registerHit(int hp);
+	void registerHit(int hp, string const& attacker, unsigned short int frame);
 	CharacterVelocity getVelocity(int time);
 	virtual void update(float timeElapsed, vector<Character*> players, vector<Character*> enemies) = 0;
 };

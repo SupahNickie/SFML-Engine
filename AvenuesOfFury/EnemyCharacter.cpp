@@ -19,6 +19,7 @@ void EnemyCharacter::update(float elapsedTime, vector<Character*> players, vecto
 		isActive = false;
 		return;
 	}
+	advanceHitRecords(elapsedTime);
 	detectCollisions(players, enemies);
 	updateFrameState(elapsedTime, jumpAttacking, jumping);
 	turnToFaceFocusChar();
@@ -45,28 +46,24 @@ void EnemyCharacter::calculateAttack(float elapsedTime) {
 	if (timeSinceAttackBegan == 0) recalculateAggression();
 
 	timeSinceAttackBegan += elapsedTime * 1000;
-	if (!hitRegistered) {
-		vector<int> v = SpriteHolder::getDamageFramesForAction(spriteName, currentAction, currentActionType);
-		if (find(v.begin(), v.end(), currentFrame) != v.end()) {
-			for_each(enemiesTouching.begin(), enemiesTouching.end(), [&](Character* e) {
-				Vector2f target = e->getCenter();
-				if (find(v.begin(), v.end(), currentFrame) != v.end() &&
-					(abs(target.y - position.y) < (.015625f * Globals::getResolution().x))) {
-					e->registerHit(attackPower[currentActionType] * 0.05f);
-					hitRegistered = true;
-					e->disable();
-				}
-			});
-			for_each(playersTouching.begin(), playersTouching.end(), [&](Character* p) {
-				Vector2f target = p->getCenter();
-				if (find(v.begin(), v.end(), currentFrame) != v.end() &&
-					(abs(target.y - position.y) < (.015625f * Globals::getResolution().x))) {
-					p->registerHit(attackPower[currentActionType]);
-					hitRegistered = true;
-					p->disable();
-				}
-			});
-		}
+	vector<int> v = SpriteHolder::getDamageFramesForAction(spriteName, currentAction, currentActionType);
+	if (find(v.begin(), v.end(), currentFrame) != v.end()) {
+		for_each(enemiesTouching.begin(), enemiesTouching.end(), [&](Character* e) {
+			Vector2f target = e->getCenter();
+			if (find(v.begin(), v.end(), currentFrame) != v.end() &&
+				(abs(target.y - position.y) < (.015625f * Globals::getResolution().x))) {
+				e->registerHit(attackPower[currentActionType] * 0.05f, spriteName, currentFrame);
+				e->disable();
+			}
+		});
+		for_each(playersTouching.begin(), playersTouching.end(), [&](Character* p) {
+			Vector2f target = p->getCenter();
+			if (find(v.begin(), v.end(), currentFrame) != v.end() &&
+				(abs(target.y - position.y) < (.015625f * Globals::getResolution().x))) {
+				p->registerHit(attackPower[currentActionType], spriteName, currentFrame);
+				p->disable();
+			}
+		});
 	}
 }
 

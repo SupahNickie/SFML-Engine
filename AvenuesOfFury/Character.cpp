@@ -52,12 +52,33 @@ bool Character::hits(Character* otherChar) {
 	return this->getPosition().intersects(otherChar->getPosition());
 }
 
-void Character::registerHit(int hp) {
+void Character::registerHit(int hp, string const& attacker, unsigned short int frame) {
+	auto it = hitsRegistered.find(attacker);
+	if (it != hitsRegistered.end()) {
+		if (it->second.frame == frame && it->second.timeSinceHitRegistered < MS_PER_FRAME) return;
+	}
+	HitRecord output;
+	output.frame = frame;
+	output.timeSinceHitRegistered = 0;
+	hitsRegistered[attacker] = output;
+
 	spriteState = Globals::ActionType::INJURE;
 	currentAction = "injure";
 	currentActionType = INJURE_1;
 	resetFrameState();
 	health -= hp;
+}
+
+void Character::advanceHitRecords(float elapsedTime) {
+	for (auto it = hitsRegistered.begin(); it != hitsRegistered.end(); /* no incrementer */ ) {
+		it->second.timeSinceHitRegistered += elapsedTime * 1000;
+		if (it->second.timeSinceHitRegistered > MS_PER_FRAME) {
+			it = hitsRegistered.erase(it);
+		}
+		else {
+			++it;
+		}
+	}
 }
 
 void Character::detectCollisions(vector<Character*> players, vector<Character*> enemies) {
