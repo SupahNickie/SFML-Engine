@@ -19,6 +19,7 @@ struct AttackInfo {
 	unsigned short int injuryType; // INJURE_HEAD, INJURE_BODY
 	string action; // fall, injure
 	Globals::ActionType actionType;
+	unsigned int timeToDisable;
 };
 
 class Character : public Graphic {
@@ -44,8 +45,11 @@ protected:
 	int timeSincePastPositionsUpdate = 0;
 	Globals::ActionType spriteState;
 	bool facingRight;
+
 	float baseSpeed;
 	bool running = false;
+
+	int timeToBeDisabled = 0;
 	bool disabled = false;
 
 	int health = 0;
@@ -73,8 +77,9 @@ protected:
 
 	void advanceHitRecords(float elapsedTime);
 	void detectCollisions(vector<Character*> players, vector<Character*> enemies);
+	bool onSameVerticalPlane(float targetY);
 	void resetFrameState(bool clearAll = true);
-	void updateFrameState(float elapsedTime, bool prioritizedAction, bool jumping);
+	void updateFrameState(float elapsedTime, bool prioritizedAction);
 	void updatePastPositions(float elapsedTime);
 	void insertAndShiftPastDirectionsPressed(Graphic::DirectionHeaded direction);
 	void setAttackState(int attackType);
@@ -93,7 +98,7 @@ public:
 
 	Character();
 	void flipHorizontally();
-	void disable();
+	void disable(int timeToDisable);
 	Graphic::DirectionHeaded stringToDirection(string const& direction);
 	string directionToString(Graphic::DirectionHeaded direction);
 	bool hits(Character* otherChar);

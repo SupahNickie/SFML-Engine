@@ -21,8 +21,7 @@ void EnemyCharacter::update(float elapsedTime, vector<Character*> players, vecto
 	}
 	advanceHitRecords(elapsedTime);
 	detectCollisions(players, enemies);
-	updateFrameState(elapsedTime, jumpAttacking, jumping);
-	turnToFaceFocusChar();
+	updateFrameState(elapsedTime, jumpAttacking);
 	handleAI(elapsedTime, players);
 	sprite.setPosition(position);
 	render();
@@ -52,17 +51,17 @@ void EnemyCharacter::calculateAttack(float elapsedTime) {
 		for_each(enemiesTouching.begin(), enemiesTouching.end(), [&](Character* e) {
 			Vector2f target = e->getCenter();
 			if (find(v.begin(), v.end(), currentFrame) != v.end() &&
-				(abs(target.y - position.y) < (.015625f * Globals::getResolution().x))) {
+				onSameVerticalPlane(target.y)) {
 				e->registerHit(attackPower[currentActionType] * 0.05f, spriteName, currentFrame, info);
-				e->disable();
+				e->disable(info.timeToDisable);
 			}
 		});
 		for_each(playersTouching.begin(), playersTouching.end(), [&](Character* p) {
 			Vector2f target = p->getCenter();
 			if (find(v.begin(), v.end(), currentFrame) != v.end() &&
-				(abs(target.y - position.y) < (.015625f * Globals::getResolution().x))) {
+				onSameVerticalPlane(target.y)) {
 				p->registerHit(attackPower[currentActionType], spriteName, currentFrame, info);
-				p->disable();
+				p->disable(info.timeToDisable);
 			}
 		});
 	}
@@ -98,8 +97,9 @@ void EnemyCharacter::resetStateAfterFinishingAction() {
 bool EnemyCharacter::handleDisabledState(float elapsedTime) {
 	if (disabled) {
 		timeSinceLastAction += elapsedTime * 1000;
-		if (timeSinceLastAction <= STUN_LENGTH) return true;
+		if (timeSinceLastAction <= timeToBeDisabled) return true;
 		timeSinceLastAction = 0;
+		timeToBeDisabled = 0;
 		disabled = false;
 		attackDisabled = false;
 		setIdleState();
@@ -145,7 +145,8 @@ bool EnemyCharacter::attack(float elapsedTime, int actionType) {
 	if (timeSinceAttackEnded > aggression) {
 		if (!attackDisabled &&
 			spriteState != Globals::ActionType::INJURE &&
-			hits(focusChar)
+			hits(focusChar) &&
+			onSameVerticalPlane(focusChar->getCenter().y)
 			) {
 			setAttackState(actionType);
 			calculateAttack(elapsedTime);
@@ -191,8 +192,10 @@ void EnemyCharacter::setMoveState() {
 void EnemyCharacter::moveTowardsFocusChar(float elapsedTime) {
 	if (spriteState == Globals::ActionType::MOVE) {
 		target = focusChar->getVelocity(reactionSpeed).position;
-		if ((abs(target.y - position.y) > (.015625f * Globals::getResolution().x)) ||
-			!hits(focusChar)) {
+		if (!onSameVerticalPlane(target.y)) {
+			moveTowardsTarget(elapsedTime);
+		}
+		else if (onSameVerticalPlane(target.y) && !hits(focusChar)) {
 			moveTowardsTarget(elapsedTime);
 		}
 	}
@@ -239,8 +242,10 @@ void EnemyCharacter::predictFocusCharLocation(float elapsedTime) {
 			break;
 		}
 	}
-	if ((abs(target.y - position.y) > (.015625f * Globals::getResolution().x)) ||
-		!hits(focusChar)) {
+	if (!onSameVerticalPlane(target.y)) {
+		moveTowardsTarget(elapsedTime);
+	}
+	else if (onSameVerticalPlane(target.y) && !hits(focusChar)) {
 		moveTowardsTarget(elapsedTime);
 	}
 }
@@ -263,6 +268,7 @@ void EnemyCharacter::moveTowardsTarget(float elapsedTime) {
 void EnemyCharacter::handleAI(float elapsedTime, vector<Character*> players) {
 	if (spriteState != Globals::ActionType::ATTACK) timeSinceAttackEnded += elapsedTime * 1000;
 	if (handleDisabledState(elapsedTime)) return;
+	turnToFaceFocusChar();
 	resetStateAfterFinishingAction();
 	if (handleDecidingState(elapsedTime, players)) return;
 	if (handleAttacking(elapsedTime)) return;

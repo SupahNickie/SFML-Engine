@@ -12,13 +12,13 @@ void PlayerCharacter::update(float elapsedTime, vector<Character*> players, vect
 	detectCollisions(players, enemies);
 	updatePastPositions(elapsedTime);
 	hitCharacters(elapsedTime);
-	updateFrameState(elapsedTime, primaryAttackPressed, jumping);
+	updateFrameState(elapsedTime, primaryAttackPressed);
 	sprite.setPosition(position);
 	render();
 
 	if (disabled) {
 		timeSinceLastAction += elapsedTime * 1000;
-		if (timeSinceLastAction <= STUN_LENGTH) return;
+		if (timeSinceLastAction <= timeToBeDisabled) return;
 		timeSinceLastAction = 0;
 		disabled = false;
 		attackDisabled = false;
@@ -135,15 +135,21 @@ void PlayerCharacter::hitCharacters(float elapsedTime) {
 		vector<int> v = SpriteHolder::getDamageFramesForAction(spriteName, currentAction, currentActionType);
 		for_each(enemiesTouching.begin(), enemiesTouching.end(), [&](Character* e) {
 			if (find(v.begin(), v.end(), currentFrame) != v.end()) {
-				e->registerHit(attackPower[currentActionType], spriteName, currentFrame, info);
-				e->disable();
-				e->focusChar = this;
+				Vector2f target = e->getCenter();
+				if (onSameVerticalPlane(target.y)) {
+					e->registerHit(attackPower[currentActionType], spriteName, currentFrame, info);
+					e->disable(info.timeToDisable);
+					e->focusChar = this;
+				}
 			}
 		});
 		for_each(playersTouching.begin(), playersTouching.end(), [&](Character* p) {
-			if (find(v.begin(), v.end(), currentFrame) != v.end()) {
-				p->registerHit(attackPower[currentActionType] * 0.05f, spriteName, currentFrame, info);
-				p->disable();
+			Vector2f target = p->getCenter();
+			if (onSameVerticalPlane(target.y)) {
+				if (find(v.begin(), v.end(), currentFrame) != v.end()) {
+					p->registerHit(attackPower[currentActionType] * 0.05f, spriteName, currentFrame, info);
+					p->disable(info.timeToDisable);
+				}
 			}
 		});
 	}

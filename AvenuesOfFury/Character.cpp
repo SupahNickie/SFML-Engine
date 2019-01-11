@@ -39,8 +39,9 @@ void Character::flipHorizontally() {
 	facingRight = !facingRight;
 }
 
-void Character::disable() {
+void Character::disable(int timeToDisable) {
 	disabled = true;
+	timeToBeDisabled = timeToDisable;
 	timeSinceLastAction = 0;
 }
 
@@ -120,6 +121,10 @@ void Character::detectCollisions(vector<Character*> players, vector<Character*> 
 	});
 }
 
+bool Character::onSameVerticalPlane(float targetY) {
+	return abs(targetY - position.y) < (.015625f * Globals::getResolution().x);
+}
+
 void Character::resetFrameState(bool clearAll) {
 	if (clearAll) timeSinceLastAction = 0;
 	timeSinceLastFrame = 0;
@@ -128,10 +133,13 @@ void Character::resetFrameState(bool clearAll) {
 	currentFrame = SpriteHolder::getStartFramesForAction(spriteName, currentAction, currentActionType);
 }
 
-void Character::updateFrameState(float elapsedTime, bool prioritizedAction, bool jumping) {
+void Character::updateFrameState(float elapsedTime, bool prioritizedAction) {
 	timeSinceLastAction += elapsedTime * 1000;
 	timeSinceLastFrame += elapsedTime * 1000;
 	if (timeSinceLastFrame > MS_PER_FRAME) {
+		if (spriteName == "skate") {
+			cout << "CURRENT ACTION " << currentAction << " FRAME: " << currentFrame << " TYPE: " << currentActionType << "\n";
+		}
 		int maxFrames = SpriteHolder::getMaxFramesForAction(spriteName, currentAction, currentActionType);
 		if (jumping && handleJumpingAnimation(maxFrames, prioritizedAction)) return;
 		handleNormalAnimation(maxFrames);
@@ -206,7 +214,7 @@ void Character::handleNormalAnimation(int maxFrames) {
 		--currentFrame;
 		spriteCycleDown = true;
 		if (!animationCycle[currentAction]) {
-			resetFrameState();
+			resetFrameState(false);
 			currentActionDone = true;
 		}
 	}
@@ -271,9 +279,11 @@ AttackInfo Character::generateAttackInfo() {
 	AttackInfo output;
 	if (spriteState == Globals::ActionType::ATTACK) {
 		output.action = "injure";
+		output.timeToDisable = STUN_LENGTH;
 	}
 	else if (spriteState == Globals::ActionType::JUMP_ATTACK || spriteState == Globals::ActionType::RUN_ATTACK) {
 		output.action = "fall";
+		output.timeToDisable = STUN_LENGTH * 10;
 	}
 	output.injuryType = currentActionType; // ATTACK_1 maps to head attacks, ATTACK_2 maps to body
 	output.actionType = Globals::actionStringToEnum(output.action);
