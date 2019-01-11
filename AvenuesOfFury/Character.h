@@ -15,6 +15,12 @@ struct HitRecord {
 	unsigned int timeSinceHitRegistered;
 };
 
+struct AttackInfo {
+	unsigned short int injuryType; // INJURE_HEAD, INJURE_BODY
+	string action; // fall, injure
+	Globals::ActionType actionType;
+};
+
 class Character : public Graphic {
 protected:
 	int MS_PER_FRAME = 50;
@@ -24,7 +30,8 @@ protected:
 	int const ATTACK_1 = 0;
 	int const ATTACK_2 = 1;
 	int const IDLE_1 = 0;
-	int const INJURE_1 = 0;
+	int const INJURE_HEAD = 0;
+	int const INJURE_BODY = 1;
 	int const JUMP_START = 0;
 	int const JUMP_AIR = 0;
 	int const JUMP_LAND = 0;
@@ -71,6 +78,7 @@ protected:
 	void updatePastPositions(float elapsedTime);
 	void insertAndShiftPastDirectionsPressed(Graphic::DirectionHeaded direction);
 	void setAttackState(int attackType);
+	AttackInfo generateAttackInfo();
 	void render();
 	virtual void setIdleState(float elapsedTime = 0.0f) = 0;
 	virtual void setDirectionHeaded() = 0;
@@ -89,7 +97,7 @@ public:
 	Graphic::DirectionHeaded stringToDirection(string const& direction);
 	string directionToString(Graphic::DirectionHeaded direction);
 	bool hits(Character* otherChar);
-	void registerHit(int hp, string const& attacker, unsigned short int frame);
+	void registerHit(int hp, string const& attacker, unsigned short int frame, AttackInfo info);
 	CharacterVelocity getVelocity(int time);
 	virtual void update(float timeElapsed, vector<Character*> players, vector<Character*> enemies) = 0;
 };

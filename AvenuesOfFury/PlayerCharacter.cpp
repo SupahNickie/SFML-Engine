@@ -131,17 +131,18 @@ void PlayerCharacter::handleJump(float elapsedTime) {
 void PlayerCharacter::hitCharacters(float elapsedTime) {
 	if ((spriteState == Globals::ActionType::ATTACK || (spriteState == Globals::ActionType::JUMP_ATTACK) || (spriteState == Globals::ActionType::RUN_ATTACK)) &&
 		playersTouching.size() + enemiesTouching.size() > 0) {
+		AttackInfo info = generateAttackInfo();
 		vector<int> v = SpriteHolder::getDamageFramesForAction(spriteName, currentAction, currentActionType);
 		for_each(enemiesTouching.begin(), enemiesTouching.end(), [&](Character* e) {
 			if (find(v.begin(), v.end(), currentFrame) != v.end()) {
-				e->registerHit(attackPower[currentActionType], spriteName, currentFrame);
+				e->registerHit(attackPower[currentActionType], spriteName, currentFrame, info);
 				e->disable();
 				e->focusChar = this;
 			}
 		});
 		for_each(playersTouching.begin(), playersTouching.end(), [&](Character* p) {
 			if (find(v.begin(), v.end(), currentFrame) != v.end()) {
-				p->registerHit(attackPower[currentActionType] * 0.05f, spriteName, currentFrame);
+				p->registerHit(attackPower[currentActionType] * 0.05f, spriteName, currentFrame, info);
 				p->disable();
 			}
 		});

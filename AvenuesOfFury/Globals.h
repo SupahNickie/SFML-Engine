@@ -25,6 +25,8 @@ public:
 		JUMP_ATTACK,
 		RUN_ATTACK,
 		RUN_ATTACK_LAND,
+		FALL,
+		RISE,
 		NONE
 	};
 	unsigned int idSerial;

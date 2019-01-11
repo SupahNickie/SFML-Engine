@@ -72,7 +72,7 @@ bool Character::hits(Character* otherChar) {
 	return this->getPosition().intersects(otherChar->getPosition());
 }
 
-void Character::registerHit(int hp, string const& attacker, unsigned short int frame) {
+void Character::registerHit(int hp, string const& attacker, unsigned short int frame, AttackInfo info) {
 	auto it = hitsRegistered.find(attacker);
 	if (it != hitsRegistered.end()) {
 		if (it->second.frame == frame && it->second.timeSinceHitRegistered < MS_PER_FRAME) return;
@@ -82,9 +82,9 @@ void Character::registerHit(int hp, string const& attacker, unsigned short int f
 	output.timeSinceHitRegistered = 0;
 	hitsRegistered[attacker] = output;
 
-	spriteState = Globals::ActionType::INJURE;
-	currentAction = "injure";
-	currentActionType = INJURE_1;
+	spriteState = info.actionType;
+	currentAction = info.action;
+	currentActionType = info.injuryType;
 	resetFrameState();
 	health -= hp;
 }
@@ -265,6 +265,19 @@ void Character::setAttackState(int attackType) {
 		insertAndShiftPastDirectionsPressed(Graphic::DirectionHeaded::NONE);
 	}
 	if (currentActionDone) attackDisabled = true;
+}
+
+AttackInfo Character::generateAttackInfo() {
+	AttackInfo output;
+	if (spriteState == Globals::ActionType::ATTACK) {
+		output.action = "injure";
+	}
+	else if (spriteState == Globals::ActionType::JUMP_ATTACK || spriteState == Globals::ActionType::RUN_ATTACK) {
+		output.action = "fall";
+	}
+	output.injuryType = currentActionType; // ATTACK_1 maps to head attacks, ATTACK_2 maps to body
+	output.actionType = Globals::actionStringToEnum(output.action);
+	return output;
 }
 
 void Character::render() {

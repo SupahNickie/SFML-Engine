@@ -47,12 +47,13 @@ void EnemyCharacter::calculateAttack(float elapsedTime) {
 
 	timeSinceAttackBegan += elapsedTime * 1000;
 	vector<int> v = SpriteHolder::getDamageFramesForAction(spriteName, currentAction, currentActionType);
+	AttackInfo info = generateAttackInfo();
 	if (find(v.begin(), v.end(), currentFrame) != v.end()) {
 		for_each(enemiesTouching.begin(), enemiesTouching.end(), [&](Character* e) {
 			Vector2f target = e->getCenter();
 			if (find(v.begin(), v.end(), currentFrame) != v.end() &&
 				(abs(target.y - position.y) < (.015625f * Globals::getResolution().x))) {
-				e->registerHit(attackPower[currentActionType] * 0.05f, spriteName, currentFrame);
+				e->registerHit(attackPower[currentActionType] * 0.05f, spriteName, currentFrame, info);
 				e->disable();
 			}
 		});
@@ -60,7 +61,7 @@ void EnemyCharacter::calculateAttack(float elapsedTime) {
 			Vector2f target = p->getCenter();
 			if (find(v.begin(), v.end(), currentFrame) != v.end() &&
 				(abs(target.y - position.y) < (.015625f * Globals::getResolution().x))) {
-				p->registerHit(attackPower[currentActionType], spriteName, currentFrame);
+				p->registerHit(attackPower[currentActionType], spriteName, currentFrame, info);
 				p->disable();
 			}
 		});

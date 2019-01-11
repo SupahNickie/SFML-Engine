@@ -8,7 +8,7 @@ Skate::Skate() {
 	texturePath = "graphics/characters/skate_sheet.png";
 	sprite = Sprite(TextureHolder::getTexture(texturePath));
 	attackPower = vector<int>(1);
-	attackPower[0] = 600;
+	attackPower[0] = 60;
 	primaryAttackPressed = false;
 	secondaryAttackPressed = false;
 	spriteState = Globals::ActionType::IDLE;
