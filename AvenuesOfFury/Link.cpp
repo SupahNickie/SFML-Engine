@@ -24,7 +24,7 @@ Link::Link() {
 	
 	animationCycle = { {"move", true}, {"attack", false}, {"idle", false}, {"injure", false} };
 	currentAction = "idle";
-	currentActionType = IDLE_1;
+	currentActionType = NORMAL_IDLE;
 	resetFrameState();
 	render();
 }

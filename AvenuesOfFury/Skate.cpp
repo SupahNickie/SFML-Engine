@@ -28,7 +28,7 @@ Skate::Skate() {
 
 	animationCycle = { {"move", false}, {"attack", false}, {"idle", false}, {"injure", false} };
 	currentAction = "idle";
-	currentActionType = IDLE_1;
+	currentActionType = NORMAL_IDLE;
 	resetFrameState();
 	render();
 }

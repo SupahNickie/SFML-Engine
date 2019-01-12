@@ -20,17 +20,18 @@ struct AttackInfo {
 	string action; // fall, injure
 	Globals::ActionType actionType;
 	unsigned int timeToDisable;
+	bool falling;
 };
 
 class Character : public Graphic {
 protected:
 	int MS_PER_FRAME = 50;
 	int STUN_LENGTH = 200;
-	int const MOVE_1 = 0;
-	int const MOVE_2 = 1;
-	int const ATTACK_1 = 0;
-	int const ATTACK_2 = 1;
-	int const IDLE_1 = 0;
+	int const WALK = 0;
+	int const RUN = 1;
+	int const HEAD_ATTACK = 0;
+	int const BODY_ATTACK = 1;
+	int const NORMAL_IDLE = 0;
 	int const INJURE_HEAD = 0;
 	int const INJURE_BODY = 1;
 	int const JUMP_START = 0;
@@ -39,18 +40,20 @@ protected:
 	int const JUMP_ATTACK = 0;
 	int const RUN_ATTACK = 0;
 	int const RUN_ATTACK_LAND = 0;
-
-	map<int, CharacterVelocity> pastPositions;
-	Graphic::DirectionHeaded* pastDirectionsPressed;
-	int timeSincePastPositionsUpdate = 0;
-	Globals::ActionType spriteState;
-	bool facingRight;
+	int const FALL = 0;
+	int const RISE = 0;
 
 	float baseSpeed;
 	bool running = false;
 
 	int timeToBeDisabled = 0;
 	bool disabled = false;
+	bool falling = false;
+
+	bool jumping = false;
+	bool jumpDisabled = false;
+	float prejumpY = 0.0f;
+	int jumpLength = 0;
 
 	int health = 0;
 	vector<int> attackPower;
@@ -70,10 +73,11 @@ protected:
 	int timeSinceLastAction = 0;
 	bool spriteCycleDown = false;
 
-	bool jumping = false;
-	bool jumpDisabled = false;
-	float prejumpY = 0.0f;
-	int jumpLength = 0;
+	map<int, CharacterVelocity> pastPositions;
+	Graphic::DirectionHeaded* pastDirectionsPressed;
+	int timeSincePastPositionsUpdate = 0;
+	Globals::ActionType spriteState;
+	bool facingRight;
 
 	void advanceHitRecords(float elapsedTime);
 	void detectCollisions(vector<Character*> players, vector<Character*> enemies);
@@ -83,12 +87,13 @@ protected:
 	void updatePastPositions(float elapsedTime);
 	void insertAndShiftPastDirectionsPressed(Graphic::DirectionHeaded direction);
 	void setAttackState(int attackType);
-	AttackInfo generateAttackInfo();
+	AttackInfo generateAttackInfo(bool longStun);
 	void render();
 	virtual void setIdleState(float elapsedTime = 0.0f) = 0;
 	virtual void setDirectionHeaded() = 0;
 private:
 	bool handleJumpingAnimation(int maxFrames, bool attacking);
+	bool handleFallingAnimation(int maxFrames);
 	void handleNormalAnimation(int maxFrames);
 public:
 	Graphic::DirectionHeaded directionHeaded = Graphic::DirectionHeaded::NONE;

@@ -9,7 +9,7 @@ EnemyCharacter::EnemyCharacter(vector<Character*> players) {
 	spriteState = Globals::ActionType::IDLE;
 	isActive = true;
 	currentAction = "idle";
-	currentActionType = IDLE_1;
+	currentActionType = NORMAL_IDLE;
 	recalculateAggression();
 	recalculateDecisionSpeed(false);
 }
@@ -46,20 +46,19 @@ void EnemyCharacter::calculateAttack(float elapsedTime) {
 
 	timeSinceAttackBegan += elapsedTime * 1000;
 	vector<int> v = SpriteHolder::getDamageFramesForAction(spriteName, currentAction, currentActionType);
-	AttackInfo info = generateAttackInfo();
 	if (find(v.begin(), v.end(), currentFrame) != v.end()) {
 		for_each(enemiesTouching.begin(), enemiesTouching.end(), [&](Character* e) {
+			AttackInfo info = generateAttackInfo(true);
 			Vector2f target = e->getCenter();
-			if (find(v.begin(), v.end(), currentFrame) != v.end() &&
-				onSameVerticalPlane(target.y)) {
+			if (onSameVerticalPlane(target.y)) {
 				e->registerHit(attackPower[currentActionType] * 0.05f, spriteName, currentFrame, info);
 				e->disable(info.timeToDisable);
 			}
 		});
 		for_each(playersTouching.begin(), playersTouching.end(), [&](Character* p) {
+			AttackInfo info = generateAttackInfo(false);
 			Vector2f target = p->getCenter();
-			if (find(v.begin(), v.end(), currentFrame) != v.end() &&
-				onSameVerticalPlane(target.y)) {
+			if (onSameVerticalPlane(target.y)) {
 				p->registerHit(attackPower[currentActionType], spriteName, currentFrame, info);
 				p->disable(info.timeToDisable);
 			}
@@ -87,7 +86,7 @@ void EnemyCharacter::resetStateAfterFinishingAction() {
 		}
 		spriteState = Globals::ActionType::IDLE;
 		currentAction = "idle";
-		currentActionType = IDLE_1;
+		currentActionType = NORMAL_IDLE;
 		resetFrameState();
 		attackDisabled = false;
 		timeSinceAttackBegan = 0;
@@ -113,7 +112,7 @@ bool EnemyCharacter::handleDecidingState(float elapsedTime, vector<Character*> p
 		if (timeSinceDecision == 0) {
 			spriteState = Globals::ActionType::IDLE;
 			currentAction = "idle";
-			currentActionType = IDLE_1;
+			currentActionType = NORMAL_IDLE;
 			resetFrameState();
 
 			// get nearest player
@@ -173,7 +172,7 @@ bool EnemyCharacter::checkDecidingState() {
 
 void EnemyCharacter::setIdleState(float elapsedTime) {
 	currentAction = "idle";
-	currentActionType = IDLE_1;
+	currentActionType = NORMAL_IDLE;
 	if (spriteState != Globals::ActionType::IDLE) {
 		spriteState = Globals::ActionType::IDLE;
 		resetFrameState();
@@ -184,7 +183,7 @@ void EnemyCharacter::setMoveState() {
 	if (spriteState == Globals::ActionType::IDLE) {
 		spriteState = Globals::ActionType::MOVE;
 		currentAction = "move";
-		currentActionType = MOVE_1;
+		currentActionType = WALK;
 		resetFrameState();
 	}
 }

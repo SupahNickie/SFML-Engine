@@ -35,12 +35,12 @@ void PlayerCharacter::update(float elapsedTime, vector<Character*> players, vect
 
 	if (!attackDisabled) {
 		if (primaryAttackPressed) {
-			setAttackState(ATTACK_1);
+			setAttackState(HEAD_ATTACK);
 			running = false;
 			return;
 		}
 		else if (secondaryAttackPressed) {
-			setAttackState(ATTACK_2);
+			setAttackState(BODY_ATTACK);
 			running = false;
 			return;
 		}
@@ -131,27 +131,26 @@ void PlayerCharacter::handleJump(float elapsedTime) {
 void PlayerCharacter::hitCharacters(float elapsedTime) {
 	if ((spriteState == Globals::ActionType::ATTACK || (spriteState == Globals::ActionType::JUMP_ATTACK) || (spriteState == Globals::ActionType::RUN_ATTACK)) &&
 		playersTouching.size() + enemiesTouching.size() > 0) {
-		AttackInfo info = generateAttackInfo();
 		vector<int> v = SpriteHolder::getDamageFramesForAction(spriteName, currentAction, currentActionType);
-		for_each(enemiesTouching.begin(), enemiesTouching.end(), [&](Character* e) {
-			if (find(v.begin(), v.end(), currentFrame) != v.end()) {
+		if (find(v.begin(), v.end(), currentFrame) != v.end()) {
+			for_each(enemiesTouching.begin(), enemiesTouching.end(), [&](Character* e) {
+				AttackInfo info = generateAttackInfo(true);
 				Vector2f target = e->getCenter();
 				if (onSameVerticalPlane(target.y)) {
 					e->registerHit(attackPower[currentActionType], spriteName, currentFrame, info);
 					e->disable(info.timeToDisable);
 					e->focusChar = this;
 				}
-			}
-		});
-		for_each(playersTouching.begin(), playersTouching.end(), [&](Character* p) {
-			Vector2f target = p->getCenter();
-			if (onSameVerticalPlane(target.y)) {
-				if (find(v.begin(), v.end(), currentFrame) != v.end()) {
+			});
+			for_each(playersTouching.begin(), playersTouching.end(), [&](Character* p) {
+				AttackInfo info = generateAttackInfo(false);
+				Vector2f target = p->getCenter();
+				if (onSameVerticalPlane(target.y)) {
 					p->registerHit(attackPower[currentActionType] * 0.05f, spriteName, currentFrame, info);
 					p->disable(info.timeToDisable);
 				}
-			}
-		});
+			});
+		}
 	}
 }
 
@@ -160,12 +159,12 @@ void PlayerCharacter::setMoveState(float elapsedTime) {
 	currentAction = "move";
 	if ((pastDirectionsPressed[4] != Graphic::DirectionHeaded::NONE) &&
 		((pastDirectionsPressed[3] == pastDirectionsPressed[4]) || running)) {
-		currentActionType = MOVE_2;
+		currentActionType = RUN;
 		speed = baseSpeed * 2.0;
 		running = true;
 	}
 	else {
-		currentActionType = MOVE_1;
+		currentActionType = WALK;
 		speed = baseSpeed;
 		running = false;
 	}
@@ -178,7 +177,7 @@ void PlayerCharacter::setMoveState(float elapsedTime) {
 
 void PlayerCharacter::setIdleState(float elapsedTime) {
 	currentAction = "idle";
-	currentActionType = IDLE_1;
+	currentActionType = NORMAL_IDLE;
 	if (spriteState != Globals::ActionType::IDLE) {
 		spriteState = Globals::ActionType::IDLE;
 		resetFrameState();

@@ -74,6 +74,7 @@ bool Character::hits(Character* otherChar) {
 }
 
 void Character::registerHit(int hp, string const& attacker, unsigned short int frame, AttackInfo info) {
+	if (falling) return; // Can't kick dudes when they're down
 	auto it = hitsRegistered.find(attacker);
 	if (it != hitsRegistered.end()) {
 		if (it->second.frame == frame && it->second.timeSinceHitRegistered < MS_PER_FRAME) return;
@@ -86,6 +87,7 @@ void Character::registerHit(int hp, string const& attacker, unsigned short int f
 	spriteState = info.actionType;
 	currentAction = info.action;
 	currentActionType = info.injuryType;
+	falling = info.falling;
 	resetFrameState();
 	health -= hp;
 }
@@ -137,11 +139,9 @@ void Character::updateFrameState(float elapsedTime, bool prioritizedAction) {
 	timeSinceLastAction += elapsedTime * 1000;
 	timeSinceLastFrame += elapsedTime * 1000;
 	if (timeSinceLastFrame > MS_PER_FRAME) {
-		if (spriteName == "skate") {
-			cout << "CURRENT ACTION " << currentAction << " FRAME: " << currentFrame << " TYPE: " << currentActionType << "\n";
-		}
 		int maxFrames = SpriteHolder::getMaxFramesForAction(spriteName, currentAction, currentActionType);
 		if (jumping && handleJumpingAnimation(maxFrames, prioritizedAction)) return;
+		if (falling && handleFallingAnimation(maxFrames)) return;
 		handleNormalAnimation(maxFrames);
 		timeSinceLastFrame = 0;
 	}
@@ -199,6 +199,25 @@ bool Character::handleJumpingAnimation(int maxFrames, bool attacking) {
 		}
 	}
 
+	return false;
+}
+
+bool Character::handleFallingAnimation(int maxFrames) {
+	if (currentFrame == maxFrames) {
+		if (spriteState == Globals::ActionType::FALL) {
+			// Time remaining is less than amount of frames their rising animation is
+			if ((timeToBeDisabled - timeSinceLastAction) > (MS_PER_FRAME * SpriteHolder::getMaxFramesForAction(spriteName, "rise", RISE))) {
+				return true;
+			}
+			else {
+				spriteState = Globals::ActionType::RISE;
+				currentAction = "rise";
+				currentActionType = RISE;
+				falling = false;
+				resetFrameState(false);
+			}
+		}
+	}
 	return false;
 }
 
@@ -275,17 +294,19 @@ void Character::setAttackState(int attackType) {
 	if (currentActionDone) attackDisabled = true;
 }
 
-AttackInfo Character::generateAttackInfo() {
+AttackInfo Character::generateAttackInfo(bool longStun) {
 	AttackInfo output;
 	if (spriteState == Globals::ActionType::ATTACK) {
 		output.action = "injure";
 		output.timeToDisable = STUN_LENGTH;
+		output.falling = false;
 	}
 	else if (spriteState == Globals::ActionType::JUMP_ATTACK || spriteState == Globals::ActionType::RUN_ATTACK) {
 		output.action = "fall";
-		output.timeToDisable = STUN_LENGTH * 10;
+		longStun ? output.timeToDisable = STUN_LENGTH * 15 : output.timeToDisable = STUN_LENGTH * 5;
+		output.falling = true;
 	}
-	output.injuryType = currentActionType; // ATTACK_1 maps to head attacks, ATTACK_2 maps to body
+	output.injuryType = currentActionType;
 	output.actionType = Globals::actionStringToEnum(output.action);
 	return output;
 }
