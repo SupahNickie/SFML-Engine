@@ -27,20 +27,6 @@ void EnemyCharacter::update(float elapsedTime, vector<Character*> players, vecto
 	render();
 }
 
-void EnemyCharacter::turnToFaceFocusChar() {
-	bool playerToRightOfSelf = focusChar->getCenter().x > this->getCenter().x;
-	if (playerToRightOfSelf && !facingRight) {
-		flipHorizontally();
-	}
-	else if (!playerToRightOfSelf && facingRight) {
-		flipHorizontally();
-	}
-}
-
-void EnemyCharacter::setDirectionHeaded() {
-	// going to be used for throwing
-}
-
 void EnemyCharacter::calculateAttack(float elapsedTime) {
 	if (timeSinceAttackBegan == 0) recalculateAggression();
 
@@ -66,43 +52,10 @@ void EnemyCharacter::calculateAttack(float elapsedTime) {
 	}
 }
 
-void EnemyCharacter::recalculateAggression() {
-	varianceAggression = rand() % maxAggression;
-	aggression = baseAggression + varianceAggression;
-}
-
-void EnemyCharacter::recalculateDecisionSpeed(bool decisionState) {
-	deciding = decisionState;
-	timeSinceDecision = 0;
-	varianceDecision = rand() % maxDecisionSpeed;
-	decisionSpeed = baseDecisionSpeed + varianceDecision;
-}
-
-void EnemyCharacter::resetStateAfterFinishingAction() {
-	if (currentActionDone) {
-		if (spriteState == Globals::ActionType::ATTACK) {
-			timeSinceAttackEnded = 0;
-			timeSinceDecision = 0;
-		}
-		spriteState = Globals::ActionType::IDLE;
-		currentAction = "idle";
-		currentActionType = NORMAL_IDLE;
-		resetFrameState();
-		attackDisabled = false;
-		timeSinceAttackBegan = 0;
-	}
-}
-
-bool EnemyCharacter::handleDisabledState(float elapsedTime) {
-	if (disabled) {
-		timeSinceLastAction += elapsedTime * 1000;
-		if (timeSinceLastAction <= timeToBeDisabled) return true;
-		timeSinceLastAction = 0;
-		timeToBeDisabled = 0;
-		disabled = false;
-		attackDisabled = false;
-		setIdleState();
-		return false;
+bool EnemyCharacter::checkDecidingState() {
+	if (decisionSpeed != 0 && timeSinceDecision > decisionSpeed) {
+		recalculateDecisionSpeed(true);
+		return true;
 	}
 	return false;
 }
@@ -138,36 +91,6 @@ bool EnemyCharacter::handleDecidingState(float elapsedTime, vector<Character*> p
 		timeSinceDecision += elapsedTime * 1000;
 		return false;
 	}
-}
-
-bool EnemyCharacter::attack(float elapsedTime, int actionType) {
-	if (timeSinceAttackEnded > aggression) {
-		if (!attackDisabled &&
-			spriteState != Globals::ActionType::INJURE &&
-			hits(focusChar) &&
-			onSameVerticalPlane(focusChar->getCenter().y)
-			) {
-			setAttackState(actionType);
-			calculateAttack(elapsedTime);
-			return true;
-		}
-		return false;
-	}
-	else if (spriteState == Globals::ActionType::INJURE) {
-		return true;
-	}
-	else {
-		setIdleState();
-		return true;
-	}
-}
-
-bool EnemyCharacter::checkDecidingState() {
-	if (decisionSpeed != 0 && timeSinceDecision > decisionSpeed) {
-		recalculateDecisionSpeed(true);
-		return true;
-	}
-	return false;
 }
 
 void EnemyCharacter::setIdleState(float elapsedTime) {
@@ -249,6 +172,95 @@ void EnemyCharacter::predictFocusCharLocation(float elapsedTime) {
 	}
 }
 
+void EnemyCharacter::handleAI(float elapsedTime, vector<Character*> players) {
+	if (spriteState != Globals::ActionType::ATTACK) timeSinceAttackEnded += elapsedTime * 1000;
+	if (handleDisabledState(elapsedTime)) return;
+	turnToFaceFocusChar();
+	resetStateAfterFinishingAction();
+	if (handleDecidingState(elapsedTime, players)) return;
+	if (handleAttacking(elapsedTime)) return;
+	if (checkDecidingState()) return;
+	setMoveState();
+	handleMoving(elapsedTime);
+}
+
+bool EnemyCharacter::attack(float elapsedTime, int actionType) {
+	if (timeSinceAttackEnded > aggression) {
+		if (!attackDisabled &&
+			spriteState != Globals::ActionType::INJURE &&
+			hits(focusChar) &&
+			onSameVerticalPlane(focusChar->getCenter().y)
+			) {
+			setAttackState(actionType);
+			calculateAttack(elapsedTime);
+			return true;
+		}
+		return false;
+	}
+	else if (spriteState == Globals::ActionType::INJURE) {
+		return true;
+	}
+	else {
+		setIdleState();
+		return true;
+	}
+}
+
+void EnemyCharacter::turnToFaceFocusChar() {
+	bool playerToRightOfSelf = focusChar->getCenter().x > this->getCenter().x;
+	if (playerToRightOfSelf && !facingRight) {
+		flipHorizontally();
+	}
+	else if (!playerToRightOfSelf && facingRight) {
+		flipHorizontally();
+	}
+}
+
+void EnemyCharacter::setDirectionHeaded() {
+	// going to be used for throwing
+}
+
+void EnemyCharacter::recalculateAggression() {
+	varianceAggression = rand() % maxAggression;
+	aggression = baseAggression + varianceAggression;
+}
+
+void EnemyCharacter::recalculateDecisionSpeed(bool decisionState) {
+	deciding = decisionState;
+	timeSinceDecision = 0;
+	varianceDecision = rand() % maxDecisionSpeed;
+	decisionSpeed = baseDecisionSpeed + varianceDecision;
+}
+
+void EnemyCharacter::resetStateAfterFinishingAction() {
+	if (currentActionDone) {
+		if (spriteState == Globals::ActionType::ATTACK) {
+			timeSinceAttackEnded = 0;
+			timeSinceDecision = 0;
+		}
+		spriteState = Globals::ActionType::IDLE;
+		currentAction = "idle";
+		currentActionType = NORMAL_IDLE;
+		resetFrameState();
+		attackDisabled = false;
+		timeSinceAttackBegan = 0;
+	}
+}
+
+bool EnemyCharacter::handleDisabledState(float elapsedTime) {
+	if (disabled) {
+		timeSinceLastAction += elapsedTime * 1000;
+		if (timeSinceLastAction <= timeToBeDisabled) return true;
+		timeSinceLastAction = 0;
+		timeToBeDisabled = 0;
+		disabled = false;
+		attackDisabled = false;
+		setIdleState();
+		return false;
+	}
+	return false;
+}
+
 void EnemyCharacter::moveTowardsTarget(float elapsedTime) {
 	if (target.x > position.x) {
 		position.x += elapsedTime * speed;
@@ -262,16 +274,4 @@ void EnemyCharacter::moveTowardsTarget(float elapsedTime) {
 	else if (target.y < position.y) {
 		position.y -= elapsedTime * speed;
 	}
-}
-
-void EnemyCharacter::handleAI(float elapsedTime, vector<Character*> players) {
-	if (spriteState != Globals::ActionType::ATTACK) timeSinceAttackEnded += elapsedTime * 1000;
-	if (handleDisabledState(elapsedTime)) return;
-	turnToFaceFocusChar();
-	resetStateAfterFinishingAction();
-	if (handleDecidingState(elapsedTime, players)) return;
-	if (handleAttacking(elapsedTime)) return;
-	if (checkDecidingState()) return;
-	setMoveState();
-	handleMoving(elapsedTime);
 }

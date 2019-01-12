@@ -11,8 +11,8 @@
 class PlayerCharacter : public Character {
 public:
 	~PlayerCharacter();
-	virtual void handleInput() = 0;
 	void update(float elapsedTime, vector<Character*> players, vector<Character*> enemies);
+	virtual void handleInput() = 0;
 protected:
 	bool upPressed;
 	bool downPressed;

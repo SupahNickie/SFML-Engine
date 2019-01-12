@@ -8,12 +8,12 @@ using namespace std;
 class Graphic : public Drawable {
 public:
 	bool isActive;
+
 	void flipHorizontally();
 	void setPosition(Vector2f position);
 	FloatRect getPosition();
 	Vector2f getCenter();
 	void deleteSprite();
-
 	virtual void draw(RenderTarget& target, RenderStates states) const;
 protected:
 	string spriteName;

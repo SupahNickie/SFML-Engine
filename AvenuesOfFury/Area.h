@@ -11,5 +11,4 @@ public:
 private:
 	Sprite sprite;
 	Vector2f viewPosition;
-
 };

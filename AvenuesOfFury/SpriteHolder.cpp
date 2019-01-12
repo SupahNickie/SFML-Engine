@@ -57,7 +57,6 @@ void SpriteHolder::initSprites(string const& handlingType, string const& spriteN
 	setIsStored(spriteName);
 }
 
-
 void SpriteHolder::deleteSprite(string const& spriteName) {
 	shInstance->spriteOriginsMap.erase(spriteName);
 	shInstance->spriteBoundsMap.erase(spriteName);
@@ -66,6 +65,35 @@ void SpriteHolder::deleteSprite(string const& spriteName) {
 	shInstance->spriteStartFrameMap.erase(spriteName);
 }
 
+void SpriteHolder::setSprite(Sprite& sprite, string const& spriteName, string const& actionCategory, int actionType, int actionFrame) {
+	Vector2i originPos = shInstance->spriteOriginsMap[spriteName][Globals::actionStringToEnum(actionCategory)][actionType][actionFrame];
+	Vector2i boundPos = shInstance->spriteBoundsMap[spriteName][Globals::actionStringToEnum(actionCategory)][actionType][actionFrame];
+
+	sprite.setTextureRect(
+		IntRect(
+			originPos.x,
+			originPos.y,
+			boundPos.x,
+			boundPos.y
+		)
+	);
+	sprite.setOrigin(
+		boundPos.x / 2.0f,
+		boundPos.y / 2.0f
+	);
+}
+
+vector<int> SpriteHolder::getDamageFramesForAction(string const& spriteName, string const& actionCategory, int actionType) {
+	return shInstance->spriteDamageFramesMap[spriteName][Globals::actionStringToEnum(actionCategory)][actionType];
+}
+
+int SpriteHolder::getMaxFramesForAction(string const& spriteName, string const& actionCategory, int actionType) {
+	return shInstance->spriteMaxFrameMap[spriteName][Globals::actionStringToEnum(actionCategory)][actionType];
+}
+
+int SpriteHolder::getStartFramesForAction(string const& spriteName, string const& actionCategory, int actionType) {
+	return shInstance->spriteStartFrameMap[spriteName][Globals::actionStringToEnum(actionCategory)][actionType];
+}
 
 void SpriteHolder::handleCharacterLine(vector<string> line, string* currentlySetting, unsigned int* numberOfActions, string spriteName, int* outIndex, int* inIndex) {
 	if (Globals::actionStringToEnum(line[0]) != Globals::ActionType::NONE) {
@@ -113,36 +141,6 @@ void SpriteHolder::handleCharacterLine(vector<string> line, string* currentlySet
 
 void SpriteHolder::handleBackgroundLine(vector<string> line, string* currentlySetting, unsigned int* numberOfActions, string spriteName, int* outIndex, int* inIndex) {
 	
-}
-
-void SpriteHolder::setSprite(Sprite& sprite, string const& spriteName, string const& actionCategory, int actionType, int actionFrame) {
-	Vector2i originPos = shInstance->spriteOriginsMap[spriteName][Globals::actionStringToEnum(actionCategory)][actionType][actionFrame];
-	Vector2i boundPos = shInstance->spriteBoundsMap[spriteName][Globals::actionStringToEnum(actionCategory)][actionType][actionFrame];
-
-	sprite.setTextureRect(
-		IntRect(
-			originPos.x,
-			originPos.y,
-			boundPos.x,
-			boundPos.y
-		)
-	);
-	sprite.setOrigin(
-		boundPos.x / 2.0f,
-		boundPos.y / 2.0f
-	);
-}
-
-vector<int> SpriteHolder::getDamageFramesForAction(string const& spriteName, string const& actionCategory, int actionType) {
-	return shInstance->spriteDamageFramesMap[spriteName][Globals::actionStringToEnum(actionCategory)][actionType];
-}
-
-int SpriteHolder::getMaxFramesForAction(string const& spriteName, string const& actionCategory, int actionType) {
-	return shInstance->spriteMaxFrameMap[spriteName][Globals::actionStringToEnum(actionCategory)][actionType];
-}
-
-int SpriteHolder::getStartFramesForAction(string const& spriteName, string const& actionCategory, int actionType) {
-	return shInstance->spriteStartFrameMap[spriteName][Globals::actionStringToEnum(actionCategory)][actionType];
 }
 
 void SpriteHolder::initActionSprites(string const& spriteName, Globals::ActionType action, unsigned int actionCount) {

@@ -93,6 +93,13 @@ void Character::registerHit(int hp, string const& attacker, unsigned short int f
 	health -= hp;
 }
 
+CharacterVelocity Character::getVelocity(int time) {
+	CharacterVelocity output;
+	time == 0 ? output.position = position : output.position = pastPositions[time].position;
+	output.direction = directionHeaded;
+	return output;
+}
+
 void Character::advanceHitRecords(float elapsedTime) {
 	for (auto it = hitsRegistered.begin(); it != hitsRegistered.end(); /* no incrementer */ ) {
 		it->second.timeSinceHitRegistered += elapsedTime * 1000;
@@ -152,6 +159,70 @@ void Character::updateFrameState(float elapsedTime, bool prioritizedAction) {
 		handleNormalAnimation(maxFrames);
 		timeSinceLastFrame = 0;
 	}
+}
+
+void Character::updatePastPositions(float elapsedTime) {
+	if (timeSincePastPositionsUpdate > 50) {
+		int positionToUpdate = 500;
+		int positionToGrab = 450;
+		while (positionToUpdate > 0) {
+			pastPositions[positionToUpdate] = pastPositions[positionToGrab];
+			positionToUpdate = positionToGrab;
+			positionToGrab -= 50;
+		}
+		CharacterVelocity current;
+		current.direction = directionHeaded;
+		current.position = position;
+		if (jumping) current.position.y = prejumpY;
+		pastPositions[0] = current;
+		timeSincePastPositionsUpdate = 0;
+	}
+	timeSincePastPositionsUpdate += elapsedTime * 1000;
+}
+
+void Character::insertAndShiftPastDirectionsPressed(DirectionHeaded direction) {
+	directionHeaded = direction;
+	memmove(&pastDirectionsPressed[0], &pastDirectionsPressed[1], (size_t)4 * sizeof(pastDirectionsPressed[0]));
+	pastDirectionsPressed[4] = directionHeaded;
+}
+
+void Character::setAttackState(int attackType) {
+	if (!attackDisabled) {
+		currentAction = "attack";
+		if (currentActionType != attackType) {
+			currentActionType = attackType;
+			resetFrameState();
+		}
+		if (spriteState != Globals::ActionType::ATTACK) {
+			spriteState = Globals::ActionType::ATTACK;
+			resetFrameState();
+		}
+		insertAndShiftPastDirectionsPressed(DirectionHeaded::NONE);
+	}
+	if (currentActionDone) attackDisabled = true;
+}
+
+AttackInfo Character::generateAttackInfo(bool longStun, Character* c) {
+	AttackInfo output;
+	if (spriteState == Globals::ActionType::ATTACK) {
+		output.action = "injure";
+		output.timeToDisable = STUN_LENGTH;
+		output.fallstatus = Fallstep::NONE;
+		output.fallY = 0.0f;
+	}
+	else if (spriteState == Globals::ActionType::JUMP_ATTACK || spriteState == Globals::ActionType::RUN_ATTACK) {
+		output.action = "fall";
+		longStun ? output.timeToDisable = STUN_LENGTH * 15 : output.timeToDisable = STUN_LENGTH * 5;
+		output.fallstatus = Fallstep::KNOCK_DOWN;
+		output.fallY = c->getCenter().y + (c->getPosition().height / 2);
+	}
+	output.injuryType = currentActionType;
+	output.actionType = Globals::actionStringToEnum(output.action);
+	return output;
+}
+
+void Character::render() {
+	SpriteHolder::setSprite(sprite, spriteName, currentAction, currentActionType, currentFrame);
 }
 
 bool Character::handleJumpingAnimation(int maxFrames, bool attacking) {
@@ -251,75 +322,4 @@ void Character::handleNormalAnimation(int maxFrames) {
 	else {
 		spriteCycleDown ? --currentFrame : ++currentFrame;
 	}
-}
-
-CharacterVelocity Character::getVelocity(int time) {
-	CharacterVelocity output;
-	time == 0 ? output.position = position : output.position = pastPositions[time].position;
-	output.direction = directionHeaded;
-	return output;
-}
-
-void Character::updatePastPositions(float elapsedTime) {
-	if (timeSincePastPositionsUpdate > 50) {
-		int positionToUpdate = 500;
-		int positionToGrab = 450;
-		while (positionToUpdate > 0) {
-			pastPositions[positionToUpdate] = pastPositions[positionToGrab];
-			positionToUpdate = positionToGrab;
-			positionToGrab -= 50;
-		}
-		CharacterVelocity current;
-		current.direction = directionHeaded;
-		current.position = position;
-		if (jumping) current.position.y = prejumpY;
-		pastPositions[0] = current;
-		timeSincePastPositionsUpdate = 0;
-	}
-	timeSincePastPositionsUpdate += elapsedTime * 1000;
-}
-
-void Character::insertAndShiftPastDirectionsPressed(DirectionHeaded direction) {
-	directionHeaded = direction;
-	memmove(&pastDirectionsPressed[0], &pastDirectionsPressed[1], (size_t)4 * sizeof(pastDirectionsPressed[0]));
-	pastDirectionsPressed[4] = directionHeaded;
-}
-
-void Character::setAttackState(int attackType) {
-	if (!attackDisabled) {
-		currentAction = "attack";
-		if (currentActionType != attackType) {
-			currentActionType = attackType;
-			resetFrameState();
-		}
-		if (spriteState != Globals::ActionType::ATTACK) {
-			spriteState = Globals::ActionType::ATTACK;
-			resetFrameState();
-		}
-		insertAndShiftPastDirectionsPressed(DirectionHeaded::NONE);
-	}
-	if (currentActionDone) attackDisabled = true;
-}
-
-AttackInfo Character::generateAttackInfo(bool longStun, Character* c) {
-	AttackInfo output;
-	if (spriteState == Globals::ActionType::ATTACK) {
-		output.action = "injure";
-		output.timeToDisable = STUN_LENGTH;
-		output.fallstatus = Fallstep::NONE;
-		output.fallY = 0.0f;
-	}
-	else if (spriteState == Globals::ActionType::JUMP_ATTACK || spriteState == Globals::ActionType::RUN_ATTACK) {
-		output.action = "fall";
-		longStun ? output.timeToDisable = STUN_LENGTH * 15 : output.timeToDisable = STUN_LENGTH * 5;
-		output.fallstatus = Fallstep::KNOCK_DOWN;
-		output.fallY = c->getCenter().y + (c->getPosition().height / 2);
-	}
-	output.injuryType = currentActionType;
-	output.actionType = Globals::actionStringToEnum(output.action);
-	return output;
-}
-
-void Character::render() {
-	SpriteHolder::setSprite(sprite, spriteName, currentAction, currentActionType, currentFrame);
 }

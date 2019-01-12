@@ -34,14 +34,14 @@ protected:
 	int varianceAggression = 0;
 	int aggression = 0; // minimum milliseconds before attacking again
 
-	bool handleDecidingState(float elapsedTime, vector<Character*> players);
-	bool attack(float elapsedTime, int actionType);
 	bool checkDecidingState();
+	bool handleDecidingState(float elapsedTime, vector<Character*> players);
 	void setIdleState(float elapsedTime = 0.0f);
 	void setMoveState();
 	void moveTowardsFocusChar(float elapsedTime);
 	void predictFocusCharLocation(float elapsedTime);
 	void handleAI(float elapsedTime, vector<Character*> players);
+	bool attack(float elapsedTime, int actionType);
 	virtual bool handleAttacking(float elapsedTime) = 0;
 	virtual void handleMoving(float elapsedTime) = 0;
 private:
