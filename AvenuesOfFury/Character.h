@@ -11,7 +11,7 @@ struct HitRecord;
 class Character : public Graphic {
 public:
 	enum class DirectionHeaded { U, UR, R, DR, D, DL, L, UL, NONE };
-	enum class FallStep { NONE, KNOCK_DOWN, HIT_GROUND, BOUNCE_UP, LAND };
+	enum class FallStep { NONE, KNOCK_DOWN, BOUNCE_UP };
 	enum class FallDirection { LEFT, RIGHT, NONE };
 	DirectionHeaded directionHeaded = DirectionHeaded::NONE;
 	float speed;
@@ -50,10 +50,12 @@ protected:
 	bool running = false;
 
 	int timeToBeDisabled = 0;
-	int timeFallingUp = 4 * MS_PER_FRAME;
+	int const baseTimeFallingUp = 4 * MS_PER_FRAME;
+	int timeFallingUp = baseTimeFallingUp;
 	bool disabled = false;
 	float fallY = 0.0f;
 	FallStep fallstatus = FallStep::NONE;
+	FallDirection fallDirection = FallDirection::NONE;
 
 	bool jumping = false;
 	bool jumpDisabled = false;

@@ -89,6 +89,7 @@ void Character::registerHit(int hp, string const& attacker, unsigned short int f
 	currentActionType = info.injuryType;
 	fallstatus = info.fallstatus;
 	fallY = info.fallY;
+	fallDirection = info.fallDirection;
 	resetFrameState();
 	health -= hp;
 }
@@ -283,6 +284,11 @@ bool Character::handleJumpingAnimation(int maxFrames, bool attacking) {
 }
 
 bool Character::handleFallingAnimation(int maxFrames, float elapsedTime) {
+	if (fallstatus == FallStep::KNOCK_DOWN) {
+		if (fallDirection == FallDirection::LEFT) position.x -= baseSpeed * elapsedTime;
+		if (fallDirection == FallDirection::RIGHT) position.x += baseSpeed * elapsedTime;
+	}
+
 	if (timeSinceLastAction < timeFallingUp) {
 		position.y -= baseSpeed * elapsedTime;
 	}
@@ -295,7 +301,7 @@ bool Character::handleFallingAnimation(int maxFrames, float elapsedTime) {
 			if (fallY >= position.y) return true;
 			resetFrameState();
 			fallstatus = FallStep::BOUNCE_UP;
-			timeFallingUp /= 2;
+			timeFallingUp = baseTimeFallingUp / 2;
 		}
 		if (fallstatus == FallStep::BOUNCE_UP) {
 			//Time remaining is less than amount of frames their rising animation is
@@ -304,7 +310,7 @@ bool Character::handleFallingAnimation(int maxFrames, float elapsedTime) {
 			currentAction = "rise";
 			currentActionType = RISE;
 			fallstatus = FallStep::NONE;
-			timeFallingUp *= 2;
+			timeFallingUp = baseTimeFallingUp;
 			resetFrameState(false);
 		}
 	}
