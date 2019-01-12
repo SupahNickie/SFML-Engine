@@ -74,7 +74,7 @@ bool Character::hits(Character* otherChar) {
 }
 
 void Character::registerHit(int hp, string const& attacker, unsigned short int frame, AttackInfo info) {
-	if (fallstatus != Fallstep::NONE) return; // Can't kick dudes when they're down
+	if (fallstatus != FallStep::NONE) return; // Can't kick dudes when they're down
 	auto it = hitsRegistered.find(attacker);
 	if (it != hitsRegistered.end()) {
 		if (it->second.frame == frame && it->second.timeSinceHitRegistered < MS_PER_FRAME) return;
@@ -155,7 +155,7 @@ void Character::updateFrameState(float elapsedTime, bool prioritizedAction) {
 	if (timeSinceLastFrame > MS_PER_FRAME) {
 		int maxFrames = SpriteHolder::getMaxFramesForAction(spriteName, currentAction, currentActionType);
 		if (jumping && handleJumpingAnimation(maxFrames, prioritizedAction)) return;
-		if ((fallstatus != Fallstep::NONE) && handleFallingAnimation(maxFrames)) return;
+		if ((fallstatus != FallStep::NONE) && handleFallingAnimation(maxFrames, elapsedTime)) return;
 		handleNormalAnimation(maxFrames);
 		timeSinceLastFrame = 0;
 	}
@@ -207,14 +207,16 @@ AttackInfo Character::generateAttackInfo(bool longStun, Character* c) {
 	if (spriteState == Globals::ActionType::ATTACK) {
 		output.action = "injure";
 		output.timeToDisable = STUN_LENGTH;
-		output.fallstatus = Fallstep::NONE;
+		output.fallstatus = FallStep::NONE;
 		output.fallY = 0.0f;
+		output.fallDirection = FallDirection::NONE;
 	}
 	else if (spriteState == Globals::ActionType::JUMP_ATTACK || spriteState == Globals::ActionType::RUN_ATTACK) {
 		output.action = "fall";
 		longStun ? output.timeToDisable = STUN_LENGTH * 15 : output.timeToDisable = STUN_LENGTH * 5;
-		output.fallstatus = Fallstep::KNOCK_DOWN;
-		output.fallY = c->getCenter().y + (c->getPosition().height / 2);
+		output.fallstatus = FallStep::KNOCK_DOWN;
+		output.fallY = c->getCenter().y + (c->getPosition().height / 4);
+		output.fallDirection = getDirectionOfCollision(c);
 	}
 	output.injuryType = currentActionType;
 	output.actionType = Globals::actionStringToEnum(output.action);
@@ -280,20 +282,30 @@ bool Character::handleJumpingAnimation(int maxFrames, bool attacking) {
 	return false;
 }
 
-bool Character::handleFallingAnimation(int maxFrames) {
+bool Character::handleFallingAnimation(int maxFrames, float elapsedTime) {
+	if (timeSinceLastAction < timeFallingUp) {
+		position.y -= baseSpeed * elapsedTime;
+	}
+	else if (fallY >= position.y) {
+		position.y += baseSpeed * elapsedTime;
+	}
+
 	if (currentFrame == maxFrames) {
-		if (spriteState == Globals::ActionType::FALL) {
-			// Time remaining is less than amount of frames their rising animation is
-			if ((timeToBeDisabled - timeSinceLastAction) > (MS_PER_FRAME * SpriteHolder::getMaxFramesForAction(spriteName, "rise", RISE))) {
-				return true;
-			}
-			else {
-				spriteState = Globals::ActionType::RISE;
-				currentAction = "rise";
-				currentActionType = RISE;
-				fallstatus = Fallstep::NONE;
-				resetFrameState(false);
-			}
+		if (fallstatus == FallStep::KNOCK_DOWN) {
+			if (fallY >= position.y) return true;
+			resetFrameState();
+			fallstatus = FallStep::BOUNCE_UP;
+			timeFallingUp /= 2;
+		}
+		if (fallstatus == FallStep::BOUNCE_UP) {
+			//Time remaining is less than amount of frames their rising animation is
+			if ((timeToBeDisabled - timeSinceLastAction) > (MS_PER_FRAME * SpriteHolder::getMaxFramesForAction(spriteName, "rise", RISE))) return true;
+			spriteState = Globals::ActionType::RISE;
+			currentAction = "rise";
+			currentActionType = RISE;
+			fallstatus = FallStep::NONE;
+			timeFallingUp *= 2;
+			resetFrameState(false);
 		}
 	}
 	return false;
@@ -322,4 +334,8 @@ void Character::handleNormalAnimation(int maxFrames) {
 	else {
 		spriteCycleDown ? --currentFrame : ++currentFrame;
 	}
+}
+
+Character::FallDirection Character::getDirectionOfCollision(Character* c) {
+	return c->getCenter().x > position.x ? FallDirection::RIGHT : FallDirection::LEFT;
 }

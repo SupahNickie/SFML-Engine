@@ -11,7 +11,8 @@ struct HitRecord;
 class Character : public Graphic {
 public:
 	enum class DirectionHeaded { U, UR, R, DR, D, DL, L, UL, NONE };
-	enum class Fallstep { NONE, KNOCK_DOWN, HIT_GROUND, BOUNCE_UP, LAND };
+	enum class FallStep { NONE, KNOCK_DOWN, HIT_GROUND, BOUNCE_UP, LAND };
+	enum class FallDirection { LEFT, RIGHT, NONE };
 	DirectionHeaded directionHeaded = DirectionHeaded::NONE;
 	float speed;
 	unsigned int uniqueID;
@@ -49,9 +50,10 @@ protected:
 	bool running = false;
 
 	int timeToBeDisabled = 0;
+	int timeFallingUp = 4 * MS_PER_FRAME;
 	bool disabled = false;
 	float fallY = 0.0f;
-	Fallstep fallstatus = Fallstep::NONE;
+	FallStep fallstatus = FallStep::NONE;
 
 	bool jumping = false;
 	bool jumpDisabled = false;
@@ -96,8 +98,9 @@ protected:
 	virtual void setDirectionHeaded() = 0;
 private:
 	bool handleJumpingAnimation(int maxFrames, bool attacking);
-	bool handleFallingAnimation(int maxFrames);
+	bool handleFallingAnimation(int maxFrames, float elapsedTime);
 	void handleNormalAnimation(int maxFrames);
+	FallDirection getDirectionOfCollision(Character* c);
 };
 
 struct CharacterVelocity {
@@ -115,6 +118,7 @@ struct AttackInfo {
 	string action; // fall, injure
 	Globals::ActionType actionType;
 	unsigned int timeToDisable;
-	Character::Fallstep fallstatus;
+	Character::FallStep fallstatus;
 	float fallY;
+	Character::FallDirection fallDirection;
 };
