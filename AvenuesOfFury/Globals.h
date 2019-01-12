@@ -9,10 +9,6 @@ using namespace std;
 using namespace sf;
 
 class Globals {
-private:
-	static Globals* gInstance;
-	Vector2f resolution;
-	float scalingFactor;
 public:
 	enum class ActionType {
 		MOVE,
@@ -38,6 +34,10 @@ public:
 	static float getScalingFactor();
 	static unsigned int getAndIncrementIDSerial();
 	static bool isJumpingState(ActionType action);
+private:
+	static Globals* gInstance;
+	Vector2f resolution;
+	float scalingFactor;
 };
 
 #endif

@@ -5,25 +5,27 @@
 using namespace sf;
 using namespace std;
 
-struct CharacterVelocity {
-	Vector2f position;
-	Graphic::DirectionHeaded direction;
-};
-
-struct HitRecord {
-	unsigned short int frame;
-	unsigned int timeSinceHitRegistered;
-};
-
-struct AttackInfo {
-	unsigned short int injuryType; // INJURE_HEAD, INJURE_BODY
-	string action; // fall, injure
-	Globals::ActionType actionType;
-	unsigned int timeToDisable;
-	bool falling;
-};
-
+struct AttackInfo;
+struct CharacterVelocity;
+struct HitRecord;
 class Character : public Graphic {
+public:
+	enum class DirectionHeaded { U, UR, R, DR, D, DL, L, UL, NONE };
+	enum class Fallstep { NONE, KNOCK_DOWN, HIT_GROUND, BOUNCE_UP, LAND };
+	DirectionHeaded directionHeaded = DirectionHeaded::NONE;
+	float speed;
+	unsigned int uniqueID;
+	Character* focusChar;
+
+	Character();
+	void flipHorizontally();
+	void disable(int timeToDisable);
+	DirectionHeaded stringToDirection(string const& direction);
+	string directionToString(DirectionHeaded direction);
+	bool hits(Character* otherChar);
+	void registerHit(int hp, string const& attacker, unsigned short int frame, AttackInfo info);
+	CharacterVelocity getVelocity(int time);
+	virtual void update(float timeElapsed, vector<Character*> players, vector<Character*> enemies) = 0;
 protected:
 	int MS_PER_FRAME = 50;
 	int STUN_LENGTH = 200;
@@ -48,7 +50,8 @@ protected:
 
 	int timeToBeDisabled = 0;
 	bool disabled = false;
-	bool falling = false;
+	float fallY = 0.0f;
+	Fallstep fallstatus = Fallstep::NONE;
 
 	bool jumping = false;
 	bool jumpDisabled = false;
@@ -74,7 +77,7 @@ protected:
 	bool spriteCycleDown = false;
 
 	map<int, CharacterVelocity> pastPositions;
-	Graphic::DirectionHeaded* pastDirectionsPressed;
+	DirectionHeaded* pastDirectionsPressed;
 	int timeSincePastPositionsUpdate = 0;
 	Globals::ActionType spriteState;
 	bool facingRight;
@@ -85,9 +88,9 @@ protected:
 	void resetFrameState(bool clearAll = true);
 	void updateFrameState(float elapsedTime, bool prioritizedAction);
 	void updatePastPositions(float elapsedTime);
-	void insertAndShiftPastDirectionsPressed(Graphic::DirectionHeaded direction);
+	void insertAndShiftPastDirectionsPressed(DirectionHeaded direction);
 	void setAttackState(int attackType);
-	AttackInfo generateAttackInfo(bool longStun);
+	AttackInfo generateAttackInfo(bool longStun, Character* c);
 	void render();
 	virtual void setIdleState(float elapsedTime = 0.0f) = 0;
 	virtual void setDirectionHeaded() = 0;
@@ -95,19 +98,23 @@ private:
 	bool handleJumpingAnimation(int maxFrames, bool attacking);
 	bool handleFallingAnimation(int maxFrames);
 	void handleNormalAnimation(int maxFrames);
-public:
-	Graphic::DirectionHeaded directionHeaded = Graphic::DirectionHeaded::NONE;
-	float speed;
-	unsigned int uniqueID;
-	Character* focusChar;
+};
 
-	Character();
-	void flipHorizontally();
-	void disable(int timeToDisable);
-	Graphic::DirectionHeaded stringToDirection(string const& direction);
-	string directionToString(Graphic::DirectionHeaded direction);
-	bool hits(Character* otherChar);
-	void registerHit(int hp, string const& attacker, unsigned short int frame, AttackInfo info);
-	CharacterVelocity getVelocity(int time);
-	virtual void update(float timeElapsed, vector<Character*> players, vector<Character*> enemies) = 0;
+struct CharacterVelocity {
+	Vector2f position;
+	Character::DirectionHeaded direction;
+};
+
+struct HitRecord {
+	unsigned short int frame;
+	unsigned int timeSinceHitRegistered;
+};
+
+struct AttackInfo {
+	unsigned short int injuryType; // INJURE_HEAD, INJURE_BODY
+	string action; // fall, injure
+	Globals::ActionType actionType;
+	unsigned int timeToDisable;
+	Character::Fallstep fallstatus;
+	float fallY;
 };

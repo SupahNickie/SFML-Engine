@@ -9,13 +9,13 @@ using namespace sf;
 using namespace std;
 
 class TextureHolder {
-private:
-	map<string, Texture> textureMap;
-	static TextureHolder* thInstance;
 public:
 	TextureHolder();
 	static void deleteTexture(string const& filename);
 	static Texture& getTexture(string const& filename);
+private:
+	map<string, Texture> textureMap;
+	static TextureHolder* thInstance;
 };
 
 #endif 

@@ -48,7 +48,7 @@ void EnemyCharacter::calculateAttack(float elapsedTime) {
 	vector<int> v = SpriteHolder::getDamageFramesForAction(spriteName, currentAction, currentActionType);
 	if (find(v.begin(), v.end(), currentFrame) != v.end()) {
 		for_each(enemiesTouching.begin(), enemiesTouching.end(), [&](Character* e) {
-			AttackInfo info = generateAttackInfo(true);
+			AttackInfo info = generateAttackInfo(true, e);
 			Vector2f target = e->getCenter();
 			if (onSameVerticalPlane(target.y)) {
 				e->registerHit(attackPower[currentActionType] * 0.05f, spriteName, currentFrame, info);
@@ -56,7 +56,7 @@ void EnemyCharacter::calculateAttack(float elapsedTime) {
 			}
 		});
 		for_each(playersTouching.begin(), playersTouching.end(), [&](Character* p) {
-			AttackInfo info = generateAttackInfo(false);
+			AttackInfo info = generateAttackInfo(false, p);
 			Vector2f target = p->getCenter();
 			if (onSameVerticalPlane(target.y)) {
 				p->registerHit(attackPower[currentActionType], spriteName, currentFrame, info);
@@ -204,39 +204,39 @@ void EnemyCharacter::predictFocusCharLocation(float elapsedTime) {
 	if (spriteState == Globals::ActionType::MOVE) {
 		CharacterVelocity cv = focusChar->getVelocity(reactionSpeed);
 		switch (cv.direction) {
-		case Graphic::DirectionHeaded::U:
+		case DirectionHeaded::U:
 			target.x = cv.position.x;
 			target.y = cv.position.y - focusChar->speed;
 			break;
-		case Graphic::DirectionHeaded::UR:
+		case DirectionHeaded::UR:
 			target.x = cv.position.x + (sqrt(pow(focusChar->speed, 2.0) / 2.0));
 			target.y = cv.position.y - (sqrt(pow(focusChar->speed, 2.0) / 2.0));
 			break;
-		case Graphic::DirectionHeaded::R:
+		case DirectionHeaded::R:
 			target.x = cv.position.x + focusChar->speed;
 			target.y = cv.position.y;
 			break;
-		case Graphic::DirectionHeaded::DR:
+		case DirectionHeaded::DR:
 			target.x = cv.position.x + (sqrt(pow(focusChar->speed, 2.0) / 2.0));
 			target.y = cv.position.y + (sqrt(pow(focusChar->speed, 2.0) / 2.0));
 			break;
-		case Graphic::DirectionHeaded::D:
+		case DirectionHeaded::D:
 			target.x = cv.position.x;
 			target.y = cv.position.y + focusChar->speed;
 			break;
-		case Graphic::DirectionHeaded::DL:
+		case DirectionHeaded::DL:
 			target.x = cv.position.x - (sqrt(pow(focusChar->speed, 2.0) / 2.0));
 			target.y = cv.position.y + (sqrt(pow(focusChar->speed, 2.0) / 2.0));
 			break;
-		case Graphic::DirectionHeaded::L:
+		case DirectionHeaded::L:
 			target.x = cv.position.x - focusChar->speed;
 			target.y = cv.position.y;
 			break;
-		case Graphic::DirectionHeaded::UL:
+		case DirectionHeaded::UL:
 			target.x = cv.position.x - (sqrt(pow(focusChar->speed, 2.0) / 2.0));
 			target.y = cv.position.y - (sqrt(pow(focusChar->speed, 2.0) / 2.0));
 			break;
-		case Graphic::DirectionHeaded::NONE:
+		case DirectionHeaded::NONE:
 			target = cv.position;
 			break;
 		}

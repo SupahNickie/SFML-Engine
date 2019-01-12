@@ -10,6 +10,9 @@
 using namespace sf;
 
 class Engine {
+public:
+	Engine();
+	void run();
 private:
 	Globals g;
 	TextureHolder th;
@@ -23,7 +26,4 @@ private:
 	void input();
 	void update(float timeElapsed);
 	void draw();
-public:
-	Engine();
-	void run();
 };

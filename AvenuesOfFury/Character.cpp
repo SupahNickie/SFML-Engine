@@ -9,7 +9,7 @@ Character::Character() {
 
 	// Init position data for enemies
 	CharacterVelocity cv;
-	cv.direction = Graphic::DirectionHeaded::NONE;
+	cv.direction = DirectionHeaded::NONE;
 	cv.position = position;
 	pastPositions = {
 		{500, cv},
@@ -26,12 +26,12 @@ Character::Character() {
 	};
 
 	// Init array of direction presses remembered
-	pastDirectionsPressed = new Graphic::DirectionHeaded[5];
-	pastDirectionsPressed[0] = Graphic::DirectionHeaded::NONE;
-	pastDirectionsPressed[1] = Graphic::DirectionHeaded::NONE;
-	pastDirectionsPressed[2] = Graphic::DirectionHeaded::NONE;
-	pastDirectionsPressed[3] = Graphic::DirectionHeaded::NONE;
-	pastDirectionsPressed[4] = Graphic::DirectionHeaded::NONE;
+	pastDirectionsPressed = new DirectionHeaded[5];
+	pastDirectionsPressed[0] = DirectionHeaded::NONE;
+	pastDirectionsPressed[1] = DirectionHeaded::NONE;
+	pastDirectionsPressed[2] = DirectionHeaded::NONE;
+	pastDirectionsPressed[3] = DirectionHeaded::NONE;
+	pastDirectionsPressed[4] = DirectionHeaded::NONE;
 }
 
 void Character::flipHorizontally() {
@@ -45,27 +45,27 @@ void Character::disable(int timeToDisable) {
 	timeSinceLastAction = 0;
 }
 
-Graphic::DirectionHeaded Character::stringToDirection(string const& direction) {
-	if (direction == "U") return Graphic::DirectionHeaded::U;
-	if (direction == "UR") return Graphic::DirectionHeaded::UR;
-	if (direction == "R") return Graphic::DirectionHeaded::R;
-	if (direction == "DR") return Graphic::DirectionHeaded::DR;
-	if (direction == "D") return Graphic::DirectionHeaded::D;
-	if (direction == "DL") return Graphic::DirectionHeaded::DL;
-	if (direction == "L") return Graphic::DirectionHeaded::L;
-	if (direction == "UL") return Graphic::DirectionHeaded::UL;
-	return Graphic::DirectionHeaded::NONE;
+Character::DirectionHeaded Character::stringToDirection(string const& direction) {
+	if (direction == "U") return DirectionHeaded::U;
+	if (direction == "UR") return DirectionHeaded::UR;
+	if (direction == "R") return DirectionHeaded::R;
+	if (direction == "DR") return DirectionHeaded::DR;
+	if (direction == "D") return DirectionHeaded::D;
+	if (direction == "DL") return DirectionHeaded::DL;
+	if (direction == "L") return DirectionHeaded::L;
+	if (direction == "UL") return DirectionHeaded::UL;
+	return DirectionHeaded::NONE;
 }
 
-string Character::directionToString(Graphic::DirectionHeaded direction) {
-	if (direction == Graphic::DirectionHeaded::U) return "U";
-	if (direction == Graphic::DirectionHeaded::UR) return "UR";
-	if (direction == Graphic::DirectionHeaded::R) return "R";
-	if (direction == Graphic::DirectionHeaded::DR) return "DR";
-	if (direction == Graphic::DirectionHeaded::D) return "D";
-	if (direction == Graphic::DirectionHeaded::DL) return "DL";
-	if (direction == Graphic::DirectionHeaded::L) return "L";
-	if (direction == Graphic::DirectionHeaded::UL) return "UL";
+string Character::directionToString(DirectionHeaded direction) {
+	if (direction == DirectionHeaded::U) return "U";
+	if (direction == DirectionHeaded::UR) return "UR";
+	if (direction == DirectionHeaded::R) return "R";
+	if (direction == DirectionHeaded::DR) return "DR";
+	if (direction == DirectionHeaded::D) return "D";
+	if (direction == DirectionHeaded::DL) return "DL";
+	if (direction == DirectionHeaded::L) return "L";
+	if (direction == DirectionHeaded::UL) return "UL";
 	return "NONE";
 }
 
@@ -74,7 +74,7 @@ bool Character::hits(Character* otherChar) {
 }
 
 void Character::registerHit(int hp, string const& attacker, unsigned short int frame, AttackInfo info) {
-	if (falling) return; // Can't kick dudes when they're down
+	if (fallstatus != Fallstep::NONE) return; // Can't kick dudes when they're down
 	auto it = hitsRegistered.find(attacker);
 	if (it != hitsRegistered.end()) {
 		if (it->second.frame == frame && it->second.timeSinceHitRegistered < MS_PER_FRAME) return;
@@ -87,7 +87,8 @@ void Character::registerHit(int hp, string const& attacker, unsigned short int f
 	spriteState = info.actionType;
 	currentAction = info.action;
 	currentActionType = info.injuryType;
-	falling = info.falling;
+	fallstatus = info.fallstatus;
+	fallY = info.fallY;
 	resetFrameState();
 	health -= hp;
 }
@@ -124,7 +125,13 @@ void Character::detectCollisions(vector<Character*> players, vector<Character*> 
 }
 
 bool Character::onSameVerticalPlane(float targetY) {
-	return abs(targetY - position.y) < (.015625f * Globals::getResolution().x);
+	if (prejumpY != 0.0f) {
+		return (abs(targetY - prejumpY) < (.015625f * Globals::getResolution().x) &&
+			abs(targetY - position.y) < (.62500f * Globals::getResolution().x));
+	}
+	else {
+		return abs(targetY - position.y) < (.015625f * Globals::getResolution().x);
+	}
 }
 
 void Character::resetFrameState(bool clearAll) {
@@ -141,7 +148,7 @@ void Character::updateFrameState(float elapsedTime, bool prioritizedAction) {
 	if (timeSinceLastFrame > MS_PER_FRAME) {
 		int maxFrames = SpriteHolder::getMaxFramesForAction(spriteName, currentAction, currentActionType);
 		if (jumping && handleJumpingAnimation(maxFrames, prioritizedAction)) return;
-		if (falling && handleFallingAnimation(maxFrames)) return;
+		if ((fallstatus != Fallstep::NONE) && handleFallingAnimation(maxFrames)) return;
 		handleNormalAnimation(maxFrames);
 		timeSinceLastFrame = 0;
 	}
@@ -213,7 +220,7 @@ bool Character::handleFallingAnimation(int maxFrames) {
 				spriteState = Globals::ActionType::RISE;
 				currentAction = "rise";
 				currentActionType = RISE;
-				falling = false;
+				fallstatus = Fallstep::NONE;
 				resetFrameState(false);
 			}
 		}
@@ -272,7 +279,7 @@ void Character::updatePastPositions(float elapsedTime) {
 	timeSincePastPositionsUpdate += elapsedTime * 1000;
 }
 
-void Character::insertAndShiftPastDirectionsPressed(Graphic::DirectionHeaded direction) {
+void Character::insertAndShiftPastDirectionsPressed(DirectionHeaded direction) {
 	directionHeaded = direction;
 	memmove(&pastDirectionsPressed[0], &pastDirectionsPressed[1], (size_t)4 * sizeof(pastDirectionsPressed[0]));
 	pastDirectionsPressed[4] = directionHeaded;
@@ -289,22 +296,24 @@ void Character::setAttackState(int attackType) {
 			spriteState = Globals::ActionType::ATTACK;
 			resetFrameState();
 		}
-		insertAndShiftPastDirectionsPressed(Graphic::DirectionHeaded::NONE);
+		insertAndShiftPastDirectionsPressed(DirectionHeaded::NONE);
 	}
 	if (currentActionDone) attackDisabled = true;
 }
 
-AttackInfo Character::generateAttackInfo(bool longStun) {
+AttackInfo Character::generateAttackInfo(bool longStun, Character* c) {
 	AttackInfo output;
 	if (spriteState == Globals::ActionType::ATTACK) {
 		output.action = "injure";
 		output.timeToDisable = STUN_LENGTH;
-		output.falling = false;
+		output.fallstatus = Fallstep::NONE;
+		output.fallY = 0.0f;
 	}
 	else if (spriteState == Globals::ActionType::JUMP_ATTACK || spriteState == Globals::ActionType::RUN_ATTACK) {
 		output.action = "fall";
 		longStun ? output.timeToDisable = STUN_LENGTH * 15 : output.timeToDisable = STUN_LENGTH * 5;
-		output.falling = true;
+		output.fallstatus = Fallstep::KNOCK_DOWN;
+		output.fallY = c->getCenter().y + (c->getPosition().height / 2);
 	}
 	output.injuryType = currentActionType;
 	output.actionType = Globals::actionStringToEnum(output.action);

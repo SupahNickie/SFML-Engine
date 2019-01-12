@@ -23,7 +23,7 @@ void PlayerCharacter::update(float elapsedTime, vector<Character*> players, vect
 		disabled = false;
 		attackDisabled = false;
 		setIdleState(elapsedTime);
-		insertAndShiftPastDirectionsPressed(Graphic::DirectionHeaded::NONE);
+		insertAndShiftPastDirectionsPressed(DirectionHeaded::NONE);
 		running = false;
 	}
 
@@ -95,10 +95,10 @@ void PlayerCharacter::setDirectionHeaded() {
 	if (leftPressed && !rightPressed) output += "L";
 	if (rightPressed && !leftPressed) output += "R";
 
-	Graphic::DirectionHeaded current = stringToDirection(output);
-	if ((current == Graphic::DirectionHeaded::NONE && timeSinceLastDirectionPress < 100) ||
+	DirectionHeaded current = stringToDirection(output);
+	if ((current == DirectionHeaded::NONE && timeSinceLastDirectionPress < 100) ||
 		(current == directionHeaded && timeSinceLastDirectionPress > 0) ||
-		(directionHeaded == Graphic::DirectionHeaded::NONE && current == Graphic::DirectionHeaded::NONE)) {
+		(directionHeaded == DirectionHeaded::NONE && current == DirectionHeaded::NONE)) {
 		return;
 	}
 
@@ -114,7 +114,7 @@ void PlayerCharacter::handleJump(float elapsedTime) {
 		jumping = true;
 		running = false;
 		prejumpY = position.y;
-		insertAndShiftPastDirectionsPressed(Graphic::DirectionHeaded::NONE);
+		insertAndShiftPastDirectionsPressed(DirectionHeaded::NONE);
 	}
 
 	if ((timeSinceLastAction) < (jumpLength / 2)) {
@@ -134,7 +134,7 @@ void PlayerCharacter::hitCharacters(float elapsedTime) {
 		vector<int> v = SpriteHolder::getDamageFramesForAction(spriteName, currentAction, currentActionType);
 		if (find(v.begin(), v.end(), currentFrame) != v.end()) {
 			for_each(enemiesTouching.begin(), enemiesTouching.end(), [&](Character* e) {
-				AttackInfo info = generateAttackInfo(true);
+				AttackInfo info = generateAttackInfo(true, e);
 				Vector2f target = e->getCenter();
 				if (onSameVerticalPlane(target.y)) {
 					e->registerHit(attackPower[currentActionType], spriteName, currentFrame, info);
@@ -143,7 +143,7 @@ void PlayerCharacter::hitCharacters(float elapsedTime) {
 				}
 			});
 			for_each(playersTouching.begin(), playersTouching.end(), [&](Character* p) {
-				AttackInfo info = generateAttackInfo(false);
+				AttackInfo info = generateAttackInfo(false, p);
 				Vector2f target = p->getCenter();
 				if (onSameVerticalPlane(target.y)) {
 					p->registerHit(attackPower[currentActionType] * 0.05f, spriteName, currentFrame, info);
@@ -157,7 +157,7 @@ void PlayerCharacter::hitCharacters(float elapsedTime) {
 void PlayerCharacter::setMoveState(float elapsedTime) {
 	timeSinceLastDirectionPress += elapsedTime * 1000;
 	currentAction = "move";
-	if ((pastDirectionsPressed[4] != Graphic::DirectionHeaded::NONE) &&
+	if ((pastDirectionsPressed[4] != DirectionHeaded::NONE) &&
 		((pastDirectionsPressed[3] == pastDirectionsPressed[4]) || running)) {
 		currentActionType = RUN;
 		speed = baseSpeed * 2.0;

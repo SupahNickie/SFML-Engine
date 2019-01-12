@@ -9,6 +9,10 @@
 #include <SFML/Graphics.hpp>
 
 class PlayerCharacter : public Character {
+public:
+	~PlayerCharacter();
+	virtual void handleInput() = 0;
+	void update(float elapsedTime, vector<Character*> players, vector<Character*> enemies);
 protected:
 	bool upPressed;
 	bool downPressed;
@@ -24,10 +28,6 @@ private:
 	void hitCharacters(float elapsedTime);
 	void setMoveState(float elapsedTime);
 	void setIdleState(float elapsedTime);
-public:
-	~PlayerCharacter();
-	virtual void handleInput() = 0;
-	void update(float elapsedTime, vector<Character*> players, vector<Character*> enemies);
 };
 
 #endif

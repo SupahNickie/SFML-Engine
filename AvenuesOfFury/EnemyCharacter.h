@@ -8,6 +8,10 @@
 
 class Character;
 class EnemyCharacter : public Character {
+public:
+	EnemyCharacter(vector<Character*> players);
+	void update(float elapsedTime, vector<Character*> players, vector<Character*> enemies);
+	void calculateAttack(float elapsedTime);
 protected:
 	Vector2f target;
 	bool deciding = false;
@@ -48,10 +52,6 @@ private:
 	void resetStateAfterFinishingAction();
 	bool handleDisabledState(float elapsedTime);
 	void moveTowardsTarget(float elapsedTime);
-public:
-	EnemyCharacter(vector<Character*> players);
-	void update(float elapsedTime, vector<Character*> players, vector<Character*> enemies);
-	void calculateAttack(float elapsedTime);
 };
 
 #endif

@@ -10,6 +10,14 @@ using namespace sf;
 using namespace std;
 
 class SpriteHolder {
+public:
+	SpriteHolder();
+	static void initSprites(string const& handlingType, string const& spriteName);
+	static void deleteSprite(string const& spriteName);
+	static void setSprite(Sprite& sprite, string const& spriteName, string const& actionCategory, int actionType, int actionFrame);
+	static vector<int> getDamageFramesForAction(string const& spriteName, string const& actionCategory, int actionType);
+	static int getMaxFramesForAction(string const& spriteName, string const& actionCategory, int actionType);
+	static int getStartFramesForAction(string const& spriteName, string const& actionCategory, int actionType);
 private:
 	static SpriteHolder* shInstance;
 	enum class HandlingType { CHARACTER, BACKGROUND, NONE };
@@ -29,14 +37,6 @@ private:
 	static bool getIsStored(string const& spriteName);
 	static void setIsStored(string const& spriteName);
 	static HandlingType handlingStringToEnum(string const& handling);
-public:
-	SpriteHolder();
-	static void initSprites(string const& handlingType, string const& spriteName);
-	static void deleteSprite(string const& spriteName);
-	static void setSprite(Sprite& sprite, string const& spriteName, string const& actionCategory, int actionType, int actionFrame);
-	static vector<int> getDamageFramesForAction(string const& spriteName, string const& actionCategory, int actionType);
-	static int getMaxFramesForAction(string const& spriteName, string const& actionCategory, int actionType);
-	static int getStartFramesForAction(string const& spriteName, string const& actionCategory, int actionType);
 };
 
 #endif 
