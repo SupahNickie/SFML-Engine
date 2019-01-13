@@ -215,7 +215,7 @@ AttackInfo Character::generateAttackInfo(bool longStun, Character* c) {
 	else if (spriteState == Globals::ActionType::JUMP_ATTACK || spriteState == Globals::ActionType::RUN_ATTACK) {
 		output.action = "fall";
 		longStun ? output.timeToDisable = STUN_LENGTH * 15 : output.timeToDisable = STUN_LENGTH * 5;
-		output.fallstatus = FallStep::KNOCK_DOWN;
+		output.fallstatus = FallStep::START_FALL;
 		output.fallY = c->getCenter().y + (c->getPosition().height / 4);
 		output.fallDirection = getDirectionOfCollision(c);
 	}
@@ -284,24 +284,24 @@ bool Character::handleJumpingAnimation(int maxFrames, bool attacking) {
 }
 
 bool Character::handleFallingAnimation(int maxFrames, float elapsedTime) {
-	if (fallstatus == FallStep::KNOCK_DOWN) {
-		if (fallDirection == FallDirection::LEFT) position.x -= baseSpeed * elapsedTime;
-		if (fallDirection == FallDirection::RIGHT) position.x += baseSpeed * elapsedTime;
+	if (fallstatus == FallStep::START_FALL) {
+		speedY = -0.004208f * Globals::getResolution().x;
+		fallstatus = FallStep::KNOCK_DOWN;
 	}
 
-	if (timeSinceLastAction < timeFallingUp) {
-		position.y -= baseSpeed * elapsedTime;
+	if (fallstatus == FallStep::KNOCK_DOWN) {
+		if (fallDirection == FallDirection::LEFT) position.x -= 3 * baseSpeed * elapsedTime;
+		if (fallDirection == FallDirection::RIGHT) position.x += 3 * baseSpeed * elapsedTime;
 	}
-	else if (fallY >= position.y) {
-		position.y += baseSpeed * elapsedTime;
-	}
+
+	speedY += gravity;
+	if ((speedY < 0) || (fallY > position.y)) position.y += speedY;
 
 	if (currentFrame == maxFrames) {
 		if (fallstatus == FallStep::KNOCK_DOWN) {
 			if (fallY >= position.y) return true;
 			resetFrameState();
 			fallstatus = FallStep::BOUNCE_UP;
-			timeFallingUp = baseTimeFallingUp / 2;
 		}
 		if (fallstatus == FallStep::BOUNCE_UP) {
 			//Time remaining is less than amount of frames their rising animation is
@@ -310,7 +310,6 @@ bool Character::handleFallingAnimation(int maxFrames, float elapsedTime) {
 			currentAction = "rise";
 			currentActionType = RISE;
 			fallstatus = FallStep::NONE;
-			timeFallingUp = baseTimeFallingUp;
 			resetFrameState(false);
 		}
 	}
