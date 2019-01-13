@@ -54,7 +54,7 @@ protected:
 	float fallY = 0.0f;
 	float speedY = 0.0f;
 	float baseSpeedY = 0.0f; // Adjust as per needed to get jump frame timing right
-	float const gravity = 0.18f * Globals::getScalingFactor();
+	float const gravity = 0.07f * Globals::getScalingFactor();
 	FallStep fallstatus = FallStep::NONE;
 	FallDirection fallDirection = FallDirection::NONE;
 

@@ -119,7 +119,7 @@ void PlayerCharacter::handleJump(float elapsedTime) {
 		speedY = baseSpeedY;
 	}
 
-	speedY += .2 * gravity;
+	speedY += (.2 * gravity * (elapsedTime * 1000));
 	if (prejumpY > position.y) position.y += speedY;
 	if (rightPressed) position.x += speed * elapsedTime;
 	if (leftPressed) position.x -= speed * elapsedTime;

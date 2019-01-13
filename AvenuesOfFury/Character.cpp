@@ -91,6 +91,8 @@ void Character::registerHit(int hp, string const& attacker, unsigned short int f
 	fallY = info.fallY;
 	fallDirection = info.fallDirection;
 	resetFrameState();
+
+	jumping = false;
 	health -= hp;
 }
 
@@ -295,7 +297,7 @@ bool Character::handleFallingAnimation(int maxFrames, float elapsedTime) {
 		if (fallDirection == FallDirection::RIGHT) position.x += 3 * baseSpeed * elapsedTime;
 	}
 
-	speedY += gravity;
+	speedY += (gravity * (elapsedTime * 1000));
 	if (fallY > position.y) position.y += speedY;
 
 	if (currentFrame == maxFrames) {
