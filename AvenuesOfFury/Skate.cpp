@@ -5,6 +5,7 @@
 
 Skate::Skate() {
 	MS_PER_FRAME = 75;
+	baseSpeedY = -0.00275f * Globals::getResolution().x;
 	texturePath = "graphics/characters/skate_sheet.png";
 	sprite = Sprite(TextureHolder::getTexture(texturePath));
 	attackPower = vector<int>(1);

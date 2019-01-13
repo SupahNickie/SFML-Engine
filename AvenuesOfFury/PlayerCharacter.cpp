@@ -114,16 +114,13 @@ void PlayerCharacter::handleJump(float elapsedTime) {
 		jumping = true;
 		running = false;
 		prejumpY = position.y;
+		position.y -= 0.1f;
 		insertAndShiftPastDirectionsPressed(DirectionHeaded::NONE);
+		speedY = baseSpeedY;
 	}
 
-	if ((timeSinceLastAction) < (jumpLength / 2)) {
-		position.y -= baseSpeed * 1.25 * elapsedTime;
-	}
-	else {
-		position.y += baseSpeed * 1.25 * elapsedTime;
-	}
-
+	speedY += .2 * gravity;
+	if (prejumpY > position.y) position.y += speedY;
 	if (rightPressed) position.x += speed * elapsedTime;
 	if (leftPressed) position.x -= speed * elapsedTime;
 }

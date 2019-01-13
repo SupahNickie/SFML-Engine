@@ -285,8 +285,9 @@ bool Character::handleJumpingAnimation(int maxFrames, bool attacking) {
 
 bool Character::handleFallingAnimation(int maxFrames, float elapsedTime) {
 	if (fallstatus == FallStep::START_FALL) {
-		speedY = -0.004208f * Globals::getResolution().x;
+		speedY = -0.0042f * Globals::getResolution().x;
 		fallstatus = FallStep::KNOCK_DOWN;
+		position.y -= 0.1f;
 	}
 
 	if (fallstatus == FallStep::KNOCK_DOWN) {
@@ -295,7 +296,7 @@ bool Character::handleFallingAnimation(int maxFrames, float elapsedTime) {
 	}
 
 	speedY += gravity;
-	if ((speedY < 0) || (fallY > position.y)) position.y += speedY;
+	if (fallY > position.y) position.y += speedY;
 
 	if (currentFrame == maxFrames) {
 		if (fallstatus == FallStep::KNOCK_DOWN) {
@@ -304,7 +305,7 @@ bool Character::handleFallingAnimation(int maxFrames, float elapsedTime) {
 			fallstatus = FallStep::BOUNCE_UP;
 		}
 		if (fallstatus == FallStep::BOUNCE_UP) {
-			//Time remaining is less than amount of frames their rising animation is
+			// Time remaining is less than amount of frames their rising animation is
 			if ((timeToBeDisabled - timeSinceLastAction) > (MS_PER_FRAME * SpriteHolder::getMaxFramesForAction(spriteName, "rise", RISE))) return true;
 			spriteState = Globals::ActionType::RISE;
 			currentAction = "rise";
