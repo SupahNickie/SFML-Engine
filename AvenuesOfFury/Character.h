@@ -61,7 +61,6 @@ protected:
 	bool jumping = false;
 	bool jumpDisabled = false;
 	float prejumpY = 0.0f;
-	int jumpLength = 0;
 
 	int health = 0;
 	vector<int> attackPower;
@@ -95,6 +94,7 @@ protected:
 	void updatePastPositions(float elapsedTime);
 	void insertAndShiftPastDirectionsPressed(DirectionHeaded direction);
 	void setAttackState(string const& action, int attackType, bool resetFrame = true);
+	void setJumpState(float elapsedTime, bool moveLeft, bool moveRight);
 	AttackInfo generateAttackInfo(bool longStun, Character* c);
 	void render();
 	virtual void setIdleState(float elapsedTime = 0.0f) = 0;

@@ -23,10 +23,6 @@ Skate::Skate() {
 	SpriteHolder::initSprites("character", spriteName);
 	sprite.scale(Vector2f(4 * Globals::getScalingFactor(), 4 * Globals::getScalingFactor()));
 
-	jumpLength = (SpriteHolder::getMaxFramesForAction(spriteName, "jump_start", 0) + 1 +
-		SpriteHolder::getMaxFramesForAction(spriteName, "jump_air", 0) + 1 +
-		SpriteHolder::getMaxFramesForAction(spriteName, "jump_land", 0) + 1) * MS_PER_FRAME;
-
 	currentAction = "idle";
 	currentActionType = NORMAL_IDLE;
 	resetFrameState();

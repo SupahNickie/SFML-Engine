@@ -17,7 +17,6 @@ void PlayerCharacter::update(float elapsedTime, vector<Character*> players, vect
 	render();
 
 	if (disabled) {
-		timeSinceLastAction += elapsedTime * 1000;
 		if (timeSinceLastAction <= timeToBeDisabled) return;
 		timeSinceLastAction = 0;
 		disabled = false;
@@ -28,7 +27,7 @@ void PlayerCharacter::update(float elapsedTime, vector<Character*> players, vect
 	}
 
 	if ((jumpPressed || jumping) && !jumpDisabled) {
-		handleJump(elapsedTime);
+		setJumpState(elapsedTime, leftPressed, rightPressed);
 		running = false;
 		return;
 	}
@@ -58,6 +57,7 @@ void PlayerCharacter::update(float elapsedTime, vector<Character*> players, vect
 		attackDisabled = false;
 	}
 
+	updateHandled = false;
 	if (rightPressed && !leftPressed) {
 		position.x += speed * elapsedTime;
 		if (!facingRight) flipHorizontally();
@@ -85,6 +85,7 @@ void PlayerCharacter::update(float elapsedTime, vector<Character*> players, vect
 		running = false;
 	}
 
+	if (!updateHandled) setIdleState(elapsedTime);
 	setDirectionHeaded();
 }
 
@@ -103,26 +104,6 @@ void PlayerCharacter::setDirectionHeaded() {
 	}
 
 	insertAndShiftPastDirectionsPressed(current);
-}
-
-void PlayerCharacter::handleJump(float elapsedTime) {
-	if (!Globals::isJumpingState(spriteState)) {
-		spriteState = Globals::ActionType::JUMP_START;
-		currentAction = "jump_start";
-		currentActionType = JUMP_START;
-		resetFrameState();
-		jumping = true;
-		running = false;
-		prejumpY = position.y;
-		position.y -= 0.0042f * Globals::getResolution().x;
-		insertAndShiftPastDirectionsPressed(DirectionHeaded::NONE);
-		speedY = baseSpeedY;
-	}
-
-	speedY += (.2 * gravity * (elapsedTime * 1000));
-	if (prejumpY > position.y) position.y += speedY;
-	if (rightPressed) position.x += speed * elapsedTime;
-	if (leftPressed) position.x -= speed * elapsedTime;
 }
 
 void PlayerCharacter::hitCharacters(float elapsedTime) {
@@ -152,6 +133,7 @@ void PlayerCharacter::hitCharacters(float elapsedTime) {
 }
 
 void PlayerCharacter::setMoveState(float elapsedTime) {
+	updateHandled = true;
 	timeSinceLastDirectionPress += elapsedTime * 1000;
 	currentAction = "move";
 	if ((pastDirectionsPressed[4] != DirectionHeaded::NONE) &&
@@ -173,6 +155,7 @@ void PlayerCharacter::setMoveState(float elapsedTime) {
 }
 
 void PlayerCharacter::setIdleState(float elapsedTime) {
+	updateHandled = true;
 	currentAction = "idle";
 	currentActionType = NORMAL_IDLE;
 	if (spriteState != Globals::ActionType::IDLE) {

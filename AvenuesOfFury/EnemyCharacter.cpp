@@ -184,14 +184,14 @@ void EnemyCharacter::handleAI(float elapsedTime, vector<Character*> players) {
 	handleMoving(elapsedTime);
 }
 
-bool EnemyCharacter::attack(float elapsedTime, string const& action, int actionType, bool resetFrame) {
+bool EnemyCharacter::attack(float elapsedTime, int actionType) {
 	if (timeSinceAttackEnded > aggression) {
 		if (!attackDisabled &&
 			spriteState != Globals::ActionType::INJURE &&
 			hits(focusChar) &&
 			onSameVerticalPlane(focusChar->getCenter().y)
 			) {
-			setAttackState(action, actionType, resetFrame);
+			setAttackState("attack", actionType);
 			calculateAttack(elapsedTime);
 			return true;
 		}
@@ -206,7 +206,32 @@ bool EnemyCharacter::attack(float elapsedTime, string const& action, int actionT
 	}
 }
 
+bool EnemyCharacter::jumpAttack(float elapsedTime) {
+	if (timeSinceAttackEnded > aggression) {
+		if (jumping) {
+			handleJump(elapsedTime);
+			return true;
+		}
+		if (!attackDisabled &&
+			spriteState != Globals::ActionType::INJURE &&
+			onSameVerticalPlane(focusChar->getCenter().y)
+			) {
+			handleJump(elapsedTime);
+			return true;
+		}
+		return false;
+	}
+	else if (spriteState == Globals::ActionType::INJURE) {
+		return true;
+	}
+	else {
+		setIdleState();
+		return false;
+	}
+}
+
 void EnemyCharacter::turnToFaceFocusChar() {
+	if (Globals::isJumpingState(spriteState)) return;
 	bool playerToRightOfSelf = focusChar->getCenter().x > this->getCenter().x;
 	if (playerToRightOfSelf && !facingRight) {
 		flipHorizontally();
@@ -243,6 +268,7 @@ void EnemyCharacter::resetStateAfterFinishingAction() {
 		currentAction = "idle";
 		currentActionType = NORMAL_IDLE;
 		resetFrameState();
+		jumping = false;
 		attackDisabled = false;
 		timeSinceAttackBegan = 0;
 	}
@@ -255,11 +281,21 @@ bool EnemyCharacter::handleDisabledState(float elapsedTime) {
 		timeSinceLastAction = 0;
 		timeToBeDisabled = 0;
 		disabled = false;
+		jumpAttacking = false;
 		attackDisabled = false;
 		setIdleState();
 		return false;
 	}
 	return false;
+}
+
+void EnemyCharacter::handleJump(float elapsedTime) {
+	setJumpState(elapsedTime, focusChar->getCenter().x < position.x, focusChar->getCenter().x > position.x);
+	if (hits(focusChar)) {
+		jumpAttacking = true;
+		setAttackState("jump_attack", JUMP_ATTACK);
+		calculateAttack(elapsedTime);
+	}
 }
 
 void EnemyCharacter::moveTowardsTarget(float elapsedTime) {

@@ -6,6 +6,7 @@
 
 Garnet::Garnet(vector<Character*> players) : EnemyCharacter(players) {
 	MS_PER_FRAME = 100;
+	baseSpeedY = -0.00275f * Globals::getResolution().x;
 	attackPower[0] = 2000;
 	texturePath = "graphics/characters/garnet_sheet.png";
 	sprite = Sprite(TextureHolder::getTexture(texturePath));
@@ -31,8 +32,13 @@ Garnet::Garnet(vector<Character*> players) : EnemyCharacter(players) {
 }
 
 bool Garnet::handleAttacking(float elapsedTime) {
-	//return attack(elapsedTime, "attack", HEAD_ATTACK);
-	return attack(elapsedTime, "jump_attack", JUMP_ATTACK, false);
+	return jumpAttack(elapsedTime);
+	//if (abs(position.x - focusChar->getCenter().x) > (0.1 * Globals::getResolution().x)) {
+	//	return jumpAttack(elapsedTime);
+	//}
+	//else {
+	//	return attack(elapsedTime, HEAD_ATTACK);
+	//}
 }
 
 void Garnet::handleMoving(float elapsedTime) {

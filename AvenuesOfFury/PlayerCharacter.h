@@ -21,6 +21,7 @@ protected:
 	bool primaryAttackPressed;
 	bool secondaryAttackPressed;
 	bool jumpPressed;
+	bool updateHandled = false;
 	int timeSinceLastDirectionPress = 0;
 private:
 	void setDirectionHeaded();

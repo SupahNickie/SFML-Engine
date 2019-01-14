@@ -137,7 +137,7 @@ void Character::detectCollisions(vector<Character*> players, vector<Character*> 
 bool Character::onSameVerticalPlane(float targetY) {
 	if (prejumpY != 0.0f) {
 		return (abs(targetY - prejumpY) < (.015625f * Globals::getResolution().x) &&
-			abs(targetY - position.y) < (.62500f * Globals::getResolution().x));
+			abs(targetY - position.y) < (.062500f * Globals::getResolution().x));
 	}
 	else {
 		return abs(targetY - position.y) < (.015625f * Globals::getResolution().x);
@@ -220,6 +220,26 @@ void Character::setAttackState(string const& action, int attackType, bool resetF
 	if (currentActionDone) attackDisabled = true;
 }
 
+void Character::setJumpState(float elapsedTime, bool moveLeft, bool moveRight) {
+	if (!Globals::isJumpingState(spriteState)) {
+		spriteState = Globals::ActionType::JUMP_START;
+		currentAction = "jump_start";
+		currentActionType = JUMP_START;
+		resetFrameState();
+		jumping = true;
+		running = false;
+		prejumpY = position.y;
+		position.y -= 0.0042f * Globals::getResolution().x;
+		insertAndShiftPastDirectionsPressed(DirectionHeaded::NONE);
+		speedY = baseSpeedY;
+	}
+
+	speedY += (.2 * gravity * (elapsedTime * 1000));
+	if (prejumpY > position.y) position.y += speedY;
+	if (moveLeft) position.x -= speed * elapsedTime;
+	if (moveRight) position.x += speed * elapsedTime;
+}
+
 AttackInfo Character::generateAttackInfo(bool longStun, Character* c) {
 	AttackInfo output;
 	if (spriteState == Globals::ActionType::ATTACK) {
@@ -246,7 +266,7 @@ void Character::render() {
 }
 
 bool Character::handleJumpingAnimation(int maxFrames, bool attacking) {
-	if (timeSinceLastAction > jumpLength) {
+	if (prejumpY <= position.y) {
 		spriteState = Globals::ActionType::JUMP_LAND;
 		currentAction = "jump_land";
 		currentActionType = JUMP_LAND;
@@ -254,6 +274,7 @@ bool Character::handleJumpingAnimation(int maxFrames, bool attacking) {
 		jumping = false;
 		jumpDisabled = true;
 		prejumpY = 0.0f;
+		currentActionDone = true;
 		return true;
 	}
 
@@ -321,12 +342,13 @@ bool Character::handleFallingAnimation(int maxFrames, float elapsedTime) {
 		}
 		if (fallstatus == FallStep::BOUNCE_UP) {
 			// Time remaining is less than amount of frames their rising animation is
-			if ((timeToBeDisabled - timeSinceLastAction) > (MS_PER_FRAME * SpriteHolder::getMaxFramesForAction(spriteName, "rise", RISE))) return true;
+			if ((timeToBeDisabled - timeSinceLastAction) > (MS_PER_FRAME * (SpriteHolder::getMaxFramesForAction(spriteName, "rise", RISE) + 1))) return true;
 			spriteState = Globals::ActionType::RISE;
 			currentAction = "rise";
 			currentActionType = RISE;
 			fallstatus = FallStep::NONE;
 			resetFrameState(false);
+			return true;
 		}
 	}
 	return false;
