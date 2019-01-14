@@ -114,7 +114,7 @@ void PlayerCharacter::handleJump(float elapsedTime) {
 		jumping = true;
 		running = false;
 		prejumpY = position.y;
-		position.y -= 0.1f;
+		position.y -= 0.0042f * Globals::getResolution().x;
 		insertAndShiftPastDirectionsPressed(DirectionHeaded::NONE);
 		speedY = baseSpeedY;
 	}

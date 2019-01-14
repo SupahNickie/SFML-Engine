@@ -298,7 +298,10 @@ bool Character::handleFallingAnimation(int maxFrames, float elapsedTime) {
 	}
 
 	speedY += (gravity * (elapsedTime * 1000));
-	if (fallY > position.y) position.y += speedY;
+	if (fallY > position.y) {
+		position.y += speedY;
+		return true;
+	}
 
 	if (currentFrame == maxFrames) {
 		if (fallstatus == FallStep::KNOCK_DOWN) {
