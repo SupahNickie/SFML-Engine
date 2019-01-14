@@ -27,7 +27,6 @@ Skate::Skate() {
 		SpriteHolder::getMaxFramesForAction(spriteName, "jump_air", 0) + 1 +
 		SpriteHolder::getMaxFramesForAction(spriteName, "jump_land", 0) + 1) * MS_PER_FRAME;
 
-	animationCycle = { {"move", false}, {"attack", false}, {"idle", false}, {"injure", false} };
 	currentAction = "idle";
 	currentActionType = NORMAL_IDLE;
 	resetFrameState();

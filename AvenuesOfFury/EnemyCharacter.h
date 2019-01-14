@@ -41,7 +41,7 @@ protected:
 	void moveTowardsFocusChar(float elapsedTime);
 	void predictFocusCharLocation(float elapsedTime);
 	void handleAI(float elapsedTime, vector<Character*> players);
-	bool attack(float elapsedTime, int actionType);
+	bool attack(float elapsedTime, string const& action, int actionType, bool resetFrame = true);
 	virtual bool handleAttacking(float elapsedTime) = 0;
 	virtual void handleMoving(float elapsedTime) = 0;
 private:

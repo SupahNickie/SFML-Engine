@@ -184,14 +184,14 @@ void EnemyCharacter::handleAI(float elapsedTime, vector<Character*> players) {
 	handleMoving(elapsedTime);
 }
 
-bool EnemyCharacter::attack(float elapsedTime, int actionType) {
+bool EnemyCharacter::attack(float elapsedTime, string const& action, int actionType, bool resetFrame) {
 	if (timeSinceAttackEnded > aggression) {
 		if (!attackDisabled &&
 			spriteState != Globals::ActionType::INJURE &&
 			hits(focusChar) &&
 			onSameVerticalPlane(focusChar->getCenter().y)
 			) {
-			setAttackState(actionType);
+			setAttackState(action, actionType, resetFrame);
 			calculateAttack(elapsedTime);
 			return true;
 		}

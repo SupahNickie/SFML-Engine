@@ -189,16 +189,31 @@ void Character::insertAndShiftPastDirectionsPressed(DirectionHeaded direction) {
 	pastDirectionsPressed[4] = directionHeaded;
 }
 
-void Character::setAttackState(int attackType) {
+void Character::setAttackState(string const& action, int attackType, bool resetFrame) {
 	if (!attackDisabled) {
-		currentAction = "attack";
+		currentAction = action;
+		if (currentAction == "attack") {
+			if (spriteState != Globals::ActionType::ATTACK) {
+				spriteState = Globals::ActionType::ATTACK;
+				resetFrameState(resetFrame);
+			}
+		}
+		if (currentAction == "jump_attack") {
+			if (spriteState != Globals::ActionType::JUMP_ATTACK) {
+				spriteState = Globals::ActionType::JUMP_ATTACK;
+				resetFrameState(resetFrame);
+			}
+		}
+		if (currentAction == "run_attack") {
+			if (spriteState != Globals::ActionType::RUN_ATTACK) {
+				spriteState = Globals::ActionType::RUN_ATTACK;
+				resetFrameState(resetFrame);
+			}
+		}
+
 		if (currentActionType != attackType) {
 			currentActionType = attackType;
-			resetFrameState();
-		}
-		if (spriteState != Globals::ActionType::ATTACK) {
-			spriteState = Globals::ActionType::ATTACK;
-			resetFrameState();
+			resetFrameState(resetFrame);
 		}
 		insertAndShiftPastDirectionsPressed(DirectionHeaded::NONE);
 	}
@@ -274,12 +289,7 @@ bool Character::handleJumpingAnimation(int maxFrames, bool attacking) {
 	}
 
 	if (attacking) {
-		if (spriteState != Globals::ActionType::JUMP_ATTACK) {
-			spriteState = Globals::ActionType::JUMP_ATTACK;
-			currentAction = "jump_attack";
-			currentActionType = JUMP_ATTACK;
-			resetFrameState(false);
-		}
+		setAttackState("jump_attack", JUMP_ATTACK, false);
 	}
 
 	return false;

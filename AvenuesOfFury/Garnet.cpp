@@ -26,13 +26,12 @@ Garnet::Garnet(vector<Character*> players) : EnemyCharacter(players) {
 	SpriteHolder::initSprites("character", spriteName);
 	sprite.scale(Vector2f(4 * Globals::getScalingFactor(), 4 * Globals::getScalingFactor()));
 
-	animationCycle = { {"move", false}, {"attack", false}, {"idle", false}, {"injure", false} };
 	resetFrameState();
 	render();
 }
 
 bool Garnet::handleAttacking(float elapsedTime) {
-	return attack(elapsedTime, HEAD_ATTACK);
+	return attack(elapsedTime, "attack", HEAD_ATTACK);
 }
 
 void Garnet::handleMoving(float elapsedTime) {

@@ -94,7 +94,7 @@ protected:
 	void updateFrameState(float elapsedTime, bool prioritizedAction);
 	void updatePastPositions(float elapsedTime);
 	void insertAndShiftPastDirectionsPressed(DirectionHeaded direction);
-	void setAttackState(int attackType);
+	void setAttackState(string const& action, int attackType, bool resetFrame = true);
 	AttackInfo generateAttackInfo(bool longStun, Character* c);
 	void render();
 	virtual void setIdleState(float elapsedTime = 0.0f) = 0;

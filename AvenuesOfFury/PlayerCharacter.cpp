@@ -35,12 +35,12 @@ void PlayerCharacter::update(float elapsedTime, vector<Character*> players, vect
 
 	if (!attackDisabled) {
 		if (primaryAttackPressed) {
-			setAttackState(HEAD_ATTACK);
+			setAttackState("attack", HEAD_ATTACK);
 			running = false;
 			return;
 		}
 		else if (secondaryAttackPressed) {
-			setAttackState(BODY_ATTACK);
+			setAttackState("attack", BODY_ATTACK);
 			running = false;
 			return;
 		}
