@@ -31,7 +31,8 @@ Garnet::Garnet(vector<Character*> players) : EnemyCharacter(players) {
 }
 
 bool Garnet::handleAttacking(float elapsedTime) {
-	return attack(elapsedTime, "attack", HEAD_ATTACK);
+	//return attack(elapsedTime, "attack", HEAD_ATTACK);
+	return attack(elapsedTime, "jump_attack", JUMP_ATTACK, false);
 }
 
 void Garnet::handleMoving(float elapsedTime) {

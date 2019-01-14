@@ -234,7 +234,8 @@ void EnemyCharacter::recalculateDecisionSpeed(bool decisionState) {
 
 void EnemyCharacter::resetStateAfterFinishingAction() {
 	if (currentActionDone) {
-		if (spriteState == Globals::ActionType::ATTACK) {
+		if (spriteState == Globals::ActionType::ATTACK ||
+			spriteState == Globals::ActionType::JUMP_ATTACK) {
 			timeSinceAttackEnded = 0;
 			timeSinceDecision = 0;
 		}
