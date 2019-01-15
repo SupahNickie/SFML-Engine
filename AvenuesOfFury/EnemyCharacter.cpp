@@ -281,8 +281,9 @@ bool EnemyCharacter::handleDisabledState(float elapsedTime) {
 		timeSinceLastAction = 0;
 		timeToBeDisabled = 0;
 		disabled = false;
-		jumpAttacking = false;
 		attackDisabled = false;
+		jumpAttacking = false;
+		jumpDisabled = false;
 		setIdleState();
 		return false;
 	}
