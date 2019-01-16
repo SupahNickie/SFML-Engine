@@ -68,6 +68,7 @@ protected:
 
 	map<string, HitRecord> hitsRegistered;
 	bool hitRegistered = false;
+	bool zig = false; // or zag, for "bouncing" when hit
 
 	vector<Character*> playersTouching;
 	vector<Character*> enemiesTouching;

@@ -92,6 +92,9 @@ void Character::registerHit(int hp, string const& attacker, unsigned short int f
 	fallDirection = info.fallDirection;
 	resetFrameState();
 
+	zig ? position.x -= 0.010 * Globals::getResolution().x : position.x += 0.010 * Globals::getResolution().x;
+	zig = !zig;
+
 	jumping = false;
 	health -= hp;
 }
