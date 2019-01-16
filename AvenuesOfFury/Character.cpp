@@ -92,9 +92,6 @@ void Character::registerHit(int hp, string const& attacker, unsigned short int f
 	fallDirection = info.fallDirection;
 	resetFrameState();
 
-	zig ? position.x -= 0.010 * Globals::getResolution().x : position.x += 0.010 * Globals::getResolution().x;
-	zig = !zig;
-
 	jumping = false;
 	health -= hp;
 }
@@ -160,8 +157,9 @@ void Character::updateFrameState(float elapsedTime, bool prioritizedAction) {
 	timeSinceLastFrame += elapsedTime * 1000;
 	if (timeSinceLastFrame > MS_PER_FRAME) {
 		int maxFrames = SpriteHolder::getMaxFramesForAction(spriteName, currentAction, currentActionType);
-		if (jumping && handleJumpingAnimation(maxFrames, prioritizedAction)) return;
-		if ((fallstatus != FallStep::NONE) && handleFallingAnimation(maxFrames, elapsedTime)) return;
+		if (handleJumpingAnimation(maxFrames, prioritizedAction, elapsedTime)) return;
+		if (handleFallingAnimation(maxFrames, prioritizedAction, elapsedTime)) return;
+		if (handleInjureAnimation(maxFrames, prioritizedAction, elapsedTime)) return;
 		handleNormalAnimation(maxFrames);
 		timeSinceLastFrame = 0;
 	}
@@ -268,91 +266,102 @@ void Character::render() {
 	SpriteHolder::setSprite(sprite, spriteName, currentAction, currentActionType, currentFrame);
 }
 
-bool Character::handleJumpingAnimation(int maxFrames, bool attacking) {
-	if (prejumpY <= position.y) {
-		spriteState = Globals::ActionType::JUMP_LAND;
-		currentAction = "jump_land";
-		currentActionType = JUMP_LAND;
-		resetFrameState(false);
-		jumping = false;
-		jumpDisabled = true;
-		prejumpY = 0.0f;
-		currentActionDone = true;
-		return true;
-	}
-
-	if (maxFrames == currentFrame) {
-		if (attacking) {
-			if (spriteState != Globals::ActionType::JUMP_ATTACK) {
-				spriteState = Globals::ActionType::JUMP_ATTACK;
-				currentAction = "jump_attack";
-				currentActionType = JUMP_ATTACK;
-				resetFrameState(false);
-			}
-			// Do nothing, let the last frame always hold until touching the ground or contact made
-			return true;
-		}
-
-		switch (spriteState) {
-		case Globals::ActionType::JUMP_START:
-			spriteState = Globals::ActionType::JUMP_AIR;
-			currentAction = "jump_air";
-			currentActionType = JUMP_AIR;
-			resetFrameState(false);
-			break;
-		case Globals::ActionType::JUMP_AIR:
+bool Character::handleJumpingAnimation(int maxFrames, bool prioritizedAction, float elapsedTime) {
+	if (jumping) {
+		if (prejumpY <= position.y) {
 			spriteState = Globals::ActionType::JUMP_LAND;
 			currentAction = "jump_land";
 			currentActionType = JUMP_LAND;
 			resetFrameState(false);
-			break;
+			jumping = false;
+			jumpDisabled = true;
+			prejumpY = 0.0f;
+			currentActionDone = true;
+			return true;
 		}
 
-		timeSinceLastFrame = 0;
-		return true;
-	}
+		if (maxFrames == currentFrame) {
+			if (prioritizedAction) {
+				if (spriteState != Globals::ActionType::JUMP_ATTACK) {
+					spriteState = Globals::ActionType::JUMP_ATTACK;
+					currentAction = "jump_attack";
+					currentActionType = JUMP_ATTACK;
+					resetFrameState(false);
+				}
+				// Do nothing, let the last frame always hold until touching the ground or contact made
+				return true;
+			}
 
-	if (attacking) {
-		setAttackState("jump_attack", JUMP_ATTACK, false);
-	}
+			switch (spriteState) {
+			case Globals::ActionType::JUMP_START:
+				spriteState = Globals::ActionType::JUMP_AIR;
+				currentAction = "jump_air";
+				currentActionType = JUMP_AIR;
+				resetFrameState(false);
+				break;
+			case Globals::ActionType::JUMP_AIR:
+				spriteState = Globals::ActionType::JUMP_LAND;
+				currentAction = "jump_land";
+				currentActionType = JUMP_LAND;
+				resetFrameState(false);
+				break;
+			}
 
+			timeSinceLastFrame = 0;
+			return true;
+		}
+
+		if (prioritizedAction) {
+			setAttackState("jump_attack", JUMP_ATTACK, false);
+		}
+	}
 	return false;
 }
 
-bool Character::handleFallingAnimation(int maxFrames, float elapsedTime) {
-	if (fallstatus == FallStep::START_FALL) {
-		speedY = -0.0042f * Globals::getResolution().x;
-		fallstatus = FallStep::KNOCK_DOWN;
-		position.y -= 0.1f;
-	}
-
-	if (fallstatus == FallStep::KNOCK_DOWN) {
-		if (fallDirection == FallDirection::LEFT) position.x -= 3 * baseSpeed * elapsedTime;
-		if (fallDirection == FallDirection::RIGHT) position.x += 3 * baseSpeed * elapsedTime;
-	}
-
-	speedY += (gravity * (elapsedTime * 1000));
-	if (fallY > position.y) {
-		position.y += speedY;
-		return true;
-	}
-
-	if (currentFrame == maxFrames) {
-		if (fallstatus == FallStep::KNOCK_DOWN) {
-			if (fallY >= position.y) return true;
-			resetFrameState();
-			fallstatus = FallStep::BOUNCE_UP;
+bool Character::handleFallingAnimation(int maxFrames, bool prioritizedAction, float elapsedTime) {
+	if (fallstatus != FallStep::NONE) {
+		if (fallstatus == FallStep::START_FALL) {
+			speedY = -0.0042f * Globals::getResolution().x;
+			fallstatus = FallStep::KNOCK_DOWN;
+			position.y -= 0.1f;
 		}
-		if (fallstatus == FallStep::BOUNCE_UP) {
-			// Time remaining is less than amount of frames their rising animation is
-			if ((timeToBeDisabled - timeSinceLastAction) > (MS_PER_FRAME * (SpriteHolder::getMaxFramesForAction(spriteName, "rise", RISE) + 1))) return true;
-			spriteState = Globals::ActionType::RISE;
-			currentAction = "rise";
-			currentActionType = RISE;
-			fallstatus = FallStep::NONE;
-			resetFrameState(false);
+
+		if (fallstatus == FallStep::KNOCK_DOWN) {
+			if (fallDirection == FallDirection::LEFT) position.x -= 3 * baseSpeed * elapsedTime;
+			if (fallDirection == FallDirection::RIGHT) position.x += 3 * baseSpeed * elapsedTime;
+		}
+
+		speedY += (gravity * (elapsedTime * 1000));
+		if (fallY > position.y) {
+			position.y += speedY;
 			return true;
 		}
+
+		if (currentFrame == maxFrames) {
+			if (fallstatus == FallStep::KNOCK_DOWN) {
+				if (fallY >= position.y) return true;
+				resetFrameState();
+				fallstatus = FallStep::BOUNCE_UP;
+			}
+			if (fallstatus == FallStep::BOUNCE_UP) {
+				// Time remaining is less than amount of frames their rising animation is
+				if ((timeToBeDisabled - timeSinceLastAction) > (MS_PER_FRAME * (SpriteHolder::getMaxFramesForAction(spriteName, "rise", RISE) + 1))) return true;
+				spriteState = Globals::ActionType::RISE;
+				currentAction = "rise";
+				currentActionType = RISE;
+				fallstatus = FallStep::NONE;
+				resetFrameState(false);
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+bool Character::handleInjureAnimation(int maxFrames, bool prioritizedAction, float elapsedTime) {
+	if (spriteState == Globals::ActionType::INJURE) {
+		zig ? position.x -= 0.010 * Globals::getResolution().x : position.x += 0.010 * Globals::getResolution().x;
+		zig = !zig;
 	}
 	return false;
 }

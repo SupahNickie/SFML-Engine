@@ -101,8 +101,9 @@ protected:
 	virtual void setIdleState(float elapsedTime = 0.0f) = 0;
 	virtual void setDirectionHeaded() = 0;
 private:
-	bool handleJumpingAnimation(int maxFrames, bool attacking);
-	bool handleFallingAnimation(int maxFrames, float elapsedTime);
+	bool handleJumpingAnimation(int maxFrames, bool prioritizedAction, float elapsedTime);
+	bool handleFallingAnimation(int maxFrames, bool prioritizedAction, float elapsedTime);
+	bool handleInjureAnimation(int maxFrames, bool prioritizedAction, float elapsedTime);
 	void handleNormalAnimation(int maxFrames);
 	FallDirection getDirectionOfCollision(Character* c);
 };
