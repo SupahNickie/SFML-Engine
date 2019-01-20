@@ -93,24 +93,6 @@ bool EnemyCharacter::handleDecidingState(float elapsedTime, vector<Character*> p
 	}
 }
 
-void EnemyCharacter::setIdleState(float elapsedTime) {
-	currentAction = "idle";
-	currentActionType = NORMAL_IDLE;
-	if (spriteState != Globals::ActionType::IDLE) {
-		spriteState = Globals::ActionType::IDLE;
-		resetFrameState();
-	}
-}
-
-void EnemyCharacter::setMoveState() {
-	if (spriteState == Globals::ActionType::IDLE) {
-		spriteState = Globals::ActionType::MOVE;
-		currentAction = "move";
-		currentActionType = WALK;
-		resetFrameState();
-	}
-}
-
 void EnemyCharacter::moveTowardsFocusChar(float elapsedTime) {
 	if (spriteState == Globals::ActionType::MOVE) {
 		target = focusChar->getVelocity(reactionSpeed).position;
@@ -201,7 +183,7 @@ bool EnemyCharacter::attack(float elapsedTime, int actionType) {
 		return true;
 	}
 	else {
-		setIdleState();
+		setIdleState(elapsedTime);
 		return true;
 	}
 }
@@ -225,8 +207,26 @@ bool EnemyCharacter::jumpAttack(float elapsedTime) {
 		return true;
 	}
 	else {
-		setIdleState();
+		setIdleState(elapsedTime);
 		return false;
+	}
+}
+
+void EnemyCharacter::setIdleState(float elapsedTime) {
+	currentAction = "idle";
+	currentActionType = NORMAL_IDLE;
+	if (spriteState != Globals::ActionType::IDLE) {
+		spriteState = Globals::ActionType::IDLE;
+		resetFrameState();
+	}
+}
+
+void EnemyCharacter::setMoveState() {
+	if (spriteState == Globals::ActionType::IDLE) {
+		spriteState = Globals::ActionType::MOVE;
+		currentAction = "move";
+		currentActionType = WALK;
+		resetFrameState();
 	}
 }
 
@@ -284,7 +284,7 @@ bool EnemyCharacter::handleDisabledState(float elapsedTime) {
 		attackDisabled = false;
 		jumpAttacking = false;
 		jumpDisabled = false;
-		setIdleState();
+		setIdleState(elapsedTime);
 		return false;
 	}
 	return false;
@@ -312,4 +312,8 @@ void EnemyCharacter::moveTowardsTarget(float elapsedTime) {
 	else if (target.y < position.y) {
 		position.y -= elapsedTime * speed;
 	}
+}
+
+void EnemyCharacter::handleRunAttackHorizontal(float elapsedTime) {
+	// determine whether to send enemy left or run during dash attack
 }

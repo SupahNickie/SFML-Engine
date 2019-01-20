@@ -165,3 +165,8 @@ void PlayerCharacter::setIdleState(float elapsedTime) {
 	}
 	timeSinceLastDirectionPress += elapsedTime * 1000;
 }
+
+void PlayerCharacter::handleRunAttackHorizontal(float elapsedTime) {
+	if (pastDirectionsPressed[3] == DirectionHeaded::R) position.x += 2 * speed * elapsedTime;
+	if (pastDirectionsPressed[3] == DirectionHeaded::L) position.x -= 2 * speed * elapsedTime;
+}

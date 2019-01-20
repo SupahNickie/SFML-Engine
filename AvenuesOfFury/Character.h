@@ -49,6 +49,7 @@ protected:
 	float baseSpeed;
 	bool running = false;
 	bool runAttacking = false;
+	bool runAttackJumps = false;
 
 	int timeToBeDisabled = 0;
 	bool disabled = false;
@@ -99,8 +100,9 @@ protected:
 	void setJumpState(float elapsedTime, bool moveLeft, bool moveRight);
 	AttackInfo generateAttackInfo(bool longStun, Character* c);
 	void render();
-	virtual void setIdleState(float elapsedTime = 0.0f) = 0;
+	virtual void setIdleState(float elapsedTime) = 0;
 	virtual void setDirectionHeaded() = 0;
+	virtual void handleRunAttackHorizontal(float elapsedTime) = 0;
 private:
 	bool handleRunningAnimation(int maxFrames, bool attackAction, float elapsedTime);
 	bool handleJumpingAnimation(int maxFrames, bool attackAction, float elapsedTime);

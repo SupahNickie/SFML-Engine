@@ -19,6 +19,7 @@ Skate::Skate() {
 	health = 4000;
 	spriteName = "skate";
 	isActive = true;
+	runAttackJumps = true;
 
 	SpriteHolder::initSprites("character", spriteName);
 	sprite.scale(Vector2f(4 * Globals::getScalingFactor(), 4 * Globals::getScalingFactor()));

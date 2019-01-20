@@ -28,6 +28,7 @@ private:
 	void hitCharacters(float elapsedTime);
 	void setMoveState(float elapsedTime);
 	void setIdleState(float elapsedTime);
+	void handleRunAttackHorizontal(float elapsedTime);
 };
 
 #endif

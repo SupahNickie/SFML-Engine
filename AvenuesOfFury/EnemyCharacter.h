@@ -36,8 +36,6 @@ protected:
 
 	bool checkDecidingState();
 	bool handleDecidingState(float elapsedTime, vector<Character*> players);
-	void setIdleState(float elapsedTime = 0.0f);
-	void setMoveState();
 	void moveTowardsFocusChar(float elapsedTime);
 	void predictFocusCharLocation(float elapsedTime);
 	void handleAI(float elapsedTime, vector<Character*> players);
@@ -46,6 +44,8 @@ protected:
 	virtual bool handleAttacking(float elapsedTime) = 0;
 	virtual void handleMoving(float elapsedTime) = 0;
 private:
+	void setIdleState(float elapsedTime);
+	void setMoveState();
 	void turnToFaceFocusChar();
 	void setDirectionHeaded();
 	void recalculateAggression();
@@ -54,6 +54,7 @@ private:
 	bool handleDisabledState(float elapsedTime);
 	void handleJump(float elapsedTime);
 	void moveTowardsTarget(float elapsedTime);
+	void handleRunAttackHorizontal(float elapsedTime);
 };
 
 #endif

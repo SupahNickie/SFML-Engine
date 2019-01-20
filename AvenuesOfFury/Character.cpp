@@ -275,7 +275,11 @@ void Character::render() {
 
 bool Character::handleRunningAnimation(int maxFrames, bool attackAction, float elapsedTime) {
 	if (running) {
-		if (runAttacking && prejumpY <= position.y) {
+		if (runAttacking && ((runAttackJumps && prejumpY <= position.y) ||
+			(!runAttackJumps && currentFrame == maxFrames))
+			) {
+			disabled = true;
+			timeToBeDisabled = MS_PER_FRAME * SpriteHolder::getMaxFramesForAction(spriteName, "run_attack_land", RUN_ATTACK_LAND);
 			spriteState = Globals::ActionType::RUN_ATTACK_LAND;
 			currentAction = "run_attack_land";
 			currentActionType = RUN_ATTACK_LAND;
@@ -285,12 +289,13 @@ bool Character::handleRunningAnimation(int maxFrames, bool attackAction, float e
 			return true;
 		}
 
-		if (spriteState == Globals::ActionType::RUN_ATTACK) {
+		if (runAttacking) {
+			handleRunAttackHorizontal(elapsedTime);
+		}
+
+		if (runAttacking && runAttackJumps) {
 			speedY += (.6 * gravity * (elapsedTime * 1000));
 			position.y += speedY;
-
-			if (pastDirectionsPressed[3] == DirectionHeaded::R) position.x += 2 * speed * elapsedTime;
-			if (pastDirectionsPressed[3] == DirectionHeaded::L) position.x -= 2 * speed * elapsedTime;
 			if (maxFrames == currentFrame) return true;
 		}
 	}
