@@ -25,6 +25,10 @@ Globals::ActionType Globals::actionStringToEnum(string const& action) {
 	if (action == "run_attack_land") return Globals::ActionType::RUN_ATTACK_LAND;
 	if (action == "fall") return Globals::ActionType::FALL;
 	if (action == "rise") return Globals::ActionType::RISE;
+	if (action == "grab") return Globals::ActionType::GRAB;
+	if (action == "grab_attack_head") return Globals::ActionType::GRAB_ATTACK_HEAD;
+	if (action == "grab_attack_body") return Globals::ActionType::GRAB_ATTACK_BODY;
+	if (action == "throw") return Globals::ActionType::THROW;
 	return Globals::ActionType::NONE;
 }
 

@@ -23,6 +23,10 @@ public:
 		RUN_ATTACK_LAND,
 		FALL,
 		RISE,
+		GRAB,
+		GRAB_ATTACK_HEAD,
+		GRAB_ATTACK_BODY,
+		THROW,
 		NONE
 	};
 	unsigned int idSerial;

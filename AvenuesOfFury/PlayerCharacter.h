@@ -25,7 +25,6 @@ protected:
 	int timeSinceLastDirectionPress = 0;
 private:
 	void setDirectionHeaded();
-	void handleJump(float elapsedTime);
 	void hitCharacters(float elapsedTime);
 	void setMoveState(float elapsedTime);
 	void setIdleState(float elapsedTime);

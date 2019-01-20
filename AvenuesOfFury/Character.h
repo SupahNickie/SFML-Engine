@@ -48,6 +48,7 @@ protected:
 
 	float baseSpeed;
 	bool running = false;
+	bool runAttacking = false;
 
 	int timeToBeDisabled = 0;
 	bool disabled = false;
@@ -101,9 +102,10 @@ protected:
 	virtual void setIdleState(float elapsedTime = 0.0f) = 0;
 	virtual void setDirectionHeaded() = 0;
 private:
-	bool handleJumpingAnimation(int maxFrames, bool prioritizedAction, float elapsedTime);
-	bool handleFallingAnimation(int maxFrames, bool prioritizedAction, float elapsedTime);
-	bool handleInjureAnimation(int maxFrames, bool prioritizedAction, float elapsedTime);
+	bool handleRunningAnimation(int maxFrames, bool attackAction, float elapsedTime);
+	bool handleJumpingAnimation(int maxFrames, bool attackAction, float elapsedTime);
+	bool handleFallingAnimation(int maxFrames, bool attackAction, float elapsedTime);
+	bool handleInjureAnimation(int maxFrames, bool attackAction, float elapsedTime);
 	void handleNormalAnimation(int maxFrames);
 	FallDirection getDirectionOfCollision(Character* c);
 };

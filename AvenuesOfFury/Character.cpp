@@ -152,14 +152,15 @@ void Character::resetFrameState(bool clearAll) {
 	currentFrame = SpriteHolder::getStartFramesForAction(spriteName, currentAction, currentActionType);
 }
 
-void Character::updateFrameState(float elapsedTime, bool prioritizedAction) {
+void Character::updateFrameState(float elapsedTime, bool attackAction) {
 	timeSinceLastAction += elapsedTime * 1000;
 	timeSinceLastFrame += elapsedTime * 1000;
 	if (timeSinceLastFrame > MS_PER_FRAME) {
 		int maxFrames = SpriteHolder::getMaxFramesForAction(spriteName, currentAction, currentActionType);
-		if (handleJumpingAnimation(maxFrames, prioritizedAction, elapsedTime)) return;
-		if (handleFallingAnimation(maxFrames, prioritizedAction, elapsedTime)) return;
-		if (handleInjureAnimation(maxFrames, prioritizedAction, elapsedTime)) return;
+		if (handleRunningAnimation(maxFrames, attackAction, elapsedTime)) return;
+		if (handleJumpingAnimation(maxFrames, attackAction, elapsedTime)) return;
+		if (handleFallingAnimation(maxFrames, attackAction, elapsedTime)) return;
+		if (handleInjureAnimation(maxFrames, attackAction, elapsedTime)) return;
 		handleNormalAnimation(maxFrames);
 		timeSinceLastFrame = 0;
 	}
@@ -192,30 +193,36 @@ void Character::insertAndShiftPastDirectionsPressed(DirectionHeaded direction) {
 
 void Character::setAttackState(string const& action, int attackType, bool resetFrame) {
 	if (!attackDisabled) {
+		bool changed = false;
 		currentAction = action;
 		if (currentAction == "attack") {
 			if (spriteState != Globals::ActionType::ATTACK) {
 				spriteState = Globals::ActionType::ATTACK;
-				resetFrameState(resetFrame);
+				changed = true;
 			}
 		}
 		if (currentAction == "jump_attack") {
 			if (spriteState != Globals::ActionType::JUMP_ATTACK) {
 				spriteState = Globals::ActionType::JUMP_ATTACK;
-				resetFrameState(resetFrame);
+				changed = true;
 			}
 		}
 		if (currentAction == "run_attack") {
 			if (spriteState != Globals::ActionType::RUN_ATTACK) {
 				spriteState = Globals::ActionType::RUN_ATTACK;
-				resetFrameState(resetFrame);
+				changed = true;
+				speedY = baseSpeedY;
+				prejumpY = position.y;
+				position.y -= 0.0042f * Globals::getResolution().x;
+				runAttacking = true;
 			}
 		}
 
 		if (currentActionType != attackType) {
 			currentActionType = attackType;
-			resetFrameState(resetFrame);
+			changed = true;
 		}
+		if (changed) resetFrameState(resetFrame);
 		insertAndShiftPastDirectionsPressed(DirectionHeaded::NONE);
 	}
 	if (currentActionDone) attackDisabled = true;
@@ -266,7 +273,31 @@ void Character::render() {
 	SpriteHolder::setSprite(sprite, spriteName, currentAction, currentActionType, currentFrame);
 }
 
-bool Character::handleJumpingAnimation(int maxFrames, bool prioritizedAction, float elapsedTime) {
+bool Character::handleRunningAnimation(int maxFrames, bool attackAction, float elapsedTime) {
+	if (running) {
+		if (runAttacking && prejumpY <= position.y) {
+			spriteState = Globals::ActionType::RUN_ATTACK_LAND;
+			currentAction = "run_attack_land";
+			currentActionType = RUN_ATTACK_LAND;
+			runAttacking = false;
+			running = false;
+			resetFrameState();
+			return true;
+		}
+
+		if (spriteState == Globals::ActionType::RUN_ATTACK) {
+			speedY += (.6 * gravity * (elapsedTime * 1000));
+			position.y += speedY;
+
+			if (pastDirectionsPressed[3] == DirectionHeaded::R) position.x += 2 * speed * elapsedTime;
+			if (pastDirectionsPressed[3] == DirectionHeaded::L) position.x -= 2 * speed * elapsedTime;
+			if (maxFrames == currentFrame) return true;
+		}
+	}
+	return false;
+}
+
+bool Character::handleJumpingAnimation(int maxFrames, bool attackAction, float elapsedTime) {
 	if (jumping) {
 		if (prejumpY <= position.y) {
 			spriteState = Globals::ActionType::JUMP_LAND;
@@ -281,12 +312,9 @@ bool Character::handleJumpingAnimation(int maxFrames, bool prioritizedAction, fl
 		}
 
 		if (maxFrames == currentFrame) {
-			if (prioritizedAction) {
+			if (attackAction) {
 				if (spriteState != Globals::ActionType::JUMP_ATTACK) {
-					spriteState = Globals::ActionType::JUMP_ATTACK;
-					currentAction = "jump_attack";
-					currentActionType = JUMP_ATTACK;
-					resetFrameState(false);
+					setAttackState("jump_attack", JUMP_ATTACK, false);
 				}
 				// Do nothing, let the last frame always hold until touching the ground or contact made
 				return true;
@@ -311,14 +339,14 @@ bool Character::handleJumpingAnimation(int maxFrames, bool prioritizedAction, fl
 			return true;
 		}
 
-		if (prioritizedAction) {
+		if (attackAction) {
 			setAttackState("jump_attack", JUMP_ATTACK, false);
 		}
 	}
 	return false;
 }
 
-bool Character::handleFallingAnimation(int maxFrames, bool prioritizedAction, float elapsedTime) {
+bool Character::handleFallingAnimation(int maxFrames, bool attackAction, float elapsedTime) {
 	if (fallstatus != FallStep::NONE) {
 		if (fallstatus == FallStep::START_FALL) {
 			speedY = -0.0042f * Globals::getResolution().x;
@@ -358,7 +386,7 @@ bool Character::handleFallingAnimation(int maxFrames, bool prioritizedAction, fl
 	return false;
 }
 
-bool Character::handleInjureAnimation(int maxFrames, bool prioritizedAction, float elapsedTime) {
+bool Character::handleInjureAnimation(int maxFrames, bool attackAction, float elapsedTime) {
 	if (spriteState == Globals::ActionType::INJURE) {
 		zig ? position.x -= 0.010 * Globals::getResolution().x : position.x += 0.010 * Globals::getResolution().x;
 		zig = !zig;

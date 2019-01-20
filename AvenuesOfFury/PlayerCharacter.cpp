@@ -26,6 +26,8 @@ void PlayerCharacter::update(float elapsedTime, vector<Character*> players, vect
 		running = false;
 	}
 
+	if (runAttacking) return;
+
 	if ((jumpPressed || jumping) && !jumpDisabled) {
 		setJumpState(elapsedTime, leftPressed, rightPressed);
 		running = false;
@@ -34,13 +36,11 @@ void PlayerCharacter::update(float elapsedTime, vector<Character*> players, vect
 
 	if (!attackDisabled) {
 		if (primaryAttackPressed) {
-			setAttackState("attack", HEAD_ATTACK);
-			running = false;
+			running ? setAttackState("run_attack", RUN_ATTACK) : setAttackState("attack", HEAD_ATTACK);
 			return;
 		}
 		else if (secondaryAttackPressed) {
 			setAttackState("attack", BODY_ATTACK);
-			running = false;
 			return;
 		}
 	}
