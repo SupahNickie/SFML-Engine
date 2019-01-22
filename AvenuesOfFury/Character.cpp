@@ -2,6 +2,7 @@
 #include "Character.h"
 #include "SpriteHolder.h"
 #include "Globals.h"
+#include <assert.h>
 #include <iostream>
 
 Character::Character() {
@@ -152,15 +153,16 @@ void Character::resetFrameState(bool clearAll) {
 	currentFrame = SpriteHolder::getStartFramesForAction(spriteName, currentAction, currentActionType);
 }
 
-void Character::updateFrameState(float elapsedTime, bool attackAction) {
+void Character::updateFrameState(float elapsedTime, AttackInfo info) {
 	timeSinceLastAction += elapsedTime * 1000;
 	timeSinceLastFrame += elapsedTime * 1000;
 	if (timeSinceLastFrame > MS_PER_FRAME) {
 		int maxFrames = SpriteHolder::getMaxFramesForAction(spriteName, currentAction, currentActionType);
-		if (handleRunningAnimation(maxFrames, attackAction, elapsedTime)) return;
-		if (handleJumpingAnimation(maxFrames, attackAction, elapsedTime)) return;
-		if (handleFallingAnimation(maxFrames, attackAction, elapsedTime)) return;
-		if (handleInjureAnimation(maxFrames, attackAction, elapsedTime)) return;
+		if (handleGrabbingAnimation(maxFrames, info, elapsedTime)) return;
+		if (handleRunningAnimation(maxFrames, info, elapsedTime)) return;
+		if (handleJumpingAnimation(maxFrames, info, elapsedTime)) return;
+		if (handleFallingAnimation(maxFrames, info, elapsedTime)) return;
+		if (handleInjureAnimation(maxFrames, info, elapsedTime)) return;
 		handleNormalAnimation(maxFrames);
 		timeSinceLastFrame = 0;
 	}
@@ -215,6 +217,27 @@ void Character::setAttackState(string const& action, int attackType, bool resetF
 				prejumpY = position.y;
 				position.y -= 0.0042f * Globals::getResolution().x;
 				runAttacking = true;
+			}
+		}
+		if (currentAction == "grab") {
+			if (spriteState != Globals::ActionType::GRAB) {
+				spriteState = Globals::ActionType::GRAB;
+				grabbing = true;
+				changed = true;
+			}
+		}
+		if (currentAction == "grab_attack_head") {
+			if (spriteState != Globals::ActionType::GRAB_ATTACK_HEAD) {
+				spriteState = Globals::ActionType::GRAB_ATTACK_HEAD;
+				grabbing = true;
+				changed = true;
+			}
+		}
+		if (currentAction == "grab_attack_body") {
+			if (spriteState != Globals::ActionType::GRAB_ATTACK_BODY) {
+				spriteState = Globals::ActionType::GRAB_ATTACK_BODY;
+				grabbing = true;
+				changed = true;
 			}
 		}
 
@@ -273,7 +296,11 @@ void Character::render() {
 	SpriteHolder::setSprite(sprite, spriteName, currentAction, currentActionType, currentFrame);
 }
 
-bool Character::handleRunningAnimation(int maxFrames, bool attackAction, float elapsedTime) {
+bool Character::handleGrabbingAnimation(int maxFrames, AttackInfo info, float elapsedTime) {
+	return false;
+}
+
+bool Character::handleRunningAnimation(int maxFrames, AttackInfo info, float elapsedTime) {
 	if (running) {
 		if (runAttacking && ((runAttackJumps && prejumpY <= position.y) ||
 			(!runAttackJumps && currentFrame == maxFrames))
@@ -302,7 +329,7 @@ bool Character::handleRunningAnimation(int maxFrames, bool attackAction, float e
 	return false;
 }
 
-bool Character::handleJumpingAnimation(int maxFrames, bool attackAction, float elapsedTime) {
+bool Character::handleJumpingAnimation(int maxFrames, AttackInfo info, float elapsedTime) {
 	if (jumping) {
 		if (prejumpY <= position.y) {
 			spriteState = Globals::ActionType::JUMP_LAND;
@@ -317,7 +344,7 @@ bool Character::handleJumpingAnimation(int maxFrames, bool attackAction, float e
 		}
 
 		if (maxFrames == currentFrame) {
-			if (attackAction) {
+			if (info.buttonPress == "primary" || info.buttonPress == "jumpAttacking") {
 				if (spriteState != Globals::ActionType::JUMP_ATTACK) {
 					setAttackState("jump_attack", JUMP_ATTACK, false);
 				}
@@ -344,14 +371,14 @@ bool Character::handleJumpingAnimation(int maxFrames, bool attackAction, float e
 			return true;
 		}
 
-		if (attackAction) {
+		if (info.buttonPress == "primary" || info.buttonPress == "jumpAttacking") {
 			setAttackState("jump_attack", JUMP_ATTACK, false);
 		}
 	}
 	return false;
 }
 
-bool Character::handleFallingAnimation(int maxFrames, bool attackAction, float elapsedTime) {
+bool Character::handleFallingAnimation(int maxFrames, AttackInfo info, float elapsedTime) {
 	if (fallstatus != FallStep::NONE) {
 		if (fallstatus == FallStep::START_FALL) {
 			speedY = -0.0042f * Globals::getResolution().x;
@@ -391,7 +418,7 @@ bool Character::handleFallingAnimation(int maxFrames, bool attackAction, float e
 	return false;
 }
 
-bool Character::handleInjureAnimation(int maxFrames, bool attackAction, float elapsedTime) {
+bool Character::handleInjureAnimation(int maxFrames, AttackInfo info, float elapsedTime) {
 	if (spriteState == Globals::ActionType::INJURE) {
 		zig ? position.x -= 0.010 * Globals::getResolution().x : position.x += 0.010 * Globals::getResolution().x;
 		zig = !zig;

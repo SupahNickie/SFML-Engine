@@ -46,10 +46,16 @@ protected:
 	int const FALL = 0;
 	int const RISE = 0;
 
+	bool grabbing = false;
+
 	float baseSpeed;
 	bool running = false;
 	bool runAttacking = false;
 	bool runAttackJumps = false;
+
+	bool jumping = false;
+	bool jumpDisabled = false;
+	float prejumpY = 0.0f;
 
 	int timeToBeDisabled = 0;
 	bool disabled = false;
@@ -59,10 +65,6 @@ protected:
 	float const gravity = 0.07f * Globals::getScalingFactor();
 	FallStep fallstatus = FallStep::NONE;
 	FallDirection fallDirection = FallDirection::NONE;
-
-	bool jumping = false;
-	bool jumpDisabled = false;
-	float prejumpY = 0.0f;
 
 	int health = 0;
 	vector<int> attackPower;
@@ -93,7 +95,7 @@ protected:
 	void detectCollisions(vector<Character*> players, vector<Character*> enemies);
 	bool onSameVerticalPlane(float targetY);
 	void resetFrameState(bool clearAll = true);
-	void updateFrameState(float elapsedTime, bool prioritizedAction);
+	void updateFrameState(float elapsedTime, AttackInfo info);
 	void updatePastPositions(float elapsedTime);
 	void insertAndShiftPastDirectionsPressed(DirectionHeaded direction);
 	void setAttackState(string const& action, int attackType, bool resetFrame = true);
@@ -104,10 +106,11 @@ protected:
 	virtual void setDirectionHeaded() = 0;
 	virtual void handleRunAttackHorizontal(float elapsedTime) = 0;
 private:
-	bool handleRunningAnimation(int maxFrames, bool attackAction, float elapsedTime);
-	bool handleJumpingAnimation(int maxFrames, bool attackAction, float elapsedTime);
-	bool handleFallingAnimation(int maxFrames, bool attackAction, float elapsedTime);
-	bool handleInjureAnimation(int maxFrames, bool attackAction, float elapsedTime);
+	bool handleGrabbingAnimation(int maxFrames, AttackInfo info, float elapsedTime);
+	bool handleRunningAnimation(int maxFrames, AttackInfo info, float elapsedTime);
+	bool handleJumpingAnimation(int maxFrames, AttackInfo info, float elapsedTime);
+	bool handleFallingAnimation(int maxFrames, AttackInfo info, float elapsedTime);
+	bool handleInjureAnimation(int maxFrames, AttackInfo info, float elapsedTime);
 	void handleNormalAnimation(int maxFrames);
 	FallDirection getDirectionOfCollision(Character* c);
 };
@@ -123,6 +126,7 @@ struct HitRecord {
 };
 
 struct AttackInfo {
+	string buttonPress;
 	unsigned short int injuryType; // INJURE_HEAD, INJURE_BODY
 	string action; // fall, injure
 	Globals::ActionType actionType;

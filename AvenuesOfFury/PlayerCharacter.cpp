@@ -12,7 +12,7 @@ void PlayerCharacter::update(float elapsedTime, vector<Character*> players, vect
 	detectCollisions(players, enemies);
 	updatePastPositions(elapsedTime);
 	hitCharacters(elapsedTime);
-	updateFrameState(elapsedTime, primaryAttackPressed);
+	updateFrameState(elapsedTime, AttackInfo{ primaryAttackPressed ? "primary" : secondaryAttackPressed ? "secondary" : ""});
 	sprite.setPosition(position);
 	render();
 
