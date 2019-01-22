@@ -25,6 +25,7 @@ protected:
 	int timeSinceLastDirectionPress = 0;
 private:
 	void setDirectionHeaded();
+	string determineAttackingIntention();
 	void hitCharacters(float elapsedTime);
 	void setMoveState(float elapsedTime);
 	void setIdleState(float elapsedTime);

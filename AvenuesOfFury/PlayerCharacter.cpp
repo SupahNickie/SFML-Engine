@@ -12,7 +12,7 @@ void PlayerCharacter::update(float elapsedTime, vector<Character*> players, vect
 	detectCollisions(players, enemies);
 	updatePastPositions(elapsedTime);
 	hitCharacters(elapsedTime);
-	updateFrameState(elapsedTime, AttackInfo{ primaryAttackPressed ? "primary" : secondaryAttackPressed ? "secondary" : ""});
+	updateFrameState(elapsedTime, determineAttackingIntention());
 	sprite.setPosition(position);
 	render();
 
@@ -104,6 +104,14 @@ void PlayerCharacter::setDirectionHeaded() {
 	}
 
 	insertAndShiftPastDirectionsPressed(current);
+}
+
+string PlayerCharacter::determineAttackingIntention() {
+	string output;
+	if (primaryAttackPressed) output = "primary";
+	if (secondaryAttackPressed) output = "secondary";
+	if (jumpPressed) output += "jump";
+	return output;
 }
 
 void PlayerCharacter::hitCharacters(float elapsedTime) {

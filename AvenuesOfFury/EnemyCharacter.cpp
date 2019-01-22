@@ -21,7 +21,7 @@ void EnemyCharacter::update(float elapsedTime, vector<Character*> players, vecto
 	}
 	advanceHitRecords(elapsedTime);
 	detectCollisions(players, enemies);
-	updateFrameState(elapsedTime, AttackInfo{ jumpAttacking ? "jumpAttacking" : "" });
+	updateFrameState(elapsedTime, jumpAttacking ? "jumpAttacking" : "" );
 	handleAI(elapsedTime, players);
 	sprite.setPosition(position);
 	render();

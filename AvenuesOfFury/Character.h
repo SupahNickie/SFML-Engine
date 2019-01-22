@@ -95,7 +95,7 @@ protected:
 	void detectCollisions(vector<Character*> players, vector<Character*> enemies);
 	bool onSameVerticalPlane(float targetY);
 	void resetFrameState(bool clearAll = true);
-	void updateFrameState(float elapsedTime, AttackInfo info);
+	void updateFrameState(float elapsedTime, string info);
 	void updatePastPositions(float elapsedTime);
 	void insertAndShiftPastDirectionsPressed(DirectionHeaded direction);
 	void setAttackState(string const& action, int attackType, bool resetFrame = true);
@@ -106,11 +106,11 @@ protected:
 	virtual void setDirectionHeaded() = 0;
 	virtual void handleRunAttackHorizontal(float elapsedTime) = 0;
 private:
-	bool handleGrabbingAnimation(int maxFrames, AttackInfo info, float elapsedTime);
-	bool handleRunningAnimation(int maxFrames, AttackInfo info, float elapsedTime);
-	bool handleJumpingAnimation(int maxFrames, AttackInfo info, float elapsedTime);
-	bool handleFallingAnimation(int maxFrames, AttackInfo info, float elapsedTime);
-	bool handleInjureAnimation(int maxFrames, AttackInfo info, float elapsedTime);
+	bool handleGrabbingAnimation(int maxFrames, string info, float elapsedTime);
+	bool handleRunningAnimation(int maxFrames, string info, float elapsedTime);
+	bool handleJumpingAnimation(int maxFrames, string info, float elapsedTime);
+	bool handleFallingAnimation(int maxFrames, string info, float elapsedTime);
+	bool handleInjureAnimation(int maxFrames, string info, float elapsedTime);
 	void handleNormalAnimation(int maxFrames);
 	FallDirection getDirectionOfCollision(Character* c);
 };
