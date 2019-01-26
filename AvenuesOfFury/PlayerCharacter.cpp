@@ -21,7 +21,8 @@ void PlayerCharacter::update(float elapsedTime, vector<Character*> players, vect
 		timeSinceLastAction = 0;
 		disabled = false;
 		attackDisabled = false;
-		setIdleState(elapsedTime);
+		if (resetToIdle) setIdleState(elapsedTime);
+		resetToIdle = true;
 		insertAndShiftPastDirectionsPressed(DirectionHeaded::NONE);
 		running = false;
 	}
@@ -30,8 +31,19 @@ void PlayerCharacter::update(float elapsedTime, vector<Character*> players, vect
 
 	if (grabbing) {
 		if (!attackDisabled) {
-			if (primaryAttackPressed) setAttackState("grab_attack_head", GRAB_ATTACK_HEAD);
-			if (secondaryAttackPressed) setAttackState("grab_attack_body", GRAB_ATTACK_BODY);
+			if (primaryAttackPressed) {
+				setAttackState("grab_attack_head", GRAB_ATTACK_HEAD);
+				disable(STUN_LENGTH);
+				resetToIdle = false;
+			}
+			if (secondaryAttackPressed) {
+				setAttackState("grab_attack_body", GRAB_ATTACK_BODY);
+				disable(STUN_LENGTH);
+				resetToIdle = false;
+			}
+			if (jumpPressed) {
+				setAttackState("throw", THROW);
+			}
 		}
 		return;
 	}
@@ -44,11 +56,18 @@ void PlayerCharacter::update(float elapsedTime, vector<Character*> players, vect
 
 	if (!attackDisabled) {
 		if (primaryAttackPressed) {
-			running ? setAttackState("run_attack", RUN_ATTACK) : setAttackState("attack", HEAD_ATTACK);
+			if (running) {
+				setAttackState("run_attack", RUN_ATTACK);
+			}
+			else {
+				setAttackState("attack", HEAD_ATTACK);
+				disable(STUN_LENGTH);
+			}
 			return;
 		}
 		else if (secondaryAttackPressed) {
 			setAttackState("attack", BODY_ATTACK);
+			disable(STUN_LENGTH);
 			return;
 		}
 	}
@@ -128,7 +147,8 @@ void PlayerCharacter::hitCharacters(float elapsedTime) {
 		spriteState == Globals::ActionType::JUMP_ATTACK ||
 		spriteState == Globals::ActionType::RUN_ATTACK ||
 		spriteState == Globals::ActionType::GRAB_ATTACK_HEAD ||
-		spriteState == Globals::ActionType::GRAB_ATTACK_BODY
+		spriteState == Globals::ActionType::GRAB_ATTACK_BODY ||
+		spriteState == Globals::ActionType::THROW
 		) &&
 		playersTouching.size() + enemiesTouching.size() > 0) {
 		vector<int> v = SpriteHolder::getDamageFramesForAction(spriteName, currentAction, currentActionType);

@@ -20,6 +20,7 @@ public:
 
 	Character();
 	void flipHorizontally();
+	bool isFacingRight();
 	void disable(int timeToDisable);
 	DirectionHeaded stringToDirection(string const& direction);
 	string directionToString(DirectionHeaded direction);
@@ -48,8 +49,11 @@ protected:
 	int const GRAB = 0;
 	int const GRAB_ATTACK_HEAD = 0;
 	int const GRAB_ATTACK_BODY = 0;
+	int const THROW = 0;
 
 	bool grabbing = false;
+	bool grabbingFromBehind = false;
+	unsigned short int grabHits = 0;
 	Character* grabbedChar = nullptr;
 
 	float baseSpeed;
@@ -104,7 +108,7 @@ protected:
 	void insertAndShiftPastDirectionsPressed(DirectionHeaded direction);
 	void setAttackState(string const& action, int attackType, bool resetFrame = true);
 	void setJumpState(float elapsedTime, bool moveLeft, bool moveRight);
-	AttackInfo generateAttackInfo(bool longStun, Character* c);
+	AttackInfo generateAttackInfo(bool longStun, Character* otherChar);
 	void render();
 	virtual void setIdleState(float elapsedTime) = 0;
 	virtual void setDirectionHeaded() = 0;
@@ -117,6 +121,7 @@ private:
 	bool handleInjureAnimation(int maxFrames, string info, float elapsedTime);
 	void handleNormalAnimation(int maxFrames);
 	void determineAndSetGrabChar(Character* otherChar);
+	void resetGrab();
 	FallDirection getDirectionOfCollision(Character* otherChar);
 };
 
