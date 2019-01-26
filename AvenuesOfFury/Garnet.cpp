@@ -32,20 +32,21 @@ Garnet::Garnet(vector<Character*> players) : EnemyCharacter(players) {
 }
 
 bool Garnet::handleAttacking(float elapsedTime) {
-	if (jumping) {
-		return jumpAttack(elapsedTime);
-	}
+	//if (jumping) {
+	//	return jumpAttack(elapsedTime);
+	//}
 
-	int choice = rand() % 1000;
-	if (choice == 0 &&
-		abs(position.x - focusChar->getCenter().x) > (0.1 * Globals::getResolution().x) &&
-		abs(position.x - focusChar->getCenter().x) < (0.2 * Globals::getResolution().x)
-		) return jumpAttack(elapsedTime);
+	//int choice = rand() % 1000;
+	//if (choice == 0 &&
+	//	abs(position.x - focusChar->getCenter().x) > (0.1 * Globals::getResolution().x) &&
+	//	abs(position.x - focusChar->getCenter().x) < (0.2 * Globals::getResolution().x)
+	//	) return jumpAttack(elapsedTime);
 
-	return attack(elapsedTime, HEAD_ATTACK);
+	//return attack(elapsedTime, HEAD_ATTACK);
+	return false;
 }
 
 void Garnet::handleMoving(float elapsedTime) {
 	//moveTowardsFocusChar(elapsedTime);
-	predictFocusCharLocation(elapsedTime);
+	//predictFocusCharLocation(elapsedTime);
 }

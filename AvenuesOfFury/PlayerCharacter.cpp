@@ -28,6 +28,14 @@ void PlayerCharacter::update(float elapsedTime, vector<Character*> players, vect
 
 	if (runAttacking) return;
 
+	if (grabbing) {
+		if (!attackDisabled) {
+			if (primaryAttackPressed) setAttackState("grab_attack_head", GRAB_ATTACK_HEAD);
+			if (secondaryAttackPressed) setAttackState("grab_attack_body", GRAB_ATTACK_BODY);
+		}
+		return;
+	}
+
 	if ((jumpPressed || jumping) && !jumpDisabled) {
 		setJumpState(elapsedTime, leftPressed, rightPressed);
 		running = false;
@@ -115,7 +123,13 @@ string PlayerCharacter::determineAttackingIntention() {
 }
 
 void PlayerCharacter::hitCharacters(float elapsedTime) {
-	if ((spriteState == Globals::ActionType::ATTACK || (spriteState == Globals::ActionType::JUMP_ATTACK) || (spriteState == Globals::ActionType::RUN_ATTACK)) &&
+	if ((
+		spriteState == Globals::ActionType::ATTACK ||
+		spriteState == Globals::ActionType::JUMP_ATTACK ||
+		spriteState == Globals::ActionType::RUN_ATTACK ||
+		spriteState == Globals::ActionType::GRAB_ATTACK_HEAD ||
+		spriteState == Globals::ActionType::GRAB_ATTACK_BODY
+		) &&
 		playersTouching.size() + enemiesTouching.size() > 0) {
 		vector<int> v = SpriteHolder::getDamageFramesForAction(spriteName, currentAction, currentActionType);
 		if (find(v.begin(), v.end(), currentFrame) != v.end()) {

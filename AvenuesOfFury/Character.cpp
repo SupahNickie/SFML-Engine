@@ -123,6 +123,7 @@ void Character::detectCollisions(vector<Character*> players, vector<Character*> 
 		if (p->uniqueID != uniqueID) {
 			if (hits(p)) {
 				playersTouching.push_back(p);
+				determineAndSetGrabChar(p);
 			}
 		}
 	});
@@ -130,6 +131,7 @@ void Character::detectCollisions(vector<Character*> players, vector<Character*> 
 		if (e->uniqueID != uniqueID) {
 			if (hits(e)) {
 				enemiesTouching.push_back(e);
+				determineAndSetGrabChar(e);
 			}
 		}
 	});
@@ -273,7 +275,9 @@ void Character::setJumpState(float elapsedTime, bool moveLeft, bool moveRight) {
 
 AttackInfo Character::generateAttackInfo(bool longStun, Character* c) {
 	AttackInfo output;
-	if (spriteState == Globals::ActionType::ATTACK) {
+	if (spriteState == Globals::ActionType::ATTACK ||
+		spriteState == Globals::ActionType::GRAB_ATTACK_HEAD ||
+		spriteState == Globals::ActionType::GRAB_ATTACK_BODY) {
 		output.action = "injure";
 		output.timeToDisable = STUN_LENGTH;
 		output.fallstatus = FallStep::NONE;
@@ -299,19 +303,18 @@ void Character::render() {
 bool Character::handleGrabbingAnimation(int maxFrames, string info, float elapsedTime) {
 	if (grabbing) {
 		if (info == "primary") {
-
 		}
 		if (info == "secondary") {
-
 		}
 		if (info == "jump") {
-
 		}
 		if (info == "primaryjump") {
-
 		}
 		if (info == "secondaryjump") {
-
+		}
+		if (currentFrame == maxFrames) {
+			setAttackState("grab", GRAB);
+			return true;
 		}
 	}
 	return false;
@@ -468,6 +471,32 @@ void Character::handleNormalAnimation(int maxFrames) {
 	}
 }
 
-Character::FallDirection Character::getDirectionOfCollision(Character* c) {
-	return c->getCenter().x > position.x ? FallDirection::RIGHT : FallDirection::LEFT;
+void Character::determineAndSetGrabChar(Character* otherChar) {
+	if (onSameVerticalPlane(otherChar->getCenter().y)) {
+		bool onRight = otherChar->getCenter().x > position.x ? true : false;
+		if (onRight && (
+			directionHeaded == DirectionHeaded::UR ||
+			directionHeaded == DirectionHeaded::R ||
+			directionHeaded == DirectionHeaded::DR
+			)) {
+			grabbedChar = otherChar;
+			grabbing = true;
+			otherChar->disable(1000);
+			setAttackState("grab", GRAB);
+		}
+		if (!onRight && (
+			directionHeaded == DirectionHeaded::UL ||
+			directionHeaded == DirectionHeaded::L ||
+			directionHeaded == DirectionHeaded::DL
+			)) {
+			grabbedChar = otherChar;
+			grabbing = true;
+			otherChar->disable(1000);
+			setAttackState("grab", GRAB);
+		}
+	}
+}
+
+Character::FallDirection Character::getDirectionOfCollision(Character* otherChar) {
+	return otherChar->getCenter().x > position.x ? FallDirection::RIGHT : FallDirection::LEFT;
 }

@@ -45,8 +45,12 @@ protected:
 	int const RUN_ATTACK_LAND = 0;
 	int const FALL = 0;
 	int const RISE = 0;
+	int const GRAB = 0;
+	int const GRAB_ATTACK_HEAD = 0;
+	int const GRAB_ATTACK_BODY = 0;
 
 	bool grabbing = false;
+	Character* grabbedChar = nullptr;
 
 	float baseSpeed;
 	bool running = false;
@@ -112,7 +116,8 @@ private:
 	bool handleFallingAnimation(int maxFrames, string info, float elapsedTime);
 	bool handleInjureAnimation(int maxFrames, string info, float elapsedTime);
 	void handleNormalAnimation(int maxFrames);
-	FallDirection getDirectionOfCollision(Character* c);
+	void determineAndSetGrabChar(Character* otherChar);
+	FallDirection getDirectionOfCollision(Character* otherChar);
 };
 
 struct CharacterVelocity {
