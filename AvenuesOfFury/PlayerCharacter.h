@@ -25,6 +25,8 @@ protected:
 	bool updateHandled = false;
 	bool resetToIdle = true;
 	int timeSinceLastDirectionPress = 0;
+
+	virtual void handleSpecialAttack() = 0;
 private:
 	void setDirectionHeaded();
 	string determineAttackingIntention();

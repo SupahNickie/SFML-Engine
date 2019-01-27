@@ -39,3 +39,9 @@ void Skate::handleInput() {
 	Keyboard::isKeyPressed(Keyboard::T) ? specialAttackPressed = true : specialAttackPressed = false;
 	Keyboard::isKeyPressed(Keyboard::Space) ? jumpPressed = true : jumpPressed = false;
 }
+
+// Handle any special logic surrounding the special attack animation (e.g. jumping, zooming around the screen, etc.)
+void Skate::handleSpecialAttack() {
+	setAttackState("attack", SPECIAL_ATTACK);
+	disable(MS_PER_FRAME * SpriteHolder::getMaxFramesForAction(spriteName, "attack", SPECIAL_ATTACK));
+}

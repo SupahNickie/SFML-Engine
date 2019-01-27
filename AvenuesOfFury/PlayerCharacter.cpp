@@ -17,8 +17,7 @@ void PlayerCharacter::update(float elapsedTime, vector<Character*> players, vect
 	render();
 
 	if (specialAttackPressed) {
-		setAttackState("attack", SPECIAL_ATTACK);
-		disable(MS_PER_FRAME * SpriteHolder::getMaxFramesForAction(spriteName, "attack", SPECIAL_ATTACK));
+		handleSpecialAttack();
 		return;
 	}
 

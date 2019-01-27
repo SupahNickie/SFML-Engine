@@ -5,4 +5,6 @@ class Link : public PlayerCharacter {
 public:
 	Link();
 	void handleInput();
+protected:
+	void handleSpecialAttack();
 };

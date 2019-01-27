@@ -37,3 +37,8 @@ void Link::handleInput() {
 	Keyboard::isKeyPressed(Keyboard::RControl) ? primaryAttackPressed = true : primaryAttackPressed = false;
 	Keyboard::isKeyPressed(Keyboard::RShift) ? secondaryAttackPressed = true : secondaryAttackPressed = false;
 }
+
+// Handle any special logic surrounding the special attack animation (e.g. jumping, zooming around the screen, etc.)
+void Link::handleSpecialAttack() {
+	return;
+}
