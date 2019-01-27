@@ -27,6 +27,7 @@ public:
 		GRAB_ATTACK_HEAD,
 		GRAB_ATTACK_BODY,
 		THROW,
+		HELD,
 		NONE
 	};
 	unsigned int idSerial;

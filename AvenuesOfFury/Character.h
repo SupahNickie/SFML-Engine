@@ -22,6 +22,7 @@ public:
 	void flipHorizontally();
 	bool isFacingRight();
 	void disable(int timeToDisable);
+	void hold(bool state);
 	DirectionHeaded stringToDirection(string const& direction);
 	string directionToString(DirectionHeaded direction);
 	bool hits(Character* otherChar);
@@ -35,6 +36,7 @@ protected:
 	int const RUN = 1;
 	int const HEAD_ATTACK = 0;
 	int const BODY_ATTACK = 1;
+	int const SPECIAL_ATTACK = 2;
 	int const NORMAL_IDLE = 0;
 	int const INJURE_HEAD = 0;
 	int const INJURE_BODY = 1;
@@ -50,7 +52,9 @@ protected:
 	int const GRAB_ATTACK_HEAD = 0;
 	int const GRAB_ATTACK_BODY = 0;
 	int const THROW = 0;
+	int const HELD = 0;
 
+	bool held = false;
 	bool grabbing = false;
 	bool grabbingFromBehind = false;
 	unsigned short int grabHits = 0;
@@ -114,6 +118,7 @@ protected:
 	virtual void setDirectionHeaded() = 0;
 	virtual void handleRunAttackHorizontal(float elapsedTime) = 0;
 private:
+	bool handleHeldAnimation(int maxFrames, string info, float elapsedTime);
 	bool handleGrabbingAnimation(int maxFrames, string info, float elapsedTime);
 	bool handleRunningAnimation(int maxFrames, string info, float elapsedTime);
 	bool handleJumpingAnimation(int maxFrames, string info, float elapsedTime);

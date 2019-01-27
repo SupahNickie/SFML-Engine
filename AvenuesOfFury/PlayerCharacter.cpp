@@ -16,6 +16,12 @@ void PlayerCharacter::update(float elapsedTime, vector<Character*> players, vect
 	sprite.setPosition(position);
 	render();
 
+	if (specialAttackPressed) {
+		setAttackState("attack", SPECIAL_ATTACK);
+		disable(MS_PER_FRAME * SpriteHolder::getMaxFramesForAction(spriteName, "attack", SPECIAL_ATTACK));
+		return;
+	}
+
 	if (disabled) {
 		if (timeSinceLastAction <= timeToBeDisabled) return;
 		timeSinceLastAction = 0;
@@ -27,6 +33,7 @@ void PlayerCharacter::update(float elapsedTime, vector<Character*> players, vect
 		running = false;
 	}
 
+	if (held) return;
 	if (runAttacking) return;
 
 	if (grabbing) {
@@ -34,15 +41,21 @@ void PlayerCharacter::update(float elapsedTime, vector<Character*> players, vect
 			if (primaryAttackPressed) {
 				setAttackState("grab_attack_head", GRAB_ATTACK_HEAD);
 				disable(STUN_LENGTH);
+				directionHeaded = DirectionHeaded::NONE;
+				grabbedChar->hold(false);
 				resetToIdle = false;
 			}
 			if (secondaryAttackPressed) {
 				setAttackState("grab_attack_body", GRAB_ATTACK_BODY);
 				disable(STUN_LENGTH);
+				directionHeaded = DirectionHeaded::NONE;
+				grabbedChar->hold(false);
 				resetToIdle = false;
 			}
 			if (jumpPressed) {
 				setAttackState("throw", THROW);
+				directionHeaded = DirectionHeaded::NONE;
+				grabbedChar->hold(false);
 			}
 		}
 		return;
@@ -61,13 +74,15 @@ void PlayerCharacter::update(float elapsedTime, vector<Character*> players, vect
 			}
 			else {
 				setAttackState("attack", HEAD_ATTACK);
-				disable(STUN_LENGTH);
+				disable(MS_PER_FRAME * 2 * SpriteHolder::getMaxFramesForAction(spriteName, "attack", HEAD_ATTACK));
+				directionHeaded = DirectionHeaded::NONE;
 			}
 			return;
 		}
 		else if (secondaryAttackPressed) {
 			setAttackState("attack", BODY_ATTACK);
-			disable(STUN_LENGTH);
+			disable(MS_PER_FRAME * 2 * SpriteHolder::getMaxFramesForAction(spriteName, "attack", BODY_ATTACK));
+			directionHeaded = DirectionHeaded::NONE;
 			return;
 		}
 	}

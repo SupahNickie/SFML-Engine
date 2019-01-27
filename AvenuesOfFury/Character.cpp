@@ -50,6 +50,19 @@ void Character::disable(int timeToDisable) {
 	timeSinceLastAction = 0;
 }
 
+void Character::hold(bool state) {
+	if (state) {
+		spriteState = Globals::ActionType::HELD;
+		currentAction = "held";
+		currentActionType = HELD;
+		resetFrameState();
+		held = true;
+	}
+	else {
+		held = false;
+	}
+}
+
 Character::DirectionHeaded Character::stringToDirection(string const& direction) {
 	if (direction == "U") return DirectionHeaded::U;
 	if (direction == "UR") return DirectionHeaded::UR;
@@ -139,7 +152,12 @@ void Character::detectCollisions(vector<Character*> players, vector<Character*> 
 			}
 		}
 	});
-	if (playersTouching.empty() && enemiesTouching.empty()) grabbing = false;
+	if (playersTouching.empty() && enemiesTouching.empty()) {
+		if (grabbedChar != nullptr) {
+			grabbedChar->hold(false);
+		}
+		grabbing = false;
+	}
 }
 
 bool Character::onSameVerticalPlane(float targetY) {
@@ -165,6 +183,7 @@ void Character::updateFrameState(float elapsedTime, string info) {
 	timeSinceLastFrame += elapsedTime * 1000;
 	if (timeSinceLastFrame > MS_PER_FRAME) {
 		int maxFrames = SpriteHolder::getMaxFramesForAction(spriteName, currentAction, currentActionType);
+		if (handleHeldAnimation(maxFrames, info, elapsedTime)) return;
 		if (handleGrabbingAnimation(maxFrames, info, elapsedTime)) return;
 		if (handleRunningAnimation(maxFrames, info, elapsedTime)) return;
 		if (handleJumpingAnimation(maxFrames, info, elapsedTime)) return;
@@ -286,6 +305,7 @@ void Character::setJumpState(float elapsedTime, bool moveLeft, bool moveRight) {
 AttackInfo Character::generateAttackInfo(bool longStun, Character* otherChar) {
 	AttackInfo output;
 	if (grabHits > 2 ||
+		(spriteState == Globals::ActionType::ATTACK && currentActionType == SPECIAL_ATTACK) ||
 		spriteState == Globals::ActionType::JUMP_ATTACK ||
 		spriteState == Globals::ActionType::RUN_ATTACK ||
 		spriteState == Globals::ActionType::THROW
@@ -295,6 +315,7 @@ AttackInfo Character::generateAttackInfo(bool longStun, Character* otherChar) {
 		output.fallstatus = FallStep::START_FALL;
 		output.fallY = otherChar->getCenter().y + (otherChar->getPosition().height / 4);
 		output.fallDirection = getDirectionOfCollision(otherChar);
+		output.injuryType = FALL;
 	}
 	else if (spriteState == Globals::ActionType::ATTACK ||
 		spriteState == Globals::ActionType::GRAB_ATTACK_HEAD ||
@@ -305,14 +326,19 @@ AttackInfo Character::generateAttackInfo(bool longStun, Character* otherChar) {
 		output.fallstatus = FallStep::NONE;
 		output.fallY = 0.0f;
 		output.fallDirection = FallDirection::NONE;
+		output.injuryType = currentActionType;
 	}
-	output.injuryType = currentActionType;
 	output.actionType = Globals::actionStringToEnum(output.action);
 	return output;
 }
 
 void Character::render() {
 	SpriteHolder::setSprite(sprite, spriteName, currentAction, currentActionType, currentFrame);
+}
+
+bool Character::handleHeldAnimation(int maxFrames, string info, float elapsedTime) {
+	if (held) return true;
+	return false;
 }
 
 bool Character::handleGrabbingAnimation(int maxFrames, string info, float elapsedTime) {
@@ -325,6 +351,7 @@ bool Character::handleGrabbingAnimation(int maxFrames, string info, float elapse
 				return false;
 			}
 			setAttackState("grab", GRAB);
+			grabbedChar->hold(true);
 			return true;
 		}
 	}
@@ -493,7 +520,7 @@ void Character::determineAndSetGrabChar(Character* otherChar) {
 			grabbedChar = otherChar;
 			grabbing = true;
 			grabbingFromBehind = otherChar->isFacingRight();
-			otherChar->disable(1000);
+			otherChar->hold(true);
 			setAttackState("grab", GRAB);
 		}
 		if (!onRight && (
@@ -504,7 +531,7 @@ void Character::determineAndSetGrabChar(Character* otherChar) {
 			grabbedChar = otherChar;
 			grabbing = true;
 			grabbingFromBehind = !otherChar->isFacingRight();
-			otherChar->disable(1000);
+			otherChar->hold(true);
 			setAttackState("grab", GRAB);
 		}
 	}

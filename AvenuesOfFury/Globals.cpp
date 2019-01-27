@@ -1,3 +1,4 @@
+
 #include "pch.h"
 #include <assert.h>
 #include "Globals.h"
@@ -29,6 +30,7 @@ Globals::ActionType Globals::actionStringToEnum(string const& action) {
 	if (action == "grab_attack_head") return Globals::ActionType::GRAB_ATTACK_HEAD;
 	if (action == "grab_attack_body") return Globals::ActionType::GRAB_ATTACK_BODY;
 	if (action == "throw") return Globals::ActionType::THROW;
+	if (action == "held") return Globals::ActionType::HELD;
 	return Globals::ActionType::NONE;
 }
 

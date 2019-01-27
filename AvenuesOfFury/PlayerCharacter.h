@@ -20,6 +20,7 @@ protected:
 	bool rightPressed;
 	bool primaryAttackPressed;
 	bool secondaryAttackPressed;
+	bool specialAttackPressed;
 	bool jumpPressed;
 	bool updateHandled = false;
 	bool resetToIdle = true;

@@ -8,8 +8,7 @@ Skate::Skate() {
 	baseSpeedY = -0.00275f * Globals::getResolution().x;
 	texturePath = "graphics/characters/skate_sheet.png";
 	sprite = Sprite(TextureHolder::getTexture(texturePath));
-	attackPower = vector<int>(1);
-	attackPower[0] = 60;
+	attackPower = vector<int>{ 60, 60, 60 };
 	primaryAttackPressed = false;
 	secondaryAttackPressed = false;
 	spriteState = Globals::ActionType::IDLE;
@@ -37,5 +36,6 @@ void Skate::handleInput() {
 	Keyboard::isKeyPressed(Keyboard::D) ? rightPressed = true : rightPressed = false;
 	Keyboard::isKeyPressed(Keyboard::E) ? primaryAttackPressed = true : primaryAttackPressed = false;
 	Keyboard::isKeyPressed(Keyboard::R) ? secondaryAttackPressed = true : secondaryAttackPressed = false;
+	Keyboard::isKeyPressed(Keyboard::T) ? specialAttackPressed = true : specialAttackPressed = false;
 	Keyboard::isKeyPressed(Keyboard::Space) ? jumpPressed = true : jumpPressed = false;
 }

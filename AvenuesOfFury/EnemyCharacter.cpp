@@ -275,6 +275,7 @@ void EnemyCharacter::resetStateAfterFinishingAction() {
 }
 
 bool EnemyCharacter::handleDisabledState(float elapsedTime) {
+	if (held) return true;
 	if (disabled) {
 		timeSinceLastAction += elapsedTime * 1000;
 		if (timeSinceLastAction <= timeToBeDisabled) return true;
