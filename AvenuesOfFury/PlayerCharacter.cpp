@@ -39,14 +39,14 @@ void PlayerCharacter::update(float elapsedTime, vector<Character*> players, vect
 		if (!attackDisabled) {
 			if (primaryAttackPressed) {
 				setAttackState("grab_attack_head", GRAB_ATTACK_HEAD);
-				disable(STUN_LENGTH);
+				disable(MS_PER_FRAME * SpriteHolder::getMaxFramesForAction(spriteName, "grab_attack_head", GRAB_ATTACK_HEAD));
 				directionHeaded = DirectionHeaded::NONE;
 				grabbedChar->hold(false);
 				resetToIdle = false;
 			}
 			if (secondaryAttackPressed) {
 				setAttackState("grab_attack_body", GRAB_ATTACK_BODY);
-				disable(STUN_LENGTH);
+				disable(MS_PER_FRAME * SpriteHolder::getMaxFramesForAction(spriteName, "grab_attack_body", GRAB_ATTACK_BODY));
 				directionHeaded = DirectionHeaded::NONE;
 				grabbedChar->hold(false);
 				resetToIdle = false;

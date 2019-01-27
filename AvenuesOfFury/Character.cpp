@@ -152,12 +152,7 @@ void Character::detectCollisions(vector<Character*> players, vector<Character*> 
 			}
 		}
 	});
-	if (playersTouching.empty() && enemiesTouching.empty()) {
-		if (grabbedChar != nullptr) {
-			grabbedChar->hold(false);
-		}
-		grabbing = false;
-	}
+	if (playersTouching.empty() && enemiesTouching.empty()) resetGrab();
 }
 
 bool Character::onSameVerticalPlane(float targetY) {
@@ -350,8 +345,10 @@ bool Character::handleGrabbingAnimation(int maxFrames, string info, float elapse
 				resetGrab();
 				return false;
 			}
-			setAttackState("grab", GRAB);
-			grabbedChar->hold(true);
+			if (currentAction != "grab") {
+				setAttackState("grab", GRAB);
+				grabbedChar->hold(true);
+			}
 			return true;
 		}
 	}
@@ -540,8 +537,11 @@ void Character::determineAndSetGrabChar(Character* otherChar) {
 void Character::resetGrab() {
 	grabHits = 0;
 	grabbing = false;
-	grabbedChar = nullptr;
 	grabbingFromBehind = false;
+	if (grabbedChar != nullptr) {
+		grabbedChar->hold(false);
+		grabbedChar = nullptr;
+	}
 }
 
 Character::FallDirection Character::getDirectionOfCollision(Character* otherChar) {
