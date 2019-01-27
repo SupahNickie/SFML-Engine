@@ -16,7 +16,7 @@ void PlayerCharacter::update(float elapsedTime, vector<Character*> players, vect
 	sprite.setPosition(position);
 	render();
 
-	if (specialAttackPressed) {
+	if (specialAttackPressed && !grabbing) {
 		handleSpecialAttack();
 		return;
 	}
@@ -53,7 +53,7 @@ void PlayerCharacter::update(float elapsedTime, vector<Character*> players, vect
 			}
 			if (jumpPressed) {
 				setAttackState("throw", THROW);
-				directionHeaded = DirectionHeaded::NONE;
+				setDirectionHeaded();
 				grabbedChar->hold(false);
 			}
 		}
@@ -159,10 +159,7 @@ void PlayerCharacter::hitCharacters(float elapsedTime) {
 	if ((
 		spriteState == Globals::ActionType::ATTACK ||
 		spriteState == Globals::ActionType::JUMP_ATTACK ||
-		spriteState == Globals::ActionType::RUN_ATTACK ||
-		spriteState == Globals::ActionType::GRAB_ATTACK_HEAD ||
-		spriteState == Globals::ActionType::GRAB_ATTACK_BODY ||
-		spriteState == Globals::ActionType::THROW
+		spriteState == Globals::ActionType::RUN_ATTACK
 		) &&
 		playersTouching.size() + enemiesTouching.size() > 0) {
 		vector<int> v = SpriteHolder::getDamageFramesForAction(spriteName, currentAction, currentActionType);
@@ -184,6 +181,17 @@ void PlayerCharacter::hitCharacters(float elapsedTime) {
 					p->disable(info.timeToDisable);
 				}
 			});
+		}
+	}
+	if (spriteState == Globals::ActionType::THROW ||
+		spriteState == Globals::ActionType::GRAB_ATTACK_HEAD ||
+		spriteState == Globals::ActionType::GRAB_ATTACK_BODY) {
+		vector<int> v = SpriteHolder::getDamageFramesForAction(spriteName, currentAction, currentActionType);
+		if (find(v.begin(), v.end(), currentFrame) != v.end()) {
+			AttackInfo info = generateAttackInfo(true, grabbedChar);
+			grabbedChar->registerHit(attackPower[currentActionType], spriteName, currentFrame, info);
+			grabbedChar->disable(info.timeToDisable);
+			grabbedChar->focusChar = this;
 		}
 	}
 }

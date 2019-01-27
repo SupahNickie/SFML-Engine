@@ -44,6 +44,14 @@ bool Character::isFacingRight() {
 	return facingRight;
 }
 
+bool Character::isInvincible() {
+	return (
+		spriteState == Globals::ActionType::FALL ||
+		spriteState == Globals::ActionType::RISE ||
+		spriteState == Globals::ActionType::INJURE
+	);
+}
+
 void Character::disable(int timeToDisable) {
 	disabled = true;
 	timeToBeDisabled = timeToDisable;
@@ -320,7 +328,7 @@ AttackInfo Character::generateAttackInfo(bool longStun, Character* otherChar) {
 		output.timeToDisable = STUN_LENGTH;
 		output.fallstatus = FallStep::NONE;
 		output.fallY = 0.0f;
-		output.fallDirection = FallDirection::NONE;
+		output.fallDirection = DirectionHeaded::NONE;
 		output.injuryType = currentActionType;
 	}
 	output.actionType = Globals::actionStringToEnum(output.action);
@@ -442,8 +450,8 @@ bool Character::handleFallingAnimation(int maxFrames, string info, float elapsed
 		}
 
 		if (fallstatus == FallStep::KNOCK_DOWN) {
-			if (fallDirection == FallDirection::LEFT) position.x -= 3 * baseSpeed * elapsedTime;
-			if (fallDirection == FallDirection::RIGHT) position.x += 3 * baseSpeed * elapsedTime;
+			if (fallDirection == DirectionHeaded::L) position.x -= 3 * baseSpeed * elapsedTime;
+			if (fallDirection == DirectionHeaded::R) position.x += 3 * baseSpeed * elapsedTime;
 		}
 
 		speedY += (gravity * (elapsedTime * 1000));
@@ -507,7 +515,10 @@ void Character::handleNormalAnimation(int maxFrames) {
 }
 
 void Character::determineAndSetGrabChar(Character* otherChar) {
-	if (onSameVerticalPlane(otherChar->getCenter().y)) {
+	if (onSameVerticalPlane(otherChar->getCenter().y) &&
+		spriteState == Globals::ActionType::MOVE &&
+		!otherChar->isInvincible()
+		) {
 		bool onRight = otherChar->getCenter().x > position.x ? true : false;
 		if (onRight && (
 			directionHeaded == DirectionHeaded::UR ||
@@ -544,6 +555,12 @@ void Character::resetGrab() {
 	}
 }
 
-Character::FallDirection Character::getDirectionOfCollision(Character* otherChar) {
-	return otherChar->getCenter().x > position.x ? FallDirection::RIGHT : FallDirection::LEFT;
+Character::DirectionHeaded Character::getDirectionOfCollision(Character* otherChar) {
+	if (spriteState == Globals::ActionType::THROW) {
+
+		cout << "DIRECTION THROWING: " << directionToString(directionHeaded) << "\n";
+	}
+	else {
+		return otherChar->getCenter().x > position.x ? DirectionHeaded::R : DirectionHeaded::L;
+	}
 }

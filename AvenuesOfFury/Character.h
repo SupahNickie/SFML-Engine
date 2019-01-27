@@ -12,7 +12,6 @@ class Character : public Graphic {
 public:
 	enum class DirectionHeaded { U, UR, R, DR, D, DL, L, UL, NONE };
 	enum class FallStep { START_FALL, KNOCK_DOWN, BOUNCE_UP, NONE };
-	enum class FallDirection { LEFT, RIGHT, NONE };
 	DirectionHeaded directionHeaded = DirectionHeaded::NONE;
 	float speed;
 	unsigned int uniqueID;
@@ -21,6 +20,7 @@ public:
 	Character();
 	void flipHorizontally();
 	bool isFacingRight();
+	bool isInvincible();
 	void disable(int timeToDisable);
 	void hold(bool state);
 	DirectionHeaded stringToDirection(string const& direction);
@@ -76,7 +76,7 @@ protected:
 	float baseSpeedY = 0.0f; // Adjust as per needed to get jump frame timing right
 	float const gravity = 0.07f * Globals::getScalingFactor();
 	FallStep fallstatus = FallStep::NONE;
-	FallDirection fallDirection = FallDirection::NONE;
+	DirectionHeaded fallDirection = DirectionHeaded::NONE;
 
 	int health = 0;
 	vector<int> attackPower;
@@ -127,7 +127,7 @@ private:
 	void handleNormalAnimation(int maxFrames);
 	void determineAndSetGrabChar(Character* otherChar);
 	void resetGrab();
-	FallDirection getDirectionOfCollision(Character* otherChar);
+	DirectionHeaded getDirectionOfCollision(Character* otherChar);
 };
 
 struct CharacterVelocity {
@@ -148,5 +148,5 @@ struct AttackInfo {
 	unsigned int timeToDisable;
 	Character::FallStep fallstatus;
 	float fallY;
-	Character::FallDirection fallDirection;
+	Character::DirectionHeaded fallDirection;
 };
