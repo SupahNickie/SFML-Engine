@@ -67,7 +67,9 @@ protected:
 
 	bool jumping = false;
 	bool jumpDisabled = false;
+	float previousY = 0.0f;
 	float prejumpY = 0.0f;
+	bool pastZenith = false;
 
 	int timeToBeDisabled = 0;
 	bool disabled = false;

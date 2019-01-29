@@ -165,11 +165,11 @@ void Character::detectCollisions(vector<Character*> players, vector<Character*> 
 
 bool Character::onSameVerticalPlane(float targetY) {
 	if (prejumpY != 0.0f) {
-		return (abs(targetY - prejumpY) < (.015625f * Globals::getResolution().x) &&
+		return (abs(targetY - prejumpY) < (.03f * Globals::getResolution().x) &&
 			abs(targetY - position.y) < (.062500f * Globals::getResolution().x));
 	}
 	else {
-		return abs(targetY - position.y) < (.015625f * Globals::getResolution().x);
+		return abs(targetY - position.y) < (.03f * Globals::getResolution().x);
 	}
 }
 
@@ -444,25 +444,38 @@ bool Character::handleJumpingAnimation(int maxFrames, string info, float elapsed
 bool Character::handleFallingAnimation(int maxFrames, string info, float elapsedTime) {
 	if (fallstatus != FallStep::NONE) {
 		if (fallstatus == FallStep::START_FALL) {
-			speedY = -0.0042f * Globals::getResolution().x;
+			speedY = -0.004f * Globals::getResolution().y;
 			fallstatus = FallStep::KNOCK_DOWN;
-			position.y -= 0.1f;
+			if (fallDirection == DirectionHeaded::UR || fallDirection == DirectionHeaded::UL || fallDirection == DirectionHeaded::U) {
+				fallY = position.y - (0.3f * Globals::getResolution().y);
+				speedY = -0.010f * Globals::getResolution().y;
+			}
+			if (fallDirection == DirectionHeaded::DR || fallDirection == DirectionHeaded::DL || fallDirection == DirectionHeaded::D) {
+				fallY = position.y + (0.3f * Globals::getResolution().y);
+			}
+			if (fallDirection == DirectionHeaded::L || fallDirection == DirectionHeaded::R) {
+				speedY = -0.010f * Globals::getResolution().y;
+			}
+			previousY = position.y;
+			pastZenith = false;
 		}
 
 		if (fallstatus == FallStep::KNOCK_DOWN) {
-			if (fallDirection == DirectionHeaded::L) position.x -= 3 * baseSpeed * elapsedTime;
-			if (fallDirection == DirectionHeaded::R) position.x += 3 * baseSpeed * elapsedTime;
+			if (fallDirection == DirectionHeaded::L || fallDirection == DirectionHeaded::UL || fallDirection == DirectionHeaded::DL) position.x -= 4 * baseSpeed * elapsedTime;
+			if (fallDirection == DirectionHeaded::R || fallDirection == DirectionHeaded::UR || fallDirection == DirectionHeaded::DR) position.x += 4 * baseSpeed * elapsedTime;
 		}
 
 		speedY += (gravity * (elapsedTime * 1000));
-		if (fallY > position.y) {
+		if (!pastZenith || fallY > position.y) {
+			previousY = position.y;
 			position.y += speedY;
+			if (previousY < position.y) pastZenith = true;
 			return true;
 		}
 
 		if (currentFrame == maxFrames) {
 			if (fallstatus == FallStep::KNOCK_DOWN) {
-				if (fallY >= position.y) return true;
+				if (fallY > position.y) return true;
 				resetFrameState();
 				fallstatus = FallStep::BOUNCE_UP;
 			}
@@ -556,11 +569,6 @@ void Character::resetGrab() {
 }
 
 Character::DirectionHeaded Character::getDirectionOfCollision(Character* otherChar) {
-	if (spriteState == Globals::ActionType::THROW) {
-
-		cout << "DIRECTION THROWING: " << directionToString(directionHeaded) << "\n";
-	}
-	else {
-		return otherChar->getCenter().x > position.x ? DirectionHeaded::R : DirectionHeaded::L;
-	}
+	if (spriteState == Globals::ActionType::THROW) return directionHeaded;
+	return otherChar->getCenter().x > position.x ? DirectionHeaded::R : DirectionHeaded::L;
 }
