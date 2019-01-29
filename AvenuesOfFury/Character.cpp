@@ -530,6 +530,7 @@ void Character::handleNormalAnimation(int maxFrames) {
 void Character::determineAndSetGrabChar(Character* otherChar) {
 	if (onSameVerticalPlane(otherChar->getCenter().y) &&
 		spriteState == Globals::ActionType::MOVE &&
+		abs((otherChar->getCenter().x - position.x) < 0.01f * Globals::getResolution().x) &&
 		!otherChar->isInvincible()
 		) {
 		bool onRight = otherChar->getCenter().x > position.x ? true : false;
