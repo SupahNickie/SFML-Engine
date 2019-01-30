@@ -65,7 +65,7 @@ void Character::hold(bool state, Character* attacker) {
 		currentActionType = HELD;
 		resetFrameState();
 		held = true;
-		heldBy = attacker;
+		attackedBy = attacker;
 	}
 	else {
 		held = false;
@@ -488,7 +488,7 @@ bool Character::handleFallingAnimation(int maxFrames, string info, float elapsed
 				currentAction = "rise";
 				currentActionType = RISE;
 				fallstatus = FallStep::NONE;
-				heldBy = nullptr;
+				attackedBy = nullptr;
 				resetFrameState(false);
 				return true;
 			}

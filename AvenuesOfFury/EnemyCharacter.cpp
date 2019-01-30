@@ -276,9 +276,9 @@ void EnemyCharacter::resetStateAfterFinishingAction() {
 }
 
 void EnemyCharacter::handleFallDamage(float elapsedTime) {
-	if (heldBy != nullptr) {
+	if (attackedBy != nullptr) {
 		auto it = remove_if(playersTouching.begin(), playersTouching.end(), [&](Character* p) {
-			return p->uniqueID == heldBy->uniqueID;
+			return p->uniqueID == attackedBy->uniqueID;
 		});
 		playersTouching.erase(it, playersTouching.end());
 		calculateAttack(elapsedTime);

@@ -54,7 +54,7 @@ protected:
 	int const THROW = 0;
 	int const HELD = 0;
 
-	Character* heldBy = nullptr;
+	Character* attackedBy = nullptr;
 	bool held = false;
 	bool grabbing = false;
 	bool grabbingFromBehind = false;

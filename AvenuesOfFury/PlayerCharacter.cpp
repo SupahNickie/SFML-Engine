@@ -11,7 +11,7 @@ void PlayerCharacter::update(float elapsedTime, vector<Character*> players, vect
 	advanceHitRecords(elapsedTime);
 	detectCollisions(players, enemies);
 	updatePastPositions(elapsedTime);
-	hitCharacters(elapsedTime);
+	attackedBy == nullptr ? hitCharacters(elapsedTime) : handleFallDamage(elapsedTime);
 	updateFrameState(elapsedTime, determineAttackingIntention());
 	sprite.setPosition(position);
 	render();
@@ -159,8 +159,7 @@ void PlayerCharacter::hitCharacters(float elapsedTime) {
 	if ((
 		spriteState == Globals::ActionType::ATTACK ||
 		spriteState == Globals::ActionType::JUMP_ATTACK ||
-		spriteState == Globals::ActionType::RUN_ATTACK ||
-		spriteState == Globals::ActionType::FALL
+		spriteState == Globals::ActionType::RUN_ATTACK
 		) &&
 		playersTouching.size() + enemiesTouching.size() > 0) {
 		vector<int> v = SpriteHolder::getDamageFramesForAction(spriteName, currentAction, currentActionType);
@@ -183,6 +182,7 @@ void PlayerCharacter::hitCharacters(float elapsedTime) {
 				}
 			});
 		}
+		return;
 	}
 	if (spriteState == Globals::ActionType::THROW ||
 		spriteState == Globals::ActionType::GRAB_ATTACK_HEAD ||
@@ -194,6 +194,7 @@ void PlayerCharacter::hitCharacters(float elapsedTime) {
 			grabbedChar->disable(info.timeToDisable);
 			grabbedChar->focusChar = this;
 		}
+		return;
 	}
 }
 
@@ -237,10 +238,8 @@ void PlayerCharacter::handleRunAttackHorizontal(float elapsedTime) {
 }
 
 void PlayerCharacter::handleFallDamage(float elapsedTime) {
-	if (heldBy != nullptr) {
-		auto it = remove_if(enemiesTouching.begin(), enemiesTouching.end(), [&](Character* e) {
-			return e->uniqueID == heldBy->uniqueID;
-		});
-		hitCharacters(elapsedTime);
-	}
+	auto it = remove_if(enemiesTouching.begin(), enemiesTouching.end(), [&](Character* e) {
+		return e->uniqueID == attackedBy->uniqueID;
+	});
+	hitCharacters(elapsedTime);
 }

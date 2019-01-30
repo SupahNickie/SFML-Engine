@@ -9,8 +9,8 @@ Engine::Engine() {
 	g.setResolution(VideoMode::getDesktopMode().width / 2.0f, VideoMode::getDesktopMode().height / 2.0f);
 	window.create(VideoMode(g.getResolution().x, g.getResolution().y), "Avenues of Fury", Style::Resize);
 
-//	g.setResolution(VideoMode::getDesktopMode().width, VideoMode::getDesktopMode().height);
-//	window.create(VideoMode(g.getResolution().x, g.getResolution().y), "Avenues of Fury", Style::Fullscreen);
+	//g.setResolution(VideoMode::getDesktopMode().width, VideoMode::getDesktopMode().height);
+	//window.create(VideoMode(g.getResolution().x, g.getResolution().y), "Avenues of Fury", Style::Fullscreen);
 
 	mainView.setSize(g.getResolution());
 }
