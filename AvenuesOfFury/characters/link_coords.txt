@@ -28,7 +28,7 @@ injure,1
 frames,1,0,;
 692,460,164,172
 fall,1
-frames,1,0,;
+frames,1,0,0,;
 692,460,164,172
 rise,1
 frames,1,0,;
