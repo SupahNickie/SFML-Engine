@@ -237,5 +237,8 @@ void PlayerCharacter::handleRunAttackHorizontal(float elapsedTime) {
 }
 
 void PlayerCharacter::handleFallDamage(float elapsedTime) {
-	// todo: implement fall damage state
+	auto it = remove_if(enemiesTouching.begin(), enemiesTouching.end(), [&](Character* e) {
+		return (heldBy != nullptr) && (e->uniqueID == heldBy->uniqueID);
+	});
+	hitCharacters(elapsedTime);
 }
