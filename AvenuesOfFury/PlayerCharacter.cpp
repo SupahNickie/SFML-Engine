@@ -237,8 +237,10 @@ void PlayerCharacter::handleRunAttackHorizontal(float elapsedTime) {
 }
 
 void PlayerCharacter::handleFallDamage(float elapsedTime) {
-	auto it = remove_if(enemiesTouching.begin(), enemiesTouching.end(), [&](Character* e) {
-		return (heldBy != nullptr) && (e->uniqueID == heldBy->uniqueID);
-	});
-	hitCharacters(elapsedTime);
+	if (heldBy != nullptr) {
+		auto it = remove_if(enemiesTouching.begin(), enemiesTouching.end(), [&](Character* e) {
+			return e->uniqueID == heldBy->uniqueID;
+		});
+		hitCharacters(elapsedTime);
+	}
 }

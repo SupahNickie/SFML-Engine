@@ -276,11 +276,13 @@ void EnemyCharacter::resetStateAfterFinishingAction() {
 }
 
 void EnemyCharacter::handleFallDamage(float elapsedTime) {
-	auto it = remove_if(playersTouching.begin(), playersTouching.end(), [&](Character* p) {
-		return (heldBy != nullptr) && (p->uniqueID == heldBy->uniqueID);
-	});
-	playersTouching.erase(it, playersTouching.end());
-	calculateAttack(elapsedTime);
+	if (heldBy != nullptr) {
+		auto it = remove_if(playersTouching.begin(), playersTouching.end(), [&](Character* p) {
+			return p->uniqueID == heldBy->uniqueID;
+		});
+		playersTouching.erase(it, playersTouching.end());
+		calculateAttack(elapsedTime);
+	}
 }
 
 bool EnemyCharacter::handleDisabledState(float elapsedTime) {
