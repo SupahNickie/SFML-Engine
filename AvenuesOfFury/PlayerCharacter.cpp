@@ -159,7 +159,8 @@ void PlayerCharacter::hitCharacters(float elapsedTime) {
 	if ((
 		spriteState == Globals::ActionType::ATTACK ||
 		spriteState == Globals::ActionType::JUMP_ATTACK ||
-		spriteState == Globals::ActionType::RUN_ATTACK
+		spriteState == Globals::ActionType::RUN_ATTACK ||
+		spriteState == Globals::ActionType::FALL
 		) &&
 		playersTouching.size() + enemiesTouching.size() > 0) {
 		vector<int> v = SpriteHolder::getDamageFramesForAction(spriteName, currentAction, currentActionType);
@@ -233,4 +234,8 @@ void PlayerCharacter::setIdleState(float elapsedTime) {
 void PlayerCharacter::handleRunAttackHorizontal(float elapsedTime) {
 	if (pastDirectionsPressed[3] == DirectionHeaded::R) position.x += 2 * speed * elapsedTime;
 	if (pastDirectionsPressed[3] == DirectionHeaded::L) position.x -= 2 * speed * elapsedTime;
+}
+
+void PlayerCharacter::handleFallDamage(float elapsedTime) {
+	// todo: implement fall damage state
 }

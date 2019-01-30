@@ -58,13 +58,14 @@ void Character::disable(int timeToDisable) {
 	timeSinceLastAction = 0;
 }
 
-void Character::hold(bool state) {
+void Character::hold(bool state, Character* attacker) {
 	if (state) {
 		spriteState = Globals::ActionType::HELD;
 		currentAction = "held";
 		currentActionType = HELD;
 		resetFrameState();
 		held = true;
+		heldBy = attacker;
 	}
 	else {
 		held = false;
@@ -311,7 +312,8 @@ AttackInfo Character::generateAttackInfo(bool longStun, Character* otherChar) {
 		(spriteState == Globals::ActionType::ATTACK && currentActionType == SPECIAL_ATTACK) ||
 		spriteState == Globals::ActionType::JUMP_ATTACK ||
 		spriteState == Globals::ActionType::RUN_ATTACK ||
-		spriteState == Globals::ActionType::THROW
+		spriteState == Globals::ActionType::THROW ||
+		spriteState == Globals::ActionType::FALL
 		) {
 		output.action = "fall";
 		longStun ? output.timeToDisable = STUN_LENGTH * 15 : output.timeToDisable = STUN_LENGTH * 5;
@@ -355,7 +357,7 @@ bool Character::handleGrabbingAnimation(int maxFrames, string info, float elapse
 			}
 			if (currentAction != "grab") {
 				setAttackState("grab", GRAB);
-				grabbedChar->hold(true);
+				grabbedChar->hold(true, this);
 			}
 			return true;
 		}
@@ -486,6 +488,7 @@ bool Character::handleFallingAnimation(int maxFrames, string info, float elapsed
 				currentAction = "rise";
 				currentActionType = RISE;
 				fallstatus = FallStep::NONE;
+				heldBy = nullptr;
 				resetFrameState(false);
 				return true;
 			}
@@ -542,7 +545,7 @@ void Character::determineAndSetGrabChar(Character* otherChar) {
 			grabbedChar = otherChar;
 			grabbing = true;
 			grabbingFromBehind = otherChar->isFacingRight();
-			otherChar->hold(true);
+			otherChar->hold(true, this);
 			setAttackState("grab", GRAB);
 		}
 		if (!onRight && (
@@ -553,7 +556,7 @@ void Character::determineAndSetGrabChar(Character* otherChar) {
 			grabbedChar = otherChar;
 			grabbing = true;
 			grabbingFromBehind = !otherChar->isFacingRight();
-			otherChar->hold(true);
+			otherChar->hold(true, this);
 			setAttackState("grab", GRAB);
 		}
 	}

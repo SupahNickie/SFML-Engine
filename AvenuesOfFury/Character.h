@@ -22,7 +22,7 @@ public:
 	bool isFacingRight();
 	bool isInvincible();
 	void disable(int timeToDisable);
-	void hold(bool state);
+	void hold(bool state, Character* attacker = nullptr);
 	DirectionHeaded stringToDirection(string const& direction);
 	string directionToString(DirectionHeaded direction);
 	bool hits(Character* otherChar);
@@ -54,6 +54,7 @@ protected:
 	int const THROW = 0;
 	int const HELD = 0;
 
+	Character* heldBy = nullptr;
 	bool held = false;
 	bool grabbing = false;
 	bool grabbingFromBehind = false;
@@ -119,6 +120,7 @@ protected:
 	virtual void setIdleState(float elapsedTime) = 0;
 	virtual void setDirectionHeaded() = 0;
 	virtual void handleRunAttackHorizontal(float elapsedTime) = 0;
+	virtual void handleFallDamage(float elapsedTime) = 0;
 private:
 	bool handleHeldAnimation(int maxFrames, string info, float elapsedTime);
 	bool handleGrabbingAnimation(int maxFrames, string info, float elapsedTime);

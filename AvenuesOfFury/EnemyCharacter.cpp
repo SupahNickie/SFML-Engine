@@ -156,6 +156,7 @@ void EnemyCharacter::predictFocusCharLocation(float elapsedTime) {
 
 void EnemyCharacter::handleAI(float elapsedTime, vector<Character*> players) {
 	if (spriteState != Globals::ActionType::ATTACK) timeSinceAttackEnded += elapsedTime * 1000;
+	if (spriteState == Globals::ActionType::FALL) handleFallDamage(elapsedTime);
 	if (handleDisabledState(elapsedTime)) return;
 	turnToFaceFocusChar();
 	resetStateAfterFinishingAction();
@@ -272,6 +273,14 @@ void EnemyCharacter::resetStateAfterFinishingAction() {
 		attackDisabled = false;
 		timeSinceAttackBegan = 0;
 	}
+}
+
+void EnemyCharacter::handleFallDamage(float elapsedTime) {
+	auto it = remove_if(playersTouching.begin(), playersTouching.end(), [&](Character* p) {
+		return (heldBy != nullptr) && (p->uniqueID == heldBy->uniqueID);
+	});
+	playersTouching.erase(it, playersTouching.end());
+	calculateAttack(elapsedTime);
 }
 
 bool EnemyCharacter::handleDisabledState(float elapsedTime) {

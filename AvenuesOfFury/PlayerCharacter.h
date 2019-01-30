@@ -34,6 +34,7 @@ private:
 	void setMoveState(float elapsedTime);
 	void setIdleState(float elapsedTime);
 	void handleRunAttackHorizontal(float elapsedTime);
+	void handleFallDamage(float elapsedTime);
 };
 
 #endif

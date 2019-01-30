@@ -51,6 +51,7 @@ private:
 	void recalculateAggression();
 	void recalculateDecisionSpeed(bool decisionState);
 	void resetStateAfterFinishingAction();
+	void handleFallDamage(float elapsedTime);
 	bool handleDisabledState(float elapsedTime);
 	void handleJump(float elapsedTime);
 	void moveTowardsTarget(float elapsedTime);
