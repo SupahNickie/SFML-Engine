@@ -19,6 +19,7 @@ void EnemyCharacter::update(float elapsedTime, vector<Character*> players, vecto
 		isActive = false;
 		return;
 	}
+	cout << "SPRITE STATE: " << currentAction << "\n";
 	advanceHitRecords(elapsedTime);
 	detectCollisions(players, enemies);
 	updateFrameState(elapsedTime, jumpAttacking ? "jumpAttacking" : "" );
@@ -213,6 +214,30 @@ bool EnemyCharacter::jumpAttack(float elapsedTime) {
 	}
 }
 
+bool EnemyCharacter::grabAttack(float elapsedTime) {
+	if (timeSinceAttackEnded > aggression) {
+		if (grabbing) {
+			handleGrab(elapsedTime);
+			return true;
+		}
+		if (!attackDisabled &&
+			spriteState != Globals::ActionType::INJURE &&
+			onSameVerticalPlane(focusChar->getCenter().y)
+			) {
+			handleGrab(elapsedTime);
+			return true;
+		}
+		return false;
+	}
+	else if (spriteState == Globals::ActionType::INJURE) {
+		return true;
+	}
+	else {
+		setIdleState(elapsedTime);
+		return false;
+	}
+}
+
 void EnemyCharacter::setIdleState(float elapsedTime) {
 	currentAction = "idle";
 	currentActionType = NORMAL_IDLE;
@@ -261,9 +286,14 @@ void EnemyCharacter::recalculateDecisionSpeed(bool decisionState) {
 void EnemyCharacter::resetStateAfterFinishingAction() {
 	if (currentActionDone) {
 		if (spriteState == Globals::ActionType::ATTACK ||
-			spriteState == Globals::ActionType::JUMP_ATTACK) {
+			spriteState == Globals::ActionType::JUMP_ATTACK ||
+			spriteState == Globals::ActionType::THROW
+			) {
 			timeSinceAttackEnded = 0;
 			timeSinceDecision = 0;
+		}
+		if (spriteState == Globals::ActionType::THROW) {
+			grabbing = false;
 		}
 		spriteState = Globals::ActionType::IDLE;
 		currentAction = "idle";
@@ -309,6 +339,29 @@ void EnemyCharacter::handleJump(float elapsedTime) {
 		setAttackState("jump_attack", JUMP_ATTACK);
 		calculateAttack(elapsedTime);
 	}
+}
+
+void EnemyCharacter::handleGrab(float elapsedTime) {
+	if (hits(focusChar) && !grabbing) {
+		grabbedChar = focusChar;
+		grabbedChar->hold(true, this);
+		grabbing = true;
+		int choice = rand() % 3;
+		cout << "GRABBING: " << grabbing << " CHOICE: " << choice << "\n";
+		//switch (choice) {
+		//	case(0):
+		//		setAttackState("grab_attack_head", GRAB_ATTACK_HEAD);
+		//		break;
+		//	case(1):
+		//		setAttackState("grab_attack_body", GRAB_ATTACK_BODY);
+		//		break;
+		//	case(2):
+		//		setAttackState("throw", THROW);
+		//		break;
+		//}
+		setAttackState("grab_attack_head", GRAB_ATTACK_HEAD);
+	}
+	calculateAttack(elapsedTime);
 }
 
 void EnemyCharacter::moveTowardsTarget(float elapsedTime) {
