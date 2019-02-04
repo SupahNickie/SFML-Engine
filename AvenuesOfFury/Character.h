@@ -30,6 +30,7 @@ public:
 	CharacterVelocity getVelocity(int time);
 	virtual void update(float timeElapsed, vector<Character*> players, vector<Character*> enemies) = 0;
 protected:
+	bool isPlayer = false;
 	int MS_PER_FRAME = 50;
 	int STUN_LENGTH = 200;
 	int const WALK = 0;

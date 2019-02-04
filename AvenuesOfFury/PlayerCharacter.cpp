@@ -3,6 +3,10 @@
 #include "SpriteHolder.h"
 #include <iostream>
 
+PlayerCharacter::PlayerCharacter() {
+	isPlayer = true;
+}
+
 PlayerCharacter::~PlayerCharacter() {
 	delete[] pastDirectionsPressed;
 }
