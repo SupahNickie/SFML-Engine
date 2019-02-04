@@ -10,6 +10,7 @@
 
 class PlayerCharacter : public Character {
 public:
+	PlayerCharacter();
 	~PlayerCharacter();
 	void update(float elapsedTime, vector<Character*> players, vector<Character*> enemies);
 	virtual void handleInput() = 0;
