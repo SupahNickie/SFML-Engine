@@ -538,6 +538,7 @@ void Character::determineAndSetGrabChar(Character* otherChar) {
 		) {
 		bool onRight = otherChar->getCenter().x > position.x ? true : false;
 		if (onRight && (
+			(focusChar != nullptr && focusChar->uniqueID == otherChar->uniqueID) ||
 			directionHeaded == DirectionHeaded::UR ||
 			directionHeaded == DirectionHeaded::R ||
 			directionHeaded == DirectionHeaded::DR
@@ -549,6 +550,7 @@ void Character::determineAndSetGrabChar(Character* otherChar) {
 			setAttackState("grab", GRAB);
 		}
 		if (!onRight && (
+			(focusChar != nullptr && focusChar->uniqueID == otherChar->uniqueID) ||
 			directionHeaded == DirectionHeaded::UL ||
 			directionHeaded == DirectionHeaded::L ||
 			directionHeaded == DirectionHeaded::DL

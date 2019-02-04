@@ -193,11 +193,11 @@ void PlayerCharacter::hitCharacters(float elapsedTime) {
 		spriteState == Globals::ActionType::GRAB_ATTACK_HEAD ||
 		spriteState == Globals::ActionType::GRAB_ATTACK_BODY) {
 		vector<int> v = SpriteHolder::getDamageFramesForAction(spriteName, currentAction, currentActionType);
-		if (find(v.begin(), v.end(), currentFrame) != v.end()) {
+		if (grabbedChar != nullptr && find(v.begin(), v.end(), currentFrame) != v.end()) {
 			AttackInfo info = generateAttackInfo(true, grabbedChar);
 			grabbedChar->registerHit(attackPower[currentActionType], spriteName, currentFrame, info);
 			grabbedChar->disable(info.timeToDisable);
-			grabbedChar->focusChar = this;
+			if (!grabbedChar->isPlayer) grabbedChar->focusChar = this;
 		}
 		return;
 	}
