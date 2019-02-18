@@ -69,6 +69,7 @@ void Character::hold(bool state, Character* attacker) {
 	}
 	else {
 		held = false;
+		attackedBy = nullptr;
 	}
 }
 
@@ -161,7 +162,18 @@ void Character::detectCollisions(vector<Character*> players, vector<Character*> 
 			}
 		}
 	});
-	if (playersTouching.empty() && enemiesTouching.empty()) resetGrab();
+	if (isPlayer && playersTouching.empty() && enemiesTouching.empty()) resetGrab();
+}
+
+void Character::resetGrab() {
+	grabHits = 0;
+	grabbing = false;
+	held = false;
+	grabbingFromBehind = false;
+	if (grabbedChar != nullptr) {
+		grabbedChar->hold(false);
+		grabbedChar = nullptr;
+	}
 }
 
 bool Character::onSameVerticalPlane(float targetY) {
@@ -561,16 +573,6 @@ void Character::determineAndSetGrabChar(Character* otherChar) {
 			otherChar->hold(true, this);
 			setAttackState("grab", GRAB);
 		}
-	}
-}
-
-void Character::resetGrab() {
-	grabHits = 0;
-	grabbing = false;
-	grabbingFromBehind = false;
-	if (grabbedChar != nullptr) {
-		grabbedChar->hold(false);
-		grabbedChar = nullptr;
 	}
 }
 

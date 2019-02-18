@@ -31,7 +31,6 @@ public:
 	CharacterVelocity getVelocity(int time);
 	virtual void update(float timeElapsed, vector<Character*> players, vector<Character*> enemies) = 0;
 protected:
-	bool isPlayer = false;
 	int MS_PER_FRAME = 50;
 	int STUN_LENGTH = 200;
 	int const WALK = 0;
@@ -110,6 +109,7 @@ protected:
 
 	void advanceHitRecords(float elapsedTime);
 	void detectCollisions(vector<Character*> players, vector<Character*> enemies);
+	void resetGrab();
 	bool onSameVerticalPlane(float targetY);
 	void resetFrameState(bool clearAll = true);
 	void updateFrameState(float elapsedTime, string info);
@@ -132,7 +132,6 @@ private:
 	bool handleInjureAnimation(int maxFrames, string info, float elapsedTime);
 	void handleNormalAnimation(int maxFrames);
 	void determineAndSetGrabChar(Character* otherChar);
-	void resetGrab();
 	DirectionHeaded getDirectionOfCollision(Character* otherChar);
 };
 

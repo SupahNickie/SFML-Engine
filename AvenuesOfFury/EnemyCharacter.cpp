@@ -19,7 +19,6 @@ void EnemyCharacter::update(float elapsedTime, vector<Character*> players, vecto
 		isActive = false;
 		return;
 	}
-	cout << "SPRITE STATE: " << currentAction << "\n";
 	advanceHitRecords(elapsedTime);
 	detectCollisions(players, enemies);
 	updateFrameState(elapsedTime, jumpAttacking ? "jumpAttacking" : "" );
@@ -222,6 +221,7 @@ bool EnemyCharacter::grabAttack(float elapsedTime) {
 		}
 		if (!attackDisabled &&
 			spriteState != Globals::ActionType::INJURE &&
+			hits(focusChar) &&
 			onSameVerticalPlane(focusChar->getCenter().y)
 			) {
 			handleGrab(elapsedTime);
@@ -268,7 +268,33 @@ void EnemyCharacter::turnToFaceFocusChar() {
 }
 
 void EnemyCharacter::setDirectionHeaded() {
-	// going to be used for throwing
+	int direction = rand() % 8;
+	switch (direction) {
+	case(0):
+		directionHeaded = DirectionHeaded::D;
+		break;
+	case(1):
+		directionHeaded = DirectionHeaded::U;
+		break;
+	case(2):
+		directionHeaded = DirectionHeaded::L;
+		break;
+	case(3):
+		directionHeaded = DirectionHeaded::R;
+		break;
+	case(4):
+		directionHeaded = DirectionHeaded::UL;
+		break;
+	case(5):
+		directionHeaded = DirectionHeaded::DR;
+		break;
+	case(6):
+		directionHeaded = DirectionHeaded::UR;
+		break;
+	case(7):
+		directionHeaded = DirectionHeaded::DL;
+		break;
+	}
 }
 
 void EnemyCharacter::recalculateAggression() {
@@ -287,6 +313,8 @@ void EnemyCharacter::resetStateAfterFinishingAction() {
 	if (currentActionDone) {
 		if (spriteState == Globals::ActionType::ATTACK ||
 			spriteState == Globals::ActionType::JUMP_ATTACK ||
+			spriteState == Globals::ActionType::GRAB_ATTACK_HEAD ||
+			spriteState == Globals::ActionType::GRAB_ATTACK_BODY ||
 			spriteState == Globals::ActionType::THROW
 			) {
 			timeSinceAttackEnded = 0;
@@ -326,7 +354,7 @@ bool EnemyCharacter::handleDisabledState(float elapsedTime) {
 		attackDisabled = false;
 		jumpAttacking = false;
 		jumpDisabled = false;
-		setIdleState(elapsedTime);
+		if (!grabbing) setIdleState(elapsedTime);
 		return false;
 	}
 	return false;
@@ -342,24 +370,30 @@ void EnemyCharacter::handleJump(float elapsedTime) {
 }
 
 void EnemyCharacter::handleGrab(float elapsedTime) {
-	if (hits(focusChar) && !grabbing) {
+	if (!hits(focusChar)) {
+		resetGrab();
+		return;
+	}
+	if (!grabbing) {
 		grabbedChar = focusChar;
-		grabbedChar->hold(true, this);
 		grabbing = true;
-		int choice = rand() % 3;
-		cout << "GRABBING: " << grabbing << " CHOICE: " << choice << "\n";
-		//switch (choice) {
-		//	case(0):
-		//		setAttackState("grab_attack_head", GRAB_ATTACK_HEAD);
-		//		break;
-		//	case(1):
-		//		setAttackState("grab_attack_body", GRAB_ATTACK_BODY);
-		//		break;
-		//	case(2):
-		//		setAttackState("throw", THROW);
-		//		break;
-		//}
-		setAttackState("grab_attack_head", GRAB_ATTACK_HEAD);
+	}
+	int choice = rand() % 3;
+	switch (choice) {
+		case(0):
+			setAttackState("grab_attack_head", GRAB_ATTACK_HEAD);
+			disable(MS_PER_FRAME * SpriteHolder::getMaxFramesForAction(spriteName, "grab_attack_head", GRAB_ATTACK_HEAD));
+			break;
+		case(1):
+			setAttackState("grab_attack_body", GRAB_ATTACK_BODY);
+			disable(MS_PER_FRAME * SpriteHolder::getMaxFramesForAction(spriteName, "grab_attack_body", GRAB_ATTACK_BODY));
+			break;
+		case(2):
+			setAttackState("throw", THROW);
+			disable(MS_PER_FRAME * SpriteHolder::getMaxFramesForAction(spriteName, "throw", THROW));
+			setDirectionHeaded();
+			grabbedChar->hold(false);
+			break;
 	}
 	calculateAttack(elapsedTime);
 }
