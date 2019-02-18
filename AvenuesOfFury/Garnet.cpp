@@ -26,21 +26,19 @@ Garnet::Garnet(vector<Character*> players) : EnemyCharacter(players) {
 
 	SpriteHolder::initSprites("character", spriteName);
 	sprite.scale(Vector2f(4 * Globals::getScalingFactor(), 4 * Globals::getScalingFactor()));
-
 	resetFrameState();
 	render();
 }
 
 bool Garnet::handleAttacking(float elapsedTime) {
-	//if (jumping) return jumpAttack(elapsedTime);
+	if (jumping) return jumpAttack(elapsedTime);
 	if (grabbing) return grabAttack(elapsedTime);
 
-	//int choice = rand() % 1000;
-	int choice = rand() % 10;
-	//if (choice == 0 &&
-	//	abs(position.x - focusChar->getCenter().x) > (0.1 * Globals::getResolution().x) &&
-	//	abs(position.x - focusChar->getCenter().x) < (0.2 * Globals::getResolution().x)
-	//	) return jumpAttack(elapsedTime);
+	int choice = rand() % 1000;
+	if (choice == 0 &&
+		abs(position.x - focusChar->getCenter().x) > (0.1 * Globals::getResolution().x) &&
+		abs(position.x - focusChar->getCenter().x) < (0.2 * Globals::getResolution().x)
+		) return jumpAttack(elapsedTime);
 
 	if (choice == 1 &&
 		abs(position.x - focusChar->getCenter().x) < (0.1 * Globals::getResolution().x)

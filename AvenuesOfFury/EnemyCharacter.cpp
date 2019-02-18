@@ -370,7 +370,8 @@ void EnemyCharacter::handleJump(float elapsedTime) {
 }
 
 void EnemyCharacter::handleGrab(float elapsedTime) {
-	if (!hits(focusChar)) {
+	if (!hits(focusChar) || grabHits > 2 || currentAction == "throw") {
+		timeSinceAttackEnded = 0;
 		resetGrab();
 		return;
 	}
@@ -383,10 +384,12 @@ void EnemyCharacter::handleGrab(float elapsedTime) {
 		case(0):
 			setAttackState("grab_attack_head", GRAB_ATTACK_HEAD);
 			disable(MS_PER_FRAME * SpriteHolder::getMaxFramesForAction(spriteName, "grab_attack_head", GRAB_ATTACK_HEAD));
+			grabbedChar->hold(false);
 			break;
 		case(1):
 			setAttackState("grab_attack_body", GRAB_ATTACK_BODY);
 			disable(MS_PER_FRAME * SpriteHolder::getMaxFramesForAction(spriteName, "grab_attack_body", GRAB_ATTACK_BODY));
+			grabbedChar->hold(false);
 			break;
 		case(2):
 			setAttackState("throw", THROW);
