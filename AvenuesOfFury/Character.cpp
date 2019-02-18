@@ -328,7 +328,7 @@ AttackInfo Character::generateAttackInfo(bool longStun, Character* otherChar) {
 		spriteState == Globals::ActionType::FALL
 		) {
 		output.action = "fall";
-		longStun && !isPlayer ? output.timeToDisable = STUN_LENGTH * 15 : output.timeToDisable = STUN_LENGTH * 5;
+		longStun && !otherChar->isPlayer ? output.timeToDisable = STUN_LENGTH * 15 : output.timeToDisable = STUN_LENGTH * 5;
 		output.fallstatus = FallStep::START_FALL;
 		output.fallY = otherChar->getCenter().y + (otherChar->getPosition().height / 4);
 		output.fallDirection = getDirectionOfCollision(otherChar);

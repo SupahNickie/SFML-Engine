@@ -20,13 +20,16 @@ void PlayerCharacter::update(float elapsedTime, vector<Character*> players, vect
 	sprite.setPosition(position);
 	render();
 
-	if (specialAttackPressed && !grabbing) {
-		hold(false);
-		handleSpecialAttack();
-		return;
-	}
-
 	if (disabled) {
+		if (spriteState == Globals::ActionType::INJURE &&
+			specialAttackPressed &&
+			!grabbing &&
+			!jumping
+			) {
+			hold(false);
+			handleSpecialAttack();
+			return;
+		}
 		if (timeSinceLastAction <= timeToBeDisabled) return;
 		timeSinceLastAction = 0;
 		disabled = false;
@@ -37,8 +40,15 @@ void PlayerCharacter::update(float elapsedTime, vector<Character*> players, vect
 		running = false;
 	}
 
-	if (held) return;
 	if (runAttacking) return;
+
+	if (specialAttackPressed && !grabbing && !jumping) {
+		hold(false);
+		handleSpecialAttack();
+		return;
+	}
+
+	if (held) return;
 
 	if (grabbing) {
 		if (!attackDisabled) {
