@@ -9,22 +9,50 @@ void Graphic::flipHorizontally() {
 	sprite.scale(-1, 1);
 }
 
-void Graphic::setPosition(Vector2f newPosition) {
-	position = newPosition;
+void Graphic::setAnimationCycle(map<string, bool> cycle) {
+	animationCycle = cycle;
 }
 
-FloatRect Graphic::getPosition() {
-	return sprite.getGlobalBounds();
+map<string, bool> Graphic::getAnimationCycle() {
+	return animationCycle;
 }
 
-Vector2f Graphic::getCenter() {
-	return position;
+void Graphic::setTexturePath(string const& newTexturePath) {
+	texturePath = newTexturePath;
+}
+
+void Graphic::setSprite(Sprite const& newSprite) {
+	sprite = newSprite;
+}
+
+Sprite* Graphic::getSprite() {
+	return &sprite;
 }
 
 void Graphic::deleteSprite() {
-	isActive = false;
 	SpriteHolder::deleteSprite(spriteName);
 	TextureHolder::deleteTexture(texturePath);
+}
+
+void Graphic::setPosition(Vector2f newPosition) {
+	position = newPosition;
+	sprite.setPosition(position);
+}
+
+Vector2f Graphic::getPosition() {
+	return position;
+}
+
+FloatRect Graphic::getBounds() {
+	return sprite.getGlobalBounds();
+}
+
+void Graphic::setSpriteName(string const& newSpriteName) {
+	spriteName = newSpriteName;
+}
+
+string Graphic::getSpriteName() {
+	return spriteName;
 }
 
 void Graphic::draw(RenderTarget& target, RenderStates states) const {

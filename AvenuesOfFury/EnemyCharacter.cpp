@@ -7,7 +7,6 @@ EnemyCharacter::EnemyCharacter(vector<Character*> players) {
 	attackPower = vector<int>(1);
 	focusChar = players[rand() % 2];
 	spriteState = Globals::ActionType::IDLE;
-	isActive = true;
 	currentAction = "idle";
 	currentActionType = NORMAL_IDLE;
 	recalculateAggression();
@@ -23,7 +22,6 @@ void EnemyCharacter::update(float elapsedTime, vector<Character*> players, vecto
 	detectCollisions(players, enemies);
 	updateFrameState(elapsedTime, jumpAttacking ? "jumpAttacking" : "" );
 	handleAI(elapsedTime, players);
-	sprite.setPosition(position);
 	render();
 }
 
@@ -31,21 +29,21 @@ void EnemyCharacter::calculateAttack(float elapsedTime) {
 	if (timeSinceAttackBegan == 0) recalculateAggression();
 
 	timeSinceAttackBegan += elapsedTime * 1000;
-	vector<int> v = SpriteHolder::getDamageFramesForAction(spriteName, currentAction, currentActionType);
+	vector<int> v = SpriteHolder::getDamageFramesForAction(getSpriteName(), currentAction, currentActionType);
 	if (find(v.begin(), v.end(), currentFrame) != v.end()) {
 		for_each(enemiesTouching.begin(), enemiesTouching.end(), [&](Character* e) {
 			AttackInfo info = generateAttackInfo(true, e);
-			Vector2f target = e->getCenter();
+			Vector2f target = e->getPosition();
 			if (onSameVerticalPlane(target.y)) {
-				e->registerHit(attackPower[currentActionType] * 0.05f, spriteName, currentFrame, info);
+				e->registerHit(attackPower[currentActionType] * 0.05f, getSpriteName(), currentFrame, info);
 				e->disable(info.timeToDisable);
 			}
 		});
 		for_each(playersTouching.begin(), playersTouching.end(), [&](Character* p) {
 			AttackInfo info = generateAttackInfo(false, p);
-			Vector2f target = p->getCenter();
+			Vector2f target = p->getPosition();
 			if (onSameVerticalPlane(target.y)) {
-				p->registerHit(attackPower[currentActionType], spriteName, currentFrame, info);
+				p->registerHit(attackPower[currentActionType], getSpriteName(), currentFrame, info);
 				p->disable(info.timeToDisable);
 			}
 		});
@@ -71,8 +69,8 @@ bool EnemyCharacter::handleDecidingState(float elapsedTime, vector<Character*> p
 			// get nearest player
 			Vector2f player1coords = players[0]->getVelocity(reactionSpeed).position;
 			Vector2f player2coords = players[1]->getVelocity(reactionSpeed).position;
-			float player1closeness = abs(abs(player1coords.x - position.x) - abs(player1coords.y - position.y));
-			float player2closeness = abs(abs(player2coords.x - position.x) - abs(player2coords.y - position.y));
+			float player1closeness = abs(abs(player1coords.x - getPosition().x) - abs(player1coords.y - getPosition().y));
+			float player2closeness = abs(abs(player2coords.x - getPosition().x) - abs(player2coords.y - getPosition().y));
 			if (player1closeness < player2closeness) {
 				focusChar = players[0];
 			}
@@ -172,7 +170,7 @@ bool EnemyCharacter::attack(float elapsedTime, int actionType) {
 		if (!attackDisabled &&
 			spriteState != Globals::ActionType::INJURE &&
 			hits(focusChar) &&
-			onSameVerticalPlane(focusChar->getCenter().y)
+			onSameVerticalPlane(focusChar->getPosition().y)
 			) {
 			setAttackState("attack", actionType);
 			calculateAttack(elapsedTime);
@@ -197,7 +195,7 @@ bool EnemyCharacter::jumpAttack(float elapsedTime) {
 		}
 		if (!attackDisabled &&
 			spriteState != Globals::ActionType::INJURE &&
-			onSameVerticalPlane(focusChar->getCenter().y)
+			onSameVerticalPlane(focusChar->getPosition().y)
 			) {
 			handleJump(elapsedTime);
 			return true;
@@ -222,7 +220,7 @@ bool EnemyCharacter::grabAttack(float elapsedTime) {
 		if (!attackDisabled &&
 			spriteState != Globals::ActionType::INJURE &&
 			hits(focusChar) &&
-			onSameVerticalPlane(focusChar->getCenter().y)
+			onSameVerticalPlane(focusChar->getPosition().y)
 			) {
 			handleGrab(elapsedTime);
 			return true;
@@ -258,7 +256,7 @@ void EnemyCharacter::setMoveState() {
 
 void EnemyCharacter::turnToFaceFocusChar() {
 	if (Globals::isJumpingState(spriteState)) return;
-	bool playerToRightOfSelf = focusChar->getCenter().x > this->getCenter().x;
+	bool playerToRightOfSelf = focusChar->getPosition().x > this->getPosition().x;
 	if (playerToRightOfSelf && !facingRight) {
 		flipHorizontally();
 	}
@@ -361,7 +359,7 @@ bool EnemyCharacter::handleDisabledState(float elapsedTime) {
 }
 
 void EnemyCharacter::handleJump(float elapsedTime) {
-	setJumpState(elapsedTime, focusChar->getCenter().x < position.x, focusChar->getCenter().x > position.x);
+	setJumpState(elapsedTime, focusChar->getPosition().x < getPosition().x, focusChar->getPosition().x > getPosition().x);
 	if (hits(focusChar)) {
 		jumpAttacking = true;
 		setAttackState("jump_attack", JUMP_ATTACK);
@@ -383,17 +381,17 @@ void EnemyCharacter::handleGrab(float elapsedTime) {
 	switch (choice) {
 		case(0):
 			setAttackState("grab_attack_head", GRAB_ATTACK_HEAD);
-			disable(MS_PER_FRAME * SpriteHolder::getMaxFramesForAction(spriteName, "grab_attack_head", GRAB_ATTACK_HEAD));
+			disable(MS_PER_FRAME * SpriteHolder::getMaxFramesForAction(getSpriteName(), "grab_attack_head", GRAB_ATTACK_HEAD));
 			grabbedChar->hold(false);
 			break;
 		case(1):
 			setAttackState("grab_attack_body", GRAB_ATTACK_BODY);
-			disable(MS_PER_FRAME * SpriteHolder::getMaxFramesForAction(spriteName, "grab_attack_body", GRAB_ATTACK_BODY));
+			disable(MS_PER_FRAME * SpriteHolder::getMaxFramesForAction(getSpriteName(), "grab_attack_body", GRAB_ATTACK_BODY));
 			grabbedChar->hold(false);
 			break;
 		case(2):
 			setAttackState("throw", THROW);
-			disable(MS_PER_FRAME * SpriteHolder::getMaxFramesForAction(spriteName, "throw", THROW));
+			disable(MS_PER_FRAME * SpriteHolder::getMaxFramesForAction(getSpriteName(), "throw", THROW));
 			setDirectionHeaded();
 			grabbedChar->hold(false);
 			break;
@@ -402,17 +400,17 @@ void EnemyCharacter::handleGrab(float elapsedTime) {
 }
 
 void EnemyCharacter::moveTowardsTarget(float elapsedTime) {
-	if (target.x > position.x) {
-		position.x += elapsedTime * speed;
+	if (target.x > getPosition().x) {
+		setPosition(Vector2f(getPosition().x + (elapsedTime * speed), getPosition().y));
 	}
-	else if (target.x < position.x) {
-		position.x -= elapsedTime * speed;
+	else if (target.x < getPosition().x) {
+		setPosition(Vector2f(getPosition().x - (elapsedTime * speed), getPosition().y));
 	}
-	if (target.y > position.y) {
-		position.y += elapsedTime * speed;
+	if (target.y > getPosition().y) {
+		setPosition(Vector2f(getPosition().x, getPosition().y + (elapsedTime * speed)));
 	}
-	else if (target.y < position.y) {
-		position.y -= elapsedTime * speed;
+	else if (target.y < getPosition().y) {
+		setPosition(Vector2f(getPosition().x, getPosition().y - (elapsedTime * speed)));
 	}
 }
 

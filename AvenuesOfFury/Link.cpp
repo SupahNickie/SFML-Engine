@@ -4,26 +4,20 @@
 #include "SpriteHolder.h"
 
 Link::Link() {
-	texturePath = "graphics/characters/link_sheet.jpg";
-	sprite = Sprite(TextureHolder::getTexture(texturePath));
-	attackPower = vector<int>(2);
-	attackPower[0] = 1000;
-	attackPower[1] = 4000;
+	setupGraphic("graphics/characters/link_sheet.jpg", "link");
+	SpriteHolder::initSprites("character", getSpriteName());
+	changeScale(Vector2f(Globals::getScalingFactor(), Globals::getScalingFactor()));
+	setAnimationCycle({ {"move", true} });
+	facingRight = false;
+
+	attackPower = vector<int>{ 1000, 4000 };
 	primaryAttackPressed = false;
 	secondaryAttackPressed = false;
-	spriteState = Globals::ActionType::IDLE;
-	facingRight = false;
 	baseSpeed = .33 * Globals::getResolution().x;
 	speed = baseSpeed;
 
-	spriteName = "link";
-	isActive = true;
-
-	SpriteHolder::initSprites("character", spriteName);
-	sprite.scale(Vector2f(Globals::getScalingFactor(), Globals::getScalingFactor()));
-	
-	animationCycle = { {"move", true} };
 	currentAction = "idle";
+	spriteState = Globals::ActionType::IDLE;
 	currentActionType = NORMAL_IDLE;
 	resetFrameState();
 	render();

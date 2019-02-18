@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Character.h"
 #include "SpriteHolder.h"
+#include "TextureHolder.h"
 #include "Globals.h"
 #include <assert.h>
 #include <iostream>
@@ -11,7 +12,7 @@ Character::Character() {
 	// Init position data for enemies
 	CharacterVelocity cv;
 	cv.direction = DirectionHeaded::NONE;
-	cv.position = position;
+	cv.position = getPosition();
 	pastPositions = {
 		{500, cv},
 		{450, cv},
@@ -35,8 +36,12 @@ Character::Character() {
 	pastDirectionsPressed[4] = DirectionHeaded::NONE;
 }
 
+Graphic* Character::getGraphic() {
+	return &graphic;
+}
+
 void Character::flipHorizontally() {
-	Graphic::flipHorizontally();
+	graphic.flipHorizontally();
 	facingRight = !facingRight;
 }
 
@@ -98,7 +103,7 @@ string Character::directionToString(DirectionHeaded direction) {
 }
 
 bool Character::hits(Character* otherChar) {
-	return this->getPosition().intersects(otherChar->getPosition());
+	return this->getBounds().intersects(otherChar->getBounds());
 }
 
 void Character::registerHit(int hp, string const& attacker, unsigned short int frame, AttackInfo info) {
@@ -126,9 +131,48 @@ void Character::registerHit(int hp, string const& attacker, unsigned short int f
 
 CharacterVelocity Character::getVelocity(int time) {
 	CharacterVelocity output;
-	time == 0 ? output.position = position : output.position = pastPositions[time].position;
+	time == 0 ? output.position = getPosition() : output.position = pastPositions[time].position;
 	output.direction = directionHeaded;
 	return output;
+}
+
+void Character::setPosition(Vector2f position) {
+	graphic.setPosition(position);
+}
+
+Vector2f Character::getPosition() {
+	return graphic.getPosition();
+}
+
+FloatRect Character::getBounds() {
+	return graphic.getBounds();
+}
+
+string Character::getSpriteName() {
+	return graphic.getSpriteName();
+}
+
+void Character::setupGraphic(string const& texturePath, string const& spriteName) {
+	graphic = Graphic();
+	graphic.setTexturePath(texturePath);
+	graphic.setSprite(Sprite(TextureHolder::getTexture(texturePath)));
+	graphic.setSpriteName(spriteName);
+}
+
+Sprite* Character::getSprite() {
+	return graphic.getSprite();
+}
+
+void Character::changeScale(Vector2f scale) {
+	getSprite()->setScale(scale);
+}
+
+void Character::setAnimationCycle(map<string, bool> cycle) {
+	graphic.setAnimationCycle(cycle);
+}
+
+bool Character::getAnimationCycle(string currentAction) {
+	return graphic.getAnimationCycle()[currentAction];
 }
 
 void Character::advanceHitRecords(float elapsedTime) {
@@ -179,10 +223,10 @@ void Character::resetGrab() {
 bool Character::onSameVerticalPlane(float targetY) {
 	if (prejumpY != 0.0f) {
 		return (abs(targetY - prejumpY) < (.03f * Globals::getResolution().x) &&
-			abs(targetY - position.y) < (.062500f * Globals::getResolution().x));
+			abs(targetY - getPosition().y) < (.062500f * Globals::getResolution().x));
 	}
 	else {
-		return abs(targetY - position.y) < (.03f * Globals::getResolution().x);
+		return abs(targetY - getPosition().y) < (.03f * Globals::getResolution().x);
 	}
 }
 
@@ -191,14 +235,14 @@ void Character::resetFrameState(bool clearAll) {
 	timeSinceLastFrame = 0;
 	spriteCycleDown = false;
 	currentActionDone = false;
-	currentFrame = SpriteHolder::getStartFramesForAction(spriteName, currentAction, currentActionType);
+	currentFrame = SpriteHolder::getStartFramesForAction(getSpriteName(), currentAction, currentActionType);
 }
 
 void Character::updateFrameState(float elapsedTime, string info) {
 	timeSinceLastAction += elapsedTime * 1000;
 	timeSinceLastFrame += elapsedTime * 1000;
 	if (timeSinceLastFrame > MS_PER_FRAME) {
-		int maxFrames = SpriteHolder::getMaxFramesForAction(spriteName, currentAction, currentActionType);
+		int maxFrames = SpriteHolder::getMaxFramesForAction(getSpriteName(), currentAction, currentActionType);
 		if (handleHeldAnimation(maxFrames, info, elapsedTime)) return;
 		if (handleGrabbingAnimation(maxFrames, info, elapsedTime)) return;
 		if (handleRunningAnimation(maxFrames, info, elapsedTime)) return;
@@ -221,7 +265,7 @@ void Character::updatePastPositions(float elapsedTime) {
 		}
 		CharacterVelocity current;
 		current.direction = directionHeaded;
-		current.position = position;
+		current.position = getPosition();
 		if (jumping) current.position.y = prejumpY;
 		pastPositions[0] = current;
 		timeSincePastPositionsUpdate = 0;
@@ -256,8 +300,8 @@ void Character::setAttackState(string const& action, int attackType, bool resetF
 				spriteState = Globals::ActionType::RUN_ATTACK;
 				changed = true;
 				speedY = baseSpeedY;
-				prejumpY = position.y;
-				position.y -= 0.0042f * Globals::getResolution().x;
+				prejumpY = getPosition().y;
+				setPosition(Vector2f(getPosition().x, getPosition().y - 0.0042f * Globals::getResolution().x));
 				runAttacking = true;
 			}
 		}
@@ -306,16 +350,16 @@ void Character::setJumpState(float elapsedTime, bool moveLeft, bool moveRight) {
 		resetFrameState();
 		jumping = true;
 		running = false;
-		prejumpY = position.y;
-		position.y -= 0.0042f * Globals::getResolution().x;
+		prejumpY = getPosition().y;
+		setPosition(Vector2f(getPosition().x, getPosition().y - 0.0042f * Globals::getResolution().x));
 		insertAndShiftPastDirectionsPressed(DirectionHeaded::NONE);
 		speedY = baseSpeedY;
 	}
 
 	speedY += (.2 * gravity * (elapsedTime * 1000));
-	if (prejumpY > position.y) position.y += speedY;
-	if (moveLeft) position.x -= speed * elapsedTime;
-	if (moveRight) position.x += speed * elapsedTime;
+	if (prejumpY > getPosition().y) setPosition(Vector2f(getPosition().x, getPosition().y + speedY));
+	if (moveLeft) setPosition(Vector2f(getPosition().x - (speed * elapsedTime), getPosition().y));
+	if (moveRight) setPosition(Vector2f(getPosition().x + (speed * elapsedTime), getPosition().y));
 }
 
 AttackInfo Character::generateAttackInfo(bool longStun, Character* otherChar) {
@@ -330,7 +374,7 @@ AttackInfo Character::generateAttackInfo(bool longStun, Character* otherChar) {
 		output.action = "fall";
 		longStun && !otherChar->isPlayer ? output.timeToDisable = STUN_LENGTH * 15 : output.timeToDisable = STUN_LENGTH * 5;
 		output.fallstatus = FallStep::START_FALL;
-		output.fallY = otherChar->getCenter().y + (otherChar->getPosition().height / 4);
+		output.fallY = otherChar->getPosition().y + (otherChar->getBounds().height / 4);
 		output.fallDirection = getDirectionOfCollision(otherChar);
 		output.injuryType = FALL;
 	}
@@ -350,7 +394,7 @@ AttackInfo Character::generateAttackInfo(bool longStun, Character* otherChar) {
 }
 
 void Character::render() {
-	SpriteHolder::setSprite(sprite, spriteName, currentAction, currentActionType, currentFrame);
+	SpriteHolder::setSprite(*getSprite(), getSpriteName(), currentAction, currentActionType, currentFrame);
 }
 
 bool Character::handleHeldAnimation(int maxFrames, string info, float elapsedTime) {
@@ -379,11 +423,11 @@ bool Character::handleGrabbingAnimation(int maxFrames, string info, float elapse
 
 bool Character::handleRunningAnimation(int maxFrames, string info, float elapsedTime) {
 	if (running) {
-		if (runAttacking && ((runAttackJumps && prejumpY <= position.y) ||
+		if (runAttacking && ((runAttackJumps && prejumpY <= getPosition().y) ||
 			(!runAttackJumps && currentFrame == maxFrames))
 			) {
 			disabled = true;
-			timeToBeDisabled = MS_PER_FRAME * SpriteHolder::getMaxFramesForAction(spriteName, "run_attack_land", RUN_ATTACK_LAND);
+			timeToBeDisabled = MS_PER_FRAME * SpriteHolder::getMaxFramesForAction(getSpriteName(), "run_attack_land", RUN_ATTACK_LAND);
 			spriteState = Globals::ActionType::RUN_ATTACK_LAND;
 			currentAction = "run_attack_land";
 			currentActionType = RUN_ATTACK_LAND;
@@ -399,7 +443,7 @@ bool Character::handleRunningAnimation(int maxFrames, string info, float elapsed
 
 		if (runAttacking && runAttackJumps) {
 			speedY += (.6 * gravity * (elapsedTime * 1000));
-			position.y += speedY;
+			setPosition(Vector2f(getPosition().x, getPosition().y + speedY));
 			if (maxFrames == currentFrame) return true;
 		}
 	}
@@ -408,7 +452,7 @@ bool Character::handleRunningAnimation(int maxFrames, string info, float elapsed
 
 bool Character::handleJumpingAnimation(int maxFrames, string info, float elapsedTime) {
 	if (jumping) {
-		if (prejumpY <= position.y) {
+		if (prejumpY <= getPosition().y) {
 			spriteState = Globals::ActionType::JUMP_LAND;
 			currentAction = "jump_land";
 			currentActionType = JUMP_LAND;
@@ -461,41 +505,45 @@ bool Character::handleFallingAnimation(int maxFrames, string info, float elapsed
 			speedY = -0.004f * Globals::getResolution().y;
 			fallstatus = FallStep::KNOCK_DOWN;
 			if (fallDirection == DirectionHeaded::UR || fallDirection == DirectionHeaded::UL || fallDirection == DirectionHeaded::U) {
-				fallY = position.y - (0.3f * Globals::getResolution().y);
+				fallY = getPosition().y - (0.3f * Globals::getResolution().y);
 				speedY = -0.010f * Globals::getResolution().y;
 			}
 			if (fallDirection == DirectionHeaded::DR || fallDirection == DirectionHeaded::DL || fallDirection == DirectionHeaded::D) {
-				fallY = position.y + (0.3f * Globals::getResolution().y);
+				fallY = getPosition().y + (0.3f * Globals::getResolution().y);
 			}
 			if (fallDirection == DirectionHeaded::L || fallDirection == DirectionHeaded::R) {
 				speedY = -0.010f * Globals::getResolution().y;
 			}
-			previousY = position.y;
+			previousY = getPosition().y;
 			pastZenith = false;
 		}
 
 		if (fallstatus == FallStep::KNOCK_DOWN) {
-			if (fallDirection == DirectionHeaded::L || fallDirection == DirectionHeaded::UL || fallDirection == DirectionHeaded::DL) position.x -= 4 * baseSpeed * elapsedTime;
-			if (fallDirection == DirectionHeaded::R || fallDirection == DirectionHeaded::UR || fallDirection == DirectionHeaded::DR) position.x += 4 * baseSpeed * elapsedTime;
+			if (fallDirection == DirectionHeaded::L || fallDirection == DirectionHeaded::UL || fallDirection == DirectionHeaded::DL) {
+				setPosition(Vector2f(getPosition().x - (4 * baseSpeed * elapsedTime), getPosition().y));
+			}
+			if (fallDirection == DirectionHeaded::R || fallDirection == DirectionHeaded::UR || fallDirection == DirectionHeaded::DR) {
+				setPosition(Vector2f(getPosition().x + (4 * baseSpeed * elapsedTime), getPosition().y));
+			}
 		}
 
 		speedY += (gravity * (elapsedTime * 1000));
-		if (!pastZenith || fallY > position.y) {
-			previousY = position.y;
-			position.y += speedY;
-			if (previousY < position.y) pastZenith = true;
+		if (!pastZenith || fallY > getPosition().y) {
+			previousY = getPosition().y;
+			setPosition(Vector2f(getPosition().x, getPosition().y + speedY));
+			if (previousY < getPosition().y) pastZenith = true;
 			return true;
 		}
 
 		if (currentFrame == maxFrames) {
 			if (fallstatus == FallStep::KNOCK_DOWN) {
-				if (fallY > position.y) return true;
+				if (fallY > getPosition().y) return true;
 				resetFrameState();
 				fallstatus = FallStep::BOUNCE_UP;
 			}
 			if (fallstatus == FallStep::BOUNCE_UP) {
 				// Time remaining is less than amount of frames their rising animation is
-				if ((timeToBeDisabled - timeSinceLastAction) > (MS_PER_FRAME * (SpriteHolder::getMaxFramesForAction(spriteName, "rise", RISE) + 1))) return true;
+				if ((timeToBeDisabled - timeSinceLastAction) > (MS_PER_FRAME * (SpriteHolder::getMaxFramesForAction(getSpriteName(), "rise", RISE) + 1))) return true;
 				spriteState = Globals::ActionType::RISE;
 				currentAction = "rise";
 				currentActionType = RISE;
@@ -511,7 +559,9 @@ bool Character::handleFallingAnimation(int maxFrames, string info, float elapsed
 
 bool Character::handleInjureAnimation(int maxFrames, string info, float elapsedTime) {
 	if (spriteState == Globals::ActionType::INJURE) {
-		zig ? position.x -= 0.010 * Globals::getResolution().x : position.x += 0.010 * Globals::getResolution().x;
+		zig ?
+			setPosition(Vector2f(getPosition().x - (0.01 * Globals::getResolution().x), getPosition().y)) :
+			setPosition(Vector2f(getPosition().x + (0.01 * Globals::getResolution().x), getPosition().y));
 		zig = !zig;
 	}
 	return false;
@@ -528,7 +578,7 @@ void Character::handleNormalAnimation(int maxFrames) {
 	else if (currentFrame >= maxFrames && !spriteCycleDown) {
 		--currentFrame;
 		spriteCycleDown = true;
-		if (!animationCycle[currentAction]) {
+		if (!getAnimationCycle(currentAction)) {
 			resetFrameState(false);
 			currentActionDone = true;
 		}
@@ -543,12 +593,12 @@ void Character::handleNormalAnimation(int maxFrames) {
 }
 
 void Character::determineAndSetGrabChar(Character* otherChar) {
-	if (onSameVerticalPlane(otherChar->getCenter().y) &&
+	if (onSameVerticalPlane(otherChar->getPosition().y) &&
 		spriteState == Globals::ActionType::MOVE &&
-		abs((otherChar->getCenter().x - position.x) < 0.01f * Globals::getResolution().x) &&
+		abs((otherChar->getPosition().x - getPosition().x) < 0.01f * Globals::getResolution().x) &&
 		!otherChar->isInvincible()
 		) {
-		bool onRight = otherChar->getCenter().x > position.x ? true : false;
+		bool onRight = otherChar->getPosition().x > getPosition().x ? true : false;
 		if (onRight && (
 			(focusChar != nullptr && focusChar->uniqueID == otherChar->uniqueID) ||
 			directionHeaded == DirectionHeaded::UR ||
@@ -578,5 +628,5 @@ void Character::determineAndSetGrabChar(Character* otherChar) {
 
 Character::DirectionHeaded Character::getDirectionOfCollision(Character* otherChar) {
 	if (spriteState == Globals::ActionType::THROW) return directionHeaded;
-	return otherChar->getCenter().x > position.x ? DirectionHeaded::R : DirectionHeaded::L;
+	return otherChar->getPosition().x > getPosition().x ? DirectionHeaded::R : DirectionHeaded::L;
 }

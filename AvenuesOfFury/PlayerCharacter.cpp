@@ -17,7 +17,6 @@ void PlayerCharacter::update(float elapsedTime, vector<Character*> players, vect
 	updatePastPositions(elapsedTime);
 	attackedBy == nullptr ? hitCharacters(elapsedTime) : handleFallDamage(elapsedTime);
 	updateFrameState(elapsedTime, determineAttackingIntention());
-	sprite.setPosition(position);
 	render();
 
 	if (disabled) {
@@ -54,14 +53,14 @@ void PlayerCharacter::update(float elapsedTime, vector<Character*> players, vect
 		if (!attackDisabled) {
 			if (primaryAttackPressed) {
 				setAttackState("grab_attack_head", GRAB_ATTACK_HEAD);
-				disable(MS_PER_FRAME * SpriteHolder::getMaxFramesForAction(spriteName, "grab_attack_head", GRAB_ATTACK_HEAD));
+				disable(MS_PER_FRAME * SpriteHolder::getMaxFramesForAction(getSpriteName(), "grab_attack_head", GRAB_ATTACK_HEAD));
 				directionHeaded = DirectionHeaded::NONE;
 				grabbedChar->hold(false);
 				resetToIdle = false;
 			}
 			if (secondaryAttackPressed) {
 				setAttackState("grab_attack_body", GRAB_ATTACK_BODY);
-				disable(MS_PER_FRAME * SpriteHolder::getMaxFramesForAction(spriteName, "grab_attack_body", GRAB_ATTACK_BODY));
+				disable(MS_PER_FRAME * SpriteHolder::getMaxFramesForAction(getSpriteName(), "grab_attack_body", GRAB_ATTACK_BODY));
 				directionHeaded = DirectionHeaded::NONE;
 				grabbedChar->hold(false);
 				resetToIdle = false;
@@ -88,14 +87,14 @@ void PlayerCharacter::update(float elapsedTime, vector<Character*> players, vect
 			}
 			else {
 				setAttackState("attack", HEAD_ATTACK);
-				disable(MS_PER_FRAME * 2 * SpriteHolder::getMaxFramesForAction(spriteName, "attack", HEAD_ATTACK));
+				disable(MS_PER_FRAME * 2 * SpriteHolder::getMaxFramesForAction(getSpriteName(), "attack", HEAD_ATTACK));
 				directionHeaded = DirectionHeaded::NONE;
 			}
 			return;
 		}
 		else if (secondaryAttackPressed) {
 			setAttackState("attack", BODY_ATTACK);
-			disable(MS_PER_FRAME * 2 * SpriteHolder::getMaxFramesForAction(spriteName, "attack", BODY_ATTACK));
+			disable(MS_PER_FRAME * 2 * SpriteHolder::getMaxFramesForAction(getSpriteName(), "attack", BODY_ATTACK));
 			directionHeaded = DirectionHeaded::NONE;
 			return;
 		}
@@ -115,24 +114,24 @@ void PlayerCharacter::update(float elapsedTime, vector<Character*> players, vect
 
 	updateHandled = false;
 	if (rightPressed && !leftPressed) {
-		position.x += speed * elapsedTime;
+		setPosition(Vector2f(getPosition().x + (speed * elapsedTime), getPosition().y));
 		if (!facingRight) flipHorizontally();
 		setMoveState(elapsedTime);
 	}
 
 	if (leftPressed && !rightPressed) {
-		position.x -= speed * elapsedTime;
+		setPosition(Vector2f(getPosition().x - (speed * elapsedTime), getPosition().y));
 		if (facingRight) flipHorizontally();
 		setMoveState(elapsedTime);
 	}
 
 	if (upPressed && !downPressed) {
-		position.y -= speed * elapsedTime;
+		setPosition(Vector2f(getPosition().x, getPosition().y - (speed * elapsedTime)));
 		setMoveState(elapsedTime);
 	}
 
 	if (downPressed && !upPressed) {
-		position.y += speed * elapsedTime;
+		setPosition(Vector2f(getPosition().x, getPosition().y + (speed * elapsedTime)));
 		setMoveState(elapsedTime);
 	}
 
@@ -177,22 +176,22 @@ void PlayerCharacter::hitCharacters(float elapsedTime) {
 		spriteState == Globals::ActionType::RUN_ATTACK
 		) &&
 		playersTouching.size() + enemiesTouching.size() > 0) {
-		vector<int> v = SpriteHolder::getDamageFramesForAction(spriteName, currentAction, currentActionType);
+		vector<int> v = SpriteHolder::getDamageFramesForAction(getSpriteName(), currentAction, currentActionType);
 		if (find(v.begin(), v.end(), currentFrame) != v.end()) {
 			for_each(enemiesTouching.begin(), enemiesTouching.end(), [&](Character* e) {
 				AttackInfo info = generateAttackInfo(true, e);
-				Vector2f target = e->getCenter();
+				Vector2f target = e->getPosition();
 				if (onSameVerticalPlane(target.y)) {
-					e->registerHit(attackPower[currentActionType], spriteName, currentFrame, info);
+					e->registerHit(attackPower[currentActionType], getSpriteName(), currentFrame, info);
 					e->disable(info.timeToDisable);
 					e->focusChar = this;
 				}
 			});
 			for_each(playersTouching.begin(), playersTouching.end(), [&](Character* p) {
 				AttackInfo info = generateAttackInfo(false, p);
-				Vector2f target = p->getCenter();
+				Vector2f target = p->getPosition();
 				if (onSameVerticalPlane(target.y)) {
-					p->registerHit(attackPower[currentActionType] * 0.05f, spriteName, currentFrame, info);
+					p->registerHit(attackPower[currentActionType] * 0.05f, getSpriteName(), currentFrame, info);
 					p->disable(info.timeToDisable);
 				}
 			});
@@ -202,10 +201,10 @@ void PlayerCharacter::hitCharacters(float elapsedTime) {
 	if (spriteState == Globals::ActionType::THROW ||
 		spriteState == Globals::ActionType::GRAB_ATTACK_HEAD ||
 		spriteState == Globals::ActionType::GRAB_ATTACK_BODY) {
-		vector<int> v = SpriteHolder::getDamageFramesForAction(spriteName, currentAction, currentActionType);
+		vector<int> v = SpriteHolder::getDamageFramesForAction(getSpriteName(), currentAction, currentActionType);
 		if (grabbedChar != nullptr && find(v.begin(), v.end(), currentFrame) != v.end()) {
 			AttackInfo info = generateAttackInfo(true, grabbedChar);
-			grabbedChar->registerHit(attackPower[currentActionType], spriteName, currentFrame, info);
+			grabbedChar->registerHit(attackPower[currentActionType], getSpriteName(), currentFrame, info);
 			grabbedChar->disable(info.timeToDisable);
 			if (!grabbedChar->isPlayer) grabbedChar->focusChar = this;
 		}
@@ -248,8 +247,8 @@ void PlayerCharacter::setIdleState(float elapsedTime) {
 }
 
 void PlayerCharacter::handleRunAttackHorizontal(float elapsedTime) {
-	if (pastDirectionsPressed[3] == DirectionHeaded::R) position.x += 2 * speed * elapsedTime;
-	if (pastDirectionsPressed[3] == DirectionHeaded::L) position.x -= 2 * speed * elapsedTime;
+	if (pastDirectionsPressed[3] == DirectionHeaded::R) setPosition(Vector2f(getPosition().x + (2 * speed * elapsedTime), getPosition().y));
+	if (pastDirectionsPressed[3] == DirectionHeaded::L) setPosition(Vector2f(getPosition().x - (2 * speed * elapsedTime), getPosition().y));
 }
 
 void PlayerCharacter::handleFallDamage(float elapsedTime) {

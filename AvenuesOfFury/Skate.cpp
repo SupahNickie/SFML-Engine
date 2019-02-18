@@ -5,25 +5,23 @@
 
 Skate::Skate() {
 	MS_PER_FRAME = 75;
-	baseSpeedY = -0.00275f * Globals::getResolution().x;
-	texturePath = "graphics/characters/skate_sheet.png";
-	sprite = Sprite(TextureHolder::getTexture(texturePath));
+	setupGraphic("graphics/characters/skate_sheet.png", "skate");
+	SpriteHolder::initSprites("character", getSpriteName());
+	changeScale(Vector2f(4 * Globals::getScalingFactor(), 4 * Globals::getScalingFactor()));
+	facingRight = true;
+
 	attackPower = vector<int>{ 60, 60, 60 };
 	primaryAttackPressed = false;
 	secondaryAttackPressed = false;
-	spriteState = Globals::ActionType::IDLE;
-	facingRight = true;
 	baseSpeed = .33 * Globals::getResolution().x;
+	baseSpeedY = -0.00275f * Globals::getResolution().x;
 	speed = baseSpeed;
+
 	health = 4000;
-	spriteName = "skate";
-	isActive = true;
 	runAttackJumps = true;
 
-	SpriteHolder::initSprites("character", spriteName);
-	sprite.scale(Vector2f(4 * Globals::getScalingFactor(), 4 * Globals::getScalingFactor()));
-
 	currentAction = "idle";
+	spriteState = Globals::ActionType::IDLE;
 	currentActionType = NORMAL_IDLE;
 	resetFrameState();
 	render();
@@ -43,5 +41,5 @@ void Skate::handleInput() {
 // Handle any special logic surrounding the special attack animation (e.g. jumping, zooming around the screen, etc.)
 void Skate::handleSpecialAttack() {
 	setAttackState("attack", SPECIAL_ATTACK);
-	disable(MS_PER_FRAME * SpriteHolder::getMaxFramesForAction(spriteName, "attack", SPECIAL_ATTACK));
+	disable(MS_PER_FRAME * SpriteHolder::getMaxFramesForAction(getSpriteName(), "attack", SPECIAL_ATTACK));
 }

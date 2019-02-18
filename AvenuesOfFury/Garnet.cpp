@@ -1,19 +1,18 @@
 #include "pch.h"
 #include "Garnet.h"
-#include "TextureHolder.h"
 #include "SpriteHolder.h"
 #include <iostream>
 
 Garnet::Garnet(vector<Character*> players) : EnemyCharacter(players) {
 	MS_PER_FRAME = 100;
-	baseSpeedY = -0.00275f * Globals::getResolution().x;
-	attackPower[0] = 2000;
-	texturePath = "graphics/characters/garnet_sheet.png";
-	sprite = Sprite(TextureHolder::getTexture(texturePath));
+	setupGraphic("graphics/characters/garnet_sheet.png", "garnet");
+	SpriteHolder::initSprites("character", getSpriteName());
+	changeScale(Vector2f(4 * Globals::getScalingFactor(), 4 * Globals::getScalingFactor()));
 	facingRight = true;
-	spriteName = "garnet";
 
 	// randomize some traits
+	baseSpeedY = -0.00275f * Globals::getResolution().x;
+	attackPower[0] = 2000;
 	varianceSpeed = rand() % (int)(.03 * Globals::getResolution().x);
 	baseSpeed = .25 * Globals::getResolution().x + varianceSpeed;
 	speed = baseSpeed;
@@ -24,8 +23,6 @@ Garnet::Garnet(vector<Character*> players) : EnemyCharacter(players) {
 	reactionSpeed -= reactionSpeed % 50;
 	maxDecisionSpeed = 2000;
 
-	SpriteHolder::initSprites("character", spriteName);
-	sprite.scale(Vector2f(4 * Globals::getScalingFactor(), 4 * Globals::getScalingFactor()));
 	resetFrameState();
 	render();
 }
@@ -36,12 +33,12 @@ bool Garnet::handleAttacking(float elapsedTime) {
 
 	int choice = rand() % 1000;
 	if (choice == 0 &&
-		abs(position.x - focusChar->getCenter().x) > (0.1 * Globals::getResolution().x) &&
-		abs(position.x - focusChar->getCenter().x) < (0.2 * Globals::getResolution().x)
+		abs(getPosition().x - focusChar->getPosition().x) > (0.1 * Globals::getResolution().x) &&
+		abs(getPosition().x - focusChar->getPosition().x) < (0.2 * Globals::getResolution().x)
 		) return jumpAttack(elapsedTime);
 
 	if (choice == 1 &&
-		abs(position.x - focusChar->getCenter().x) < (0.1 * Globals::getResolution().x)
+		abs(getPosition().x - focusChar->getPosition().x) < (0.1 * Globals::getResolution().x)
 		) return grabAttack(elapsedTime);
 
 	return attack(elapsedTime, HEAD_ATTACK);

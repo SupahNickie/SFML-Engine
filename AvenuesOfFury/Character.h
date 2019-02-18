@@ -8,7 +8,7 @@ using namespace std;
 struct AttackInfo;
 struct CharacterVelocity;
 struct HitRecord;
-class Character : public Graphic {
+class Character {
 public:
 	enum class DirectionHeaded { U, UR, R, DR, D, DL, L, UL, NONE };
 	enum class FallStep { START_FALL, KNOCK_DOWN, BOUNCE_UP, NONE };
@@ -17,8 +17,10 @@ public:
 	unsigned int uniqueID;
 	Character* focusChar;
 	bool isPlayer = false;
+	bool isActive = true;
 
 	Character();
+	Graphic* getGraphic();
 	void flipHorizontally();
 	bool isFacingRight();
 	bool isInvincible();
@@ -29,8 +31,14 @@ public:
 	bool hits(Character* otherChar);
 	void registerHit(int hp, string const& attacker, unsigned short int frame, AttackInfo info);
 	CharacterVelocity getVelocity(int time);
+	void setPosition(Vector2f position);
+	Vector2f getPosition();
+	FloatRect getBounds();
+	string getSpriteName();
 	virtual void update(float timeElapsed, vector<Character*> players, vector<Character*> enemies) = 0;
 protected:
+	Graphic graphic;
+
 	int MS_PER_FRAME = 50;
 	int STUN_LENGTH = 200;
 	int const WALK = 0;
@@ -107,6 +115,11 @@ protected:
 	Globals::ActionType spriteState;
 	bool facingRight;
 
+	void setupGraphic(string const& texturePath, string const& spriteName);
+	Sprite* getSprite();
+	void changeScale(Vector2f scale);
+	void setAnimationCycle(map<string, bool> cycle);
+	bool getAnimationCycle(string currentAction);
 	void advanceHitRecords(float elapsedTime);
 	void detectCollisions(vector<Character*> players, vector<Character*> enemies);
 	void resetGrab();
