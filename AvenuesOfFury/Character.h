@@ -94,7 +94,7 @@ protected:
 	vector<int> attackPower;
 	bool attackDisabled = false;
 
-	map<string, HitRecord> hitsRegistered;
+	unordered_map<string, HitRecord> hitsRegistered;
 	bool hitRegistered = false;
 	bool zig = false; // or zag, for "bouncing" when hit
 
@@ -109,7 +109,7 @@ protected:
 	int timeSinceLastAction = 0;
 	bool spriteCycleDown = false;
 
-	map<int, CharacterVelocity> pastPositions;
+	unordered_map<int, CharacterVelocity> pastPositions;
 	DirectionHeaded* pastDirectionsPressed;
 	int timeSincePastPositionsUpdate = 0;
 	Globals::ActionType spriteState;
@@ -118,7 +118,7 @@ protected:
 	void setupGraphic(string const& texturePath, string const& spriteName);
 	Sprite* getSprite();
 	void changeScale(Vector2f scale);
-	void setAnimationCycle(map<string, bool> cycle);
+	void setAnimationCycle(unordered_map<string, bool> cycle);
 	bool getAnimationCycle(string currentAction);
 	void advanceHitRecords(float elapsedTime);
 	void detectCollisions(vector<Character*> players, vector<Character*> enemies);

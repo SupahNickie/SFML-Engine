@@ -167,7 +167,7 @@ void Character::changeScale(Vector2f scale) {
 	getSprite()->setScale(scale);
 }
 
-void Character::setAnimationCycle(map<string, bool> cycle) {
+void Character::setAnimationCycle(unordered_map<string, bool> cycle) {
 	graphic.setAnimationCycle(cycle);
 }
 

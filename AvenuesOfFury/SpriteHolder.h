@@ -3,7 +3,7 @@
 #define SPRITE_HOLDER_H
 
 #include <SFML/Graphics.hpp>
-#include <map>
+#include <unordered_map>
 #include "Globals.h"
 
 using namespace sf;
@@ -22,12 +22,12 @@ private:
 	static SpriteHolder* shInstance;
 	enum class HandlingType { CHARACTER, BACKGROUND, NONE };
 
-	map<string, map<Globals::ActionType, vector<vector<Vector2i>>>> spriteOriginsMap;
-	map<string, map<Globals::ActionType, vector<vector<Vector2i>>>> spriteBoundsMap;
-	map<string, map<Globals::ActionType, vector<vector<int>>>> spriteDamageFramesMap;
-	map<string, map<Globals::ActionType, vector<int>>> spriteMaxFrameMap;
-	map<string, map<Globals::ActionType, vector<int>>> spriteStartFrameMap;
-	map<string, bool> isStoredMap;
+	unordered_map<string, unordered_map<Globals::ActionType, vector<vector<Vector2i>>>> spriteOriginsMap;
+	unordered_map<string, unordered_map<Globals::ActionType, vector<vector<Vector2i>>>> spriteBoundsMap;
+	unordered_map<string, unordered_map<Globals::ActionType, vector<vector<int>>>> spriteDamageFramesMap;
+	unordered_map<string, unordered_map<Globals::ActionType, vector<int>>> spriteMaxFrameMap;
+	unordered_map<string, unordered_map<Globals::ActionType, vector<int>>> spriteStartFrameMap;
+	unordered_map<string, bool> isStoredMap;
 
 	static void handleCharacterLine(vector<string> line, string* currentlySetting, unsigned int* numberOfActions, string spriteName, int* outIndex, int* inIndex);
 	static void handleBackgroundLine(vector<string> line, string* currentlySetting, unsigned int* numberOfActions, string spriteName, int* outIndex, int* inIndex);

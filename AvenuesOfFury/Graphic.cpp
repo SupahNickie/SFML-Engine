@@ -9,11 +9,11 @@ void Graphic::flipHorizontally() {
 	sprite.scale(-1, 1);
 }
 
-void Graphic::setAnimationCycle(map<string, bool> cycle) {
+void Graphic::setAnimationCycle(unordered_map<string, bool> cycle) {
 	animationCycle = cycle;
 }
 
-map<string, bool> Graphic::getAnimationCycle() {
+unordered_map<string, bool> Graphic::getAnimationCycle() {
 	return animationCycle;
 }
 
